@@ -83,10 +83,10 @@ enum TOKEN_TYPE {
 };
 
 //词法标记
-class C5Token {
+class Token {
 public:
-    TOKEN_TYPE token_type; //词法标记类型
-    string literal; //词法标记原始值
+    TOKEN_TYPE TokenType; //词法标记类型
+    string Literal; //词法标记原始值
 };
 
 #endif //DEMO_CPP_TOKEN_H

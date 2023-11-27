@@ -6,15 +6,12 @@ add_executable(hello_world hello_world.cpp)
 
 add_executable(
         lexer_test
-        hkni/Token.h
         hkni/Lexer.h
         hkni/LexerTest.cpp
 )
 
 add_executable(
         parser_test
-        hkni/Token.h
-        hkni/Lexer.h
         hkni/Parser.h
         hkni/ParserTest.cpp
 )

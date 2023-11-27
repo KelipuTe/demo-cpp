@@ -4,12 +4,12 @@
 #include "../Token.h"
 
 namespace ast {
-    // ast语法树结点
-    class C5Node {
+    //结点
+    class I9Node {
     public:
-        virtual string F8TokenLiteral() = 0;
+        virtual string GetTokenLiteral() = 0;
 
-        virtual string F8ToString() = 0;
+        virtual string ToString() = 0;
     };
 }
 
