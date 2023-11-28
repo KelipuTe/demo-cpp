@@ -1,14 +1,14 @@
-#ifndef DEMO_CPP_STATEMENT_H
-#define DEMO_CPP_STATEMENT_H
+#ifndef HKNI_STATEMENT_H
+#define HKNI_STATEMENT_H
 
 #include "Node.h"
 
 namespace ast {
-    //语句
+    //语句抽象
     class I9Statement : public I9Node {
     public:
         virtual void StatementNode() = 0;
     };
 }
 
-#endif //DEMO_CPP_STATEMENT_H
+#endif //HKNI_STATEMENT_H

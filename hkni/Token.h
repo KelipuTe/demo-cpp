@@ -1,5 +1,5 @@
-#ifndef DEMO_CPP_TOKEN_H
-#define DEMO_CPP_TOKEN_H
+#ifndef HKNI_TOKEN_H
+#define HKNI_TOKEN_H
 
 #include <string>
 
@@ -26,6 +26,7 @@ enum TOKEN_TYPE {
     MUL, //乘号（*）
     DIV, //除号（/）
     MOD, //取模（%）
+
     INC, //自增（++）
     DEC, //自减（--）
 
@@ -89,4 +90,4 @@ public:
     string Literal; //词法标记原始值
 };
 
-#endif //DEMO_CPP_TOKEN_H
+#endif //HKNI_TOKEN_H

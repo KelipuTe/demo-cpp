@@ -1,10 +1,8 @@
-#ifndef DEMO_CPP_NODE_H
-#define DEMO_CPP_NODE_H
-
-#include "../Token.h"
+#ifndef HKNI_NODE_H
+#define HKNI_NODE_H
 
 namespace ast {
-    //结点
+    //AST树结点
     class I9Node {
     public:
         virtual string GetTokenLiteral() = 0;
@@ -14,4 +12,4 @@ namespace ast {
 }
 
 
-#endif //DEMO_CPP_NODE_H
+#endif //HKNI_NODE_H

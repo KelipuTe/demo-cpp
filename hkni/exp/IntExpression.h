@@ -3,25 +3,26 @@
 
 #include <string>
 #include "../Token.h"
-#include "Expression.h"
+#include "../ast/Expression.h"
 
 namespace ast {
+    //整数表达式
     class IntExpression : public I9Expression {
         //####属性
-    private:
-        Token token;
+    public:
+        Token TokenHKNI;
         //####方法
     public:
         IntExpression(Token token) {
-            this->token = token;
+            this->TokenHKNI = token;
         };
 
         string GetTokenLiteral() override {
-            return this->token.Literal;
+            return this->TokenHKNI.Literal;
         }
 
         string ToString() override {
-            return this->token.Literal;
+            return this->TokenHKNI.Literal;
         }
 
         void ExpressionNode() override {}

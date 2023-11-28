@@ -3,27 +3,28 @@
 
 #include <string>
 #include "../Token.h"
-#include "Expression.h"
+#include "../ast/Expression.h"
 
 namespace ast {
+    //字符串表达式
     class StringExpression : public I9Expression {
         //####属性
     public:
-        Token token;
+        Token TokenHKNI;
         //####方法
     public:
         StringExpression(Token token) {
-            this->token = token;
+            this->TokenHKNI = token;
         };
 
         string GetTokenLiteral() override {
-            return this->token.Literal;
+            return this->TokenHKNI.Literal;
         }
 
         string ToString() override {
             string t4str;
             t4str.append("\"");
-                t4str.append(this->token.Literal);
+            t4str.append(this->TokenHKNI.Literal);
             t4str.append("\"");
             return t4str;
         }

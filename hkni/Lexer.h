@@ -1,5 +1,5 @@
-#ifndef DEMO_CPP_LEXER_H
-#define DEMO_CPP_LEXER_H
+#ifndef HKNI_LEXER_H
+#define HKNI_LEXER_H
 
 #include <string>
 #include <map>
@@ -210,6 +210,7 @@ public:
                     token.Literal = "+";
                     token.TokenType = ADD;
                 }
+                break;
             case '-':
                 if (PeekNextChar() == '=') {
                     ReadNextChar();
@@ -578,4 +579,4 @@ private:
     }
 };
 
-#endif //DEMO_CPP_LEXER_H
+#endif //HKNI_LEXER_H

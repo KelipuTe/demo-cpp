@@ -1,33 +1,32 @@
-#ifndef DEMO_CPP_IDENTIFIEREXPRESSION_H
-#define DEMO_CPP_IDENTIFIEREXPRESSION_H
+#ifndef HKNI_IDENTIFIER_EXPRESSION_H
+#define HKNI_IDENTIFIER_EXPRESSION_H
 
 #include <string>
 #include "../Token.h"
-#include "Expression.h"
+#include "../ast/Expression.h"
 
 namespace ast {
     //标识符表达式
     class IdentifierExpression : public I9Expression {
         //####属性
-    private:
-        Token token;
+    public:
+        Token TokenHKNI;
         //####方法
     public:
         IdentifierExpression(Token token) {
-            this->token = token;
+            this->TokenHKNI = token;
         };
 
         string GetTokenLiteral() override {
-            return this->token.Literal;
+            return this->TokenHKNI.Literal;
         }
 
         string ToString() override {
-            return this->token.Literal;
+            return this->TokenHKNI.Literal;
         }
 
-        void ExpressionNode() override {
-        }
+        void ExpressionNode() override {}
     };
 }
 
-#endif //DEMO_CPP_IDENTIFIEREXPRESSION_H
+#endif //HKNI_IDENTIFIER_EXPRESSION_H

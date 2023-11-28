@@ -1,14 +1,14 @@
-#ifndef DEMO_CPP_EXPRESSION_H
-#define DEMO_CPP_EXPRESSION_H
+#ifndef HKNI_EXPRESSION_H
+#define HKNI_EXPRESSION_H
 
 #include "Node.h"
 
 namespace ast {
-    //表达式
+    //表达式抽象
     class I9Expression : public I9Node {
     public:
         virtual void ExpressionNode() = 0;
     };
 }
 
-#endif //DEMO_CPP_EXPRESSION_H
+#endif //HKNI_EXPRESSION_H

@@ -1,25 +1,27 @@
-#ifndef DEMO_CPP_EXPRESSIONSTATEMENT_H
-#define DEMO_CPP_EXPRESSIONSTATEMENT_H
+#ifndef HKNI_EXPRESSION_STATEMENT_H
+#define HKNI_EXPRESSION_STATEMENT_H
 
 #include <string>
 #include "../Token.h"
-#include "Expression.h"
-#include "Statement.h"
+#include "../ast/Expression.h"
+#include "../ast/Statement.h"
 
 namespace ast {
+    //表达式语句
+    //格式：表达式;
     class ExpressionStatement : public I9Statement {
         //####属性
     public:
-        Token token;
+        Token TokenHKNI;
         I9Expression *I9Exp;
         //####方法
     public:
         ExpressionStatement(Token token) {
-            this->token = token;
+            this->TokenHKNI = token;
         };
 
         string GetTokenLiteral() override {
-            return this->token.Literal;
+            return this->TokenHKNI.Literal;
         }
 
         string ToString() override {
@@ -35,4 +37,4 @@ namespace ast {
     };
 }
 
-#endif //DEMO_CPP_EXPRESSIONSTATEMENT_H
+#endif //HKNI_EXPRESSION_STATEMENT_H

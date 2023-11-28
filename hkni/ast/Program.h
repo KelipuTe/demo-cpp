@@ -1,8 +1,7 @@
-#ifndef DEMO_CPP_PROGRAM_H
-#define DEMO_CPP_PROGRAM_H
+#ifndef HKNI_PROGRAM_H
+#define HKNI_PROGRAM_H
 
 #include <vector>
-#include "Node.h"
 #include "Statement.h"
 
 using namespace std;
@@ -11,7 +10,7 @@ namespace ast {
     //程序
     class Program : public I9Node {
     public:
-        std::vector<I9Statement *> I9StatementList;
+        std::vector<I9Statement *> I9StatementList; //语句列表
     public:
         string GetTokenLiteral() override {
             if (!I9StatementList.empty()) {
@@ -22,13 +21,13 @@ namespace ast {
         }
 
         string ToString() override {
-            string Result;
+            string t4str;
             for (auto &item: I9StatementList) {
-                Result += item->ToString();
+                t4str += item->ToString();
             }
-            return Result;
+            return t4str;
         }
     };
 }
 
-#endif //DEMO_CPP_PROGRAM_H
+#endif //HKNI_PROGRAM_H
