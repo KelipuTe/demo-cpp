@@ -24,7 +24,8 @@ public:
 void testParserDoParse() {
     ParserTestCase *tcList[] = {
 //            new ParserTestCase("IDENTIFIER", "a;", INPUT_MODE),
-//
+
+//            new ParserTestCase("HKNI_NULL", "null;", INPUT_MODE),
 //            new ParserTestCase("HKNI_INT", "10;", INPUT_MODE),
 //            new ParserTestCase("HKNI_INT", "0b10;", INPUT_MODE),
 //            new ParserTestCase("HKNI_INT", "010;", INPUT_MODE),
@@ -34,18 +35,47 @@ void testParserDoParse() {
 //
 //            new ParserTestCase("ASSIGN", "a=1;", INPUT_MODE),
 
-//            new ParserTestCase("ADD", "1+2", INPUT_MODE),
-//            new ParserTestCase("SUB", "1-2", INPUT_MODE),
-//            new ParserTestCase("ADD_SUB", "1+2-3", INPUT_MODE),
-//            new ParserTestCase("MUL", "1*2", INPUT_MODE),
-//            new ParserTestCase("DIV", "1/2", INPUT_MODE),
-//            new ParserTestCase("MUL_DIV", "1*2/3", INPUT_MODE),
-//            new ParserTestCase("MOD", "1%2", INPUT_MODE),
-//            new ParserTestCase("ADD_MUL", "1+2*3", INPUT_MODE),
-            new ParserTestCase("ADD_LPAREN_MUL", "(1+2)*3", INPUT_MODE),
+//            new ParserTestCase("ADD", "1+2;", INPUT_MODE),
+//            new ParserTestCase("SUB", "1-2;", INPUT_MODE),
+//            new ParserTestCase("SUB", "-2;", INPUT_MODE),
+//            new ParserTestCase("SUB_SUB", "-2-2;", INPUT_MODE),
+//            new ParserTestCase("ADD_SUB", "1+2-3;", INPUT_MODE),
+//            new ParserTestCase("MUL", "1*2;", INPUT_MODE),
+//            new ParserTestCase("DIV", "1/2;", INPUT_MODE),
+//            new ParserTestCase("MUL_DIV", "1*2/3;", INPUT_MODE),
+//            new ParserTestCase("MOD", "1%2;", INPUT_MODE),
+//            new ParserTestCase("ADD_MUL", "1+2*3;", INPUT_MODE),
+//            new ParserTestCase("ADD_LPAREN_MUL", "(1+2)*3;", INPUT_MODE),
 
-//            new ParserTestCase("INC", "i++", INPUT_MODE),
-//            new ParserTestCase("DEC", "i--", INPUT_MODE),
+
+//            new ParserTestCase("INC", "i++;", INPUT_MODE),
+//            new ParserTestCase("DEC", "i--;", INPUT_MODE),
+
+//            new ParserTestCase("ADD_ASSIGN", "a+=2;", INPUT_MODE),
+//            new ParserTestCase("SUB_ASSIGN", "a-=2;", INPUT_MODE),
+//            new ParserTestCase("MUL_ASSIGN", "a*=2;", INPUT_MODE),
+//            new ParserTestCase("DIV_ASSIGN", "a/=2;", INPUT_MODE),
+//            new ParserTestCase("MOD_ASSIGN", "a%=2;", INPUT_MODE),
+
+//            new ParserTestCase("EQ", "a==1;", INPUT_MODE),
+//            new ParserTestCase("NEQ", "a!=1;", INPUT_MODE),
+//            new ParserTestCase("GT", "a>1;", INPUT_MODE),
+//            new ParserTestCase("GTE", "a>=1;", INPUT_MODE),
+//            new ParserTestCase("LT", "a<1;", INPUT_MODE),
+//            new ParserTestCase("LTE", "a<=1;", INPUT_MODE),
+
+//            new ParserTestCase("AND", "true && false;", INPUT_MODE),
+//            new ParserTestCase("OR", "true || false;", INPUT_MODE),
+//            new ParserTestCase("NOT", "!true;", INPUT_MODE),
+
+//            new ParserTestCase("BIT_AND", "0b10 & 0b11;", INPUT_MODE),
+//            new ParserTestCase("BIT_OR", "0b10 | 0b11;", INPUT_MODE),
+
+//            new ParserTestCase("HKNI_TRUE", "true;", INPUT_MODE),
+//            new ParserTestCase("HKNI_FALSE", "false;", INPUT_MODE),
+
+//            new ParserTestCase("IF", "if(a==1){b=1;}", INPUT_MODE),
+//            new ParserTestCase("IF", "if(a==1){b=1;}else{b=2;}", INPUT_MODE),
 
     };
 

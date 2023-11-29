@@ -22,7 +22,7 @@ enum TOKEN_TYPE {
     ASSIGN, //等于号或者赋值（=）
 
     ADD, //加号（+）
-    SUB, //减号（-）
+    SUB, //减号，负号（-）
     MUL, //乘号（*）
     DIV, //除号（/）
     MOD, //取模（%）
@@ -40,8 +40,8 @@ enum TOKEN_TYPE {
     EQ, //等于号（==）
     NEQ, //不等于号（!=）
     GT, //大于号（>）
-    GTE, //大于等于号（>=）
     LT, //小于号（<）
+    GTE, //大于等于号（>=）
     LTE, //小于等于号（<=）
 
     AND, //逻辑与（&&）
@@ -56,8 +56,8 @@ enum TOKEN_TYPE {
     COMMA, //逗号（,）
     DOT, //点（.）
 
-    LPAREN, //左括号（（）
-    RPAREN, //右括号（））
+    LPAREN, //左括号（(）
+    RPAREN, //右括号（)）
     LBRACE, //左大括号（{）
     RBRACE, //右大括号（}）
     LBRACKET, //左中括号（[）

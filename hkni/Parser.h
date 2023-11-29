@@ -9,11 +9,18 @@
 #include "Precedence.h"
 
 #include "exp/IdentifierExpression.h"
+
+#include "exp/NullExpression.h"
 #include "exp/IntExpression.h"
 #include "exp/FloatExpression.h"
 #include "exp/StringExpression.h"
 #include "exp/AssignExpression.h"
+
+#include "exp/PrefixExpression.h"
 #include "exp/InfixExpression.h"
+
+#include "exp/BoolExpression.h"
+#include "exp/IfExpression.h"
 
 #include "stmt/ExpressionStatement.h"
 #include "stmt/VarStatement.h"
@@ -70,15 +77,7 @@ public:
             } else if (nowToken.TokenType == COMMENT) {
 
             } else {
-                I9Statement *i9stmt;
-                switch (nowToken.TokenType) {
-                    case HKNI_VAR:
-                        i9stmt = parseVarStatement();
-                        break;
-                    default:
-                        i9stmt = parseExpressionStatement();
-                        break;
-                }
+                I9Statement *i9stmt = this->parseStatement();
                 if (i9stmt != nullptr) {
                     p7program->I9StatementList.push_back(i9stmt);
                 }
@@ -100,28 +99,77 @@ private:
         precedenceMap[DIV] = MUL_DIV_MOD_P;
         precedenceMap[MOD] = MUL_DIV_MOD_P;
 
+        precedenceMap[INC] = SUB_INC_DEC_NOT_P;
+        precedenceMap[DEC] = SUB_INC_DEC_NOT_P;
+
+        precedenceMap[ADD_ASSIGN] = ASSIGN_P;
+        precedenceMap[SUB_ASSIGN] = ASSIGN_P;
+        precedenceMap[MUL_ASSIGN] = ASSIGN_P;
+        precedenceMap[DIV_ASSIGN] = ASSIGN_P;
+        precedenceMap[MOD_ASSIGN] = ASSIGN_P;
+
+        precedenceMap[EQ] = EQ_NEQ_P;
+        precedenceMap[NEQ] = EQ_NEQ_P;
+        precedenceMap[GT] = GT_LT_GTE_LTE_P;
+        precedenceMap[LT] = GT_LT_GTE_LTE_P;
+        precedenceMap[GTE] = GT_LT_GTE_LTE_P;
+        precedenceMap[LTE] = GT_LT_GTE_LTE_P;
+
+        precedenceMap[AND] = AND_P;
+        precedenceMap[OR] = OR_P;
+        precedenceMap[NOT] = SUB_INC_DEC_NOT_P;
+
+        precedenceMap[BIT_AND] = BIT_AND_P;
+        precedenceMap[BIT_OR] = BIT_OR_P;
+
         precedenceMap[LPAREN] = LPAREN_P;
     }
 
-    //初始化词法标记的解析方法
+    //初始化词法标记的解析方法，前缀和中缀两个map
     //如果在map里没找到，会返回默认值nullptr
     void initParsingFunction() {
-        //前缀词法标记的解析方法
         f8PrefixParsingMap[IDENTIFIER] = std::bind(&Parser::parseIdentifierExpression, this);
+
+        f8PrefixParsingMap[HKNI_NULL] = std::bind(&Parser::parseNullExpression, this);
         f8PrefixParsingMap[HKNI_INT] = std::bind(&Parser::parseIntExpression, this);
         f8PrefixParsingMap[HKNI_FLOAT] = std::bind(&Parser::parseFloatExpression, this);
         f8PrefixParsingMap[HKNI_STRING] = std::bind(&Parser::parseStringExpression, this);
 
-        f8PrefixParsingMap[LPAREN] = std::bind(&Parser::parseLParenExpression, this);
-
-        //中缀词法标记的解析方法
         f8InfixParsingMap[ASSIGN] = std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1);
 
         f8InfixParsingMap[ADD] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
+        f8PrefixParsingMap[SUB] = std::bind(&Parser::parsePrefixExpression, this);
         f8InfixParsingMap[SUB] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
         f8InfixParsingMap[MUL] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
         f8InfixParsingMap[DIV] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
         f8InfixParsingMap[MOD] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
+
+        f8InfixParsingMap[ADD_ASSIGN] = std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1);
+        f8InfixParsingMap[SUB_ASSIGN] = std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1);
+        f8InfixParsingMap[MUL_ASSIGN] = std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1);
+        f8InfixParsingMap[DIV_ASSIGN] = std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1);
+        f8InfixParsingMap[MOD_ASSIGN] = std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1);
+
+        f8InfixParsingMap[EQ] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
+        f8InfixParsingMap[NEQ] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
+        f8InfixParsingMap[GT] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
+        f8InfixParsingMap[LT] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
+        f8InfixParsingMap[GTE] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
+        f8InfixParsingMap[LTE] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
+
+        f8InfixParsingMap[AND] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
+        f8InfixParsingMap[OR] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
+        f8PrefixParsingMap[NOT] = std::bind(&Parser::parsePrefixExpression,this);
+
+        f8InfixParsingMap[BIT_AND] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
+        f8InfixParsingMap[BIT_OR] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
+
+        f8PrefixParsingMap[LPAREN] = std::bind(&Parser::parseLParenExpression, this);
+
+        f8PrefixParsingMap[HKNI_TRUE] = std::bind(&Parser::parseBoolExpression,this);
+        f8PrefixParsingMap[HKNI_FALSE] = std::bind(&Parser::parseBoolExpression,this);
+
+        f8PrefixParsingMap[HKNI_IF] = std::bind(&Parser::parseIfExpression, this);
     }
 
     void getNextToken() {
@@ -237,6 +285,10 @@ private:
         return new IdentifierExpression(nowToken);
     }
 
+    NullExpression *parseNullExpression() {
+        return new NullExpression(nowToken);
+    };
+
     IntExpression *parseIntExpression() {
         return new IntExpression(nowToken);
     };
@@ -249,6 +301,49 @@ private:
         return new StringExpression(nowToken);
     };
 
+    I9Expression *parseLParenExpression() {
+        getNextToken(); //跳过'('标记
+        auto *p7exp = parseExpression(LOWEST_P);
+        if (!expectNextTokenIs(RPAREN)) {
+            return nullptr;
+        }
+        return p7exp;
+    }
+
+    IfExpression *parseIfExpression() {
+        IfExpression *p7exp = new IfExpression(nowToken);
+
+        //if(条件表达式)
+        if (!expectNextTokenIs(LPAREN)) {
+            return nullptr;
+        }
+        getNextToken(); //跳过'('标记
+        p7exp->I9ConditionExp = parseExpression(LOWEST_P);
+        if (!expectNextTokenIs(RPAREN)) {
+            return nullptr;
+        }
+
+        //{块语句}
+        if (!expectNextTokenIs(LBRACE)) {
+            return nullptr;
+        }
+        p7exp->P7ConsequenceStmt = parseBlockStatement();
+
+        //else
+        if (nextTokenIs(HKNI_ELSE)) {
+            getNextToken(); //跳过"else"标记
+            //{块语句}
+            if (!expectNextTokenIs(LBRACE)) {
+                return nullptr;
+            }
+            p7exp->P7AlternativeStmt = parseBlockStatement();
+        } else {
+            p7exp->P7AlternativeStmt = nullptr;
+        }
+
+        return p7exp;
+    }
+
     AssignExpression *parseAssignExpression(I9Expression *i9exp) {
         auto *p7exp = new AssignExpression(nowToken);
         p7exp->I9NameExp = i9exp;
@@ -257,27 +352,64 @@ private:
         return p7exp;
     }
 
-    InfixExpression *parseInfixExpression(I9Expression *i9exp) {
-        auto *p7exp = new InfixExpression(nowToken);
-        p7exp->I9LeftExp = i9exp;
-        int precedence = this->getNowTokenPrecedence(); //注意，这里传的是中缀运算符的优先级
-        getNextToken();
-        p7exp->I9RightExp = parseExpression(precedence);
+    PrefixExpression *parsePrefixExpression() {
+        auto *p7exp = new PrefixExpression(nowToken);
+        getNextToken(); //跳过前缀标记
+        p7exp->I9Exp = parseExpression(SUB_INC_DEC_NOT_P); //这里直接传负号的优先级，负号和减号冲突了
         return p7exp;
     }
 
-    I9Expression *parseLParenExpression() {
-        getNextToken();
-        auto *p7exp = parseExpression(LOWEST_P);
-        if (!expectNextTokenIs(RPAREN)) {
-            return nullptr;
-        }
+    InfixExpression *parseInfixExpression(I9Expression *i9exp) {
+        auto *p7exp = new InfixExpression(nowToken);
+        p7exp->I9LeftExp = i9exp;
+        int precedence = this->getNowTokenPrecedence(); //获取中缀标记的优先级
+        getNextToken(); //跳过中缀标记
+        p7exp->I9RightExp = parseExpression(precedence); //这里传的是中缀标记的优先级
         return p7exp;
     }
+
+    BoolExpression *parseBoolExpression() {
+        return new BoolExpression(nowToken);
+    };
 
     //####解析表达式####
 
     //####解析语句
+
+    I9Statement *parseStatement() {
+        I9Statement *i9stmt;
+        switch (nowToken.TokenType) {
+            case HKNI_VAR:
+                i9stmt = parseVarStatement();
+                break;
+            default:
+                i9stmt = parseExpressionStatement();
+                break;
+        }
+        return i9stmt;
+    }
+
+    BlockStatement *parseBlockStatement() {
+        BlockStatement *p7stmt = new BlockStatement(nowToken);
+
+        getNextToken(); //跳过'{'标记
+
+        while (!nowTokenIs(RBRACE)) {
+            if (nowTokenIs(COMMENT)) {
+                getNextToken();
+                continue;
+            }
+
+            auto *i9stmt = parseStatement();
+            if (i9stmt != nullptr) {
+                p7stmt->I9StatementList.push_back(i9stmt);
+            }
+
+            getNextToken();
+        }
+
+        return p7stmt;
+    }
 
     ExpressionStatement *parseExpressionStatement() {
         auto *p7stmt = new ExpressionStatement(nowToken);
@@ -300,7 +432,6 @@ private:
             return nullptr;
         }
         this->getNextToken();
-
         p7stmt->I9ValueExp = parseExpression(LOWEST_P);
 
         if (this->nextTokenIs(SEMICOLON)) {
