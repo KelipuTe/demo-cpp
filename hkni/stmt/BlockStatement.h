@@ -11,7 +11,7 @@ namespace ast {
         //####属性
     public:
         Token TokenHKNI;
-        std::vector<I9Statement*> I9StatementList;
+        std::vector<I9Statement*> BodyStmtList;
         //####方法
     public:
         BlockStatement(Token token) {
@@ -24,7 +24,7 @@ namespace ast {
 
         string ToString() override {
             string t4str;
-            for (auto &item: I9StatementList) {
+            for (auto &item: BodyStmtList) {
                 t4str += item->ToString();
             }
             return t4str;

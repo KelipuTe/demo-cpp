@@ -21,9 +21,13 @@
 
 #include "exp/BoolExpression.h"
 #include "exp/IfExpression.h"
+#include "exp/ForExpression.h"
+#include "exp/FuncExpression.h"
+#include "exp/CallExpression.h"
 
-#include "stmt/ExpressionStatement.h"
 #include "stmt/VarStatement.h"
+#include "stmt/ReturnStatement.h"
+#include "stmt/ExpressionStatement.h"
 
 #include "ast/Program.h"
 
@@ -150,26 +154,30 @@ private:
         f8InfixParsingMap[DIV_ASSIGN] = std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1);
         f8InfixParsingMap[MOD_ASSIGN] = std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1);
 
-        f8InfixParsingMap[EQ] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
-        f8InfixParsingMap[NEQ] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
-        f8InfixParsingMap[GT] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
-        f8InfixParsingMap[LT] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
-        f8InfixParsingMap[GTE] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
-        f8InfixParsingMap[LTE] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
+        f8InfixParsingMap[EQ] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
+        f8InfixParsingMap[NEQ] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
+        f8InfixParsingMap[GT] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
+        f8InfixParsingMap[LT] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
+        f8InfixParsingMap[GTE] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
+        f8InfixParsingMap[LTE] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
 
-        f8InfixParsingMap[AND] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
-        f8InfixParsingMap[OR] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
-        f8PrefixParsingMap[NOT] = std::bind(&Parser::parsePrefixExpression,this);
+        f8InfixParsingMap[AND] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
+        f8InfixParsingMap[OR] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
+        f8PrefixParsingMap[NOT] = std::bind(&Parser::parsePrefixExpression, this);
 
-        f8InfixParsingMap[BIT_AND] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
-        f8InfixParsingMap[BIT_OR] = std::bind(&Parser::parseInfixExpression,this,std::placeholders::_1);
+        f8InfixParsingMap[BIT_AND] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
+        f8InfixParsingMap[BIT_OR] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
 
         f8PrefixParsingMap[LPAREN] = std::bind(&Parser::parseLParenExpression, this);
+        f8InfixParsingMap[LPAREN] = std::bind(&Parser::parseCallExpression, this, std::placeholders::_1);
 
-        f8PrefixParsingMap[HKNI_TRUE] = std::bind(&Parser::parseBoolExpression,this);
-        f8PrefixParsingMap[HKNI_FALSE] = std::bind(&Parser::parseBoolExpression,this);
+        f8PrefixParsingMap[HKNI_TRUE] = std::bind(&Parser::parseBoolExpression, this);
+        f8PrefixParsingMap[HKNI_FALSE] = std::bind(&Parser::parseBoolExpression, this);
 
         f8PrefixParsingMap[HKNI_IF] = std::bind(&Parser::parseIfExpression, this);
+        f8PrefixParsingMap[HKNI_FOR] = std::bind(&Parser::parseForExpression, this);
+
+        f8PrefixParsingMap[HKNI_FUNC] = std::bind(&Parser::parseFuncExpression, this);
     }
 
     void getNextToken() {
@@ -185,18 +193,21 @@ private:
         return nextToken.TokenType == type;
     };
 
+    void reportError(){
+        string modeStr = this->p7lexer->GetModeStr();
+        string rowStr = std::to_string(this->p7lexer->GetNowRow());
+        string columnStr = std::to_string(this->p7lexer->GetNowColumn());
+
+        string t4str = modeStr + rowStr + "行；" + columnStr + "列；expectNextTokenIs；语法错误：" + nowToken.Literal;
+        errorList.push_back(t4str);
+    }
+
     bool expectNextTokenIs(TOKEN_TYPE type) {
         if (nextTokenIs(type)) {
             getNextToken();
             return true;
         } else {
-            string modeStr = this->p7lexer->GetModeStr();
-            string rowStr = std::to_string(this->p7lexer->GetNowRow());
-            string columnStr = std::to_string(this->p7lexer->GetNowColumn());
-
-            string t4str = modeStr + rowStr + "行；" + columnStr + "列；expectNextTokenIs；语法错误：" + nowToken.Literal;
-            errorList.push_back(t4str);
-
+            reportError();
             return false;
         }
     }
@@ -344,6 +355,111 @@ private:
         return p7exp;
     }
 
+    ForExpression *parseForExpression() {
+        ForExpression *p7exp = new ForExpression(nowToken);
+
+        if (!expectNextTokenIs(LPAREN)) {
+            return nullptr;
+        }
+        getNextToken();
+        p7exp->I9InitStmt = parseStatement();
+        if (!nowTokenIs(SEMICOLON)) {
+            reportError();
+            return nullptr;
+        }
+        getNextToken();
+        p7exp->I9ConditionStmt = parseStatement();
+        if (!nowTokenIs(SEMICOLON)) {
+            reportError();
+            return nullptr;
+        }
+        getNextToken();
+        p7exp->I9IncrementStmt = parseStatement();
+        if (!expectNextTokenIs(RPAREN)) {
+            return nullptr;
+        }
+
+        if(!expectNextTokenIs(LBRACE)){
+            return nullptr;
+        }
+
+        return p7exp;
+    }
+
+    FuncExpression *parseFuncExpression() {
+        //func
+        FuncExpression *p7exp = new FuncExpression(nowToken);
+
+        //函数名
+        if (nextTokenIs(IDENTIFIER)) {
+            getNextToken();
+            p7exp->P7NameExp = new IdentifierExpression(nowToken);
+        }
+
+        if (!expectNextTokenIs(LPAREN)) {
+            return nullptr;
+        }
+        parseFuncArgsList(p7exp);
+
+        if (!expectNextTokenIs(LBRACE)) {
+            return nullptr;
+        }
+        p7exp->P7BodyBlockStmt = parseBlockStatement();
+        return p7exp;
+    }
+
+    void parseFuncArgsList(FuncExpression *p7exp) {
+        //无参数
+        if (nextTokenIs(RPAREN)) {
+            this->getNextToken();
+            return;
+        }
+
+        //有参数
+        std::vector<IdentifierExpression *> argList;
+        this->getNextToken();
+        argList.push_back(new IdentifierExpression(nowToken));
+        while (nextTokenIs(COMMA)) {
+            this->getNextToken();
+            this->getNextToken();
+            argList.push_back(new IdentifierExpression(nowToken));
+        }
+
+        expectNextTokenIs(RPAREN);
+
+        p7exp->P7ArgList = argList;
+    }
+
+    CallExpression *parseCallExpression(I9Expression *funcEXP) {
+        CallExpression *p7exp = new CallExpression(nowToken);
+        p7exp->I9Exp = funcEXP;
+        parseCallArgsList(p7exp);
+
+        return p7exp;
+    }
+
+    void parseCallArgsList(CallExpression *p7exp) {
+        //无参数
+        if (nextTokenIs(RPAREN)) {
+            this->getNextToken();
+            return;
+        }
+
+        //有参数
+        std::vector<I9Expression *> argList;
+        this->getNextToken();
+        argList.push_back(new IdentifierExpression(nowToken));
+        while (nextTokenIs(COMMA)) {
+            this->getNextToken();
+            this->getNextToken();
+            argList.push_back(parseExpression(LOWEST_P));
+        }
+
+        expectNextTokenIs(RPAREN);
+
+        p7exp->P7ArgList = argList;
+    }
+
     AssignExpression *parseAssignExpression(I9Expression *i9exp) {
         auto *p7exp = new AssignExpression(nowToken);
         p7exp->I9NameExp = i9exp;
@@ -382,42 +498,14 @@ private:
             case HKNI_VAR:
                 i9stmt = parseVarStatement();
                 break;
+            case HKNI_RETURN:
+                i9stmt = parseReturnStatement();
+                break;
             default:
                 i9stmt = parseExpressionStatement();
                 break;
         }
         return i9stmt;
-    }
-
-    BlockStatement *parseBlockStatement() {
-        BlockStatement *p7stmt = new BlockStatement(nowToken);
-
-        getNextToken(); //跳过'{'标记
-
-        while (!nowTokenIs(RBRACE)) {
-            if (nowTokenIs(COMMENT)) {
-                getNextToken();
-                continue;
-            }
-
-            auto *i9stmt = parseStatement();
-            if (i9stmt != nullptr) {
-                p7stmt->I9StatementList.push_back(i9stmt);
-            }
-
-            getNextToken();
-        }
-
-        return p7stmt;
-    }
-
-    ExpressionStatement *parseExpressionStatement() {
-        auto *p7stmt = new ExpressionStatement(nowToken);
-        p7stmt->I9Exp = parseExpression(LOWEST_P);
-        if (nextTokenIs(SEMICOLON)) {
-            getNextToken();
-        }
-        return p7stmt;
     }
 
     VarStatement *parseVarStatement() {
@@ -436,6 +524,47 @@ private:
 
         if (this->nextTokenIs(SEMICOLON)) {
             this->getNextToken();
+        }
+
+        return p7stmt;
+    }
+
+    ReturnStatement *parseReturnStatement() {
+        auto *p7stmt = new ReturnStatement(nowToken);
+        this->getNextToken();
+        p7stmt->I9Exp = parseExpression(LOWEST_P);
+        if (this->nextTokenIs(SEMICOLON)) {
+            this->getNextToken();
+        }
+        return p7stmt;
+    }
+
+    ExpressionStatement *parseExpressionStatement() {
+        auto *p7stmt = new ExpressionStatement(nowToken);
+        p7stmt->I9Exp = parseExpression(LOWEST_P);
+        if (nextTokenIs(SEMICOLON)) {
+            getNextToken();
+        }
+        return p7stmt;
+    }
+
+    BlockStatement *parseBlockStatement() {
+        BlockStatement *p7stmt = new BlockStatement(nowToken);
+
+        getNextToken(); //跳过'{'标记
+
+        while (!nowTokenIs(RBRACE)) {
+            if (nowTokenIs(COMMENT)) {
+                getNextToken();
+                continue;
+            }
+
+            auto *i9stmt = parseStatement();
+            if (i9stmt != nullptr) {
+                p7stmt->BodyStmtList.push_back(i9stmt);
+            }
+
+            getNextToken();
         }
 
         return p7stmt;

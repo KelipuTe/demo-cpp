@@ -47,7 +47,6 @@ void testParserDoParse() {
 //            new ParserTestCase("ADD_MUL", "1+2*3;", INPUT_MODE),
 //            new ParserTestCase("ADD_LPAREN_MUL", "(1+2)*3;", INPUT_MODE),
 
-
 //            new ParserTestCase("INC", "i++;", INPUT_MODE),
 //            new ParserTestCase("DEC", "i--;", INPUT_MODE),
 
@@ -77,6 +76,22 @@ void testParserDoParse() {
 //            new ParserTestCase("IF", "if(a==1){b=1;}", INPUT_MODE),
 //            new ParserTestCase("IF", "if(a==1){b=1;}else{b=2;}", INPUT_MODE),
 
+            new ParserTestCase("FOR", "for(i=1;i<10;i+=1){}", INPUT_MODE),
+
+//            new ParserTestCase("FUNC", "func hello(){}", INPUT_MODE),
+//            new ParserTestCase("FUNC", "func hello(a){a;}", INPUT_MODE),
+//            new ParserTestCase("FUNC", "func hello(a,b){a;b;}", INPUT_MODE),
+
+//new ParserTestCase("RETURN", "return;", INPUT_MODE),
+//new ParserTestCase("RETURN", "return 1;", INPUT_MODE),
+//new ParserTestCase("RETURN", "return a;", INPUT_MODE),
+
+//            new ParserTestCase("CALL", "hello();", INPUT_MODE),
+//            new ParserTestCase("CALL", "hello(1);", INPUT_MODE),
+//            new ParserTestCase("CALL", "hello(1,2);", INPUT_MODE),
+//            new ParserTestCase("CALL", "hello(a);", INPUT_MODE),
+//            new ParserTestCase("CALL", "hello(a,b);", INPUT_MODE),
+//            new ParserTestCase("CALL", "hello(pie());", INPUT_MODE),
     };
 
     int tcListLen = sizeof(tcList) / sizeof(tcList[0]);

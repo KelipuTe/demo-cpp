@@ -15,9 +15,9 @@ namespace ast {
         //####属性
     public:
         Token TokenHKNI;
-        I9Expression *I9ConditionExp;
-        BlockStatement *P7ConsequenceStmt;
-        BlockStatement *P7AlternativeStmt;
+        I9Expression *I9ConditionExp; //条件
+        BlockStatement *P7ConsequenceStmt; //if块
+        BlockStatement *P7AlternativeStmt; //else块
         //####方法
     public:
         IfExpression(Token token) {
