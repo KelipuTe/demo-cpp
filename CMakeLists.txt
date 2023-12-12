@@ -15,3 +15,9 @@ add_executable(
         hkni/Parser.h
         hkni/ParserTest.cpp
 )
+
+add_executable(
+        interpreter_test
+        hkni/Interpreter.h
+        hkni/InterpreterTest.cpp
+)

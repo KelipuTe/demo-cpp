@@ -134,10 +134,10 @@ private:
     void initParsingFunction() {
         f8PrefixParsingMap[IDENTIFIER] = std::bind(&Parser::parseIdentifierExpression, this);
 
-        f8PrefixParsingMap[HKNI_NULL] = std::bind(&Parser::parseNullExpression, this);
-        f8PrefixParsingMap[HKNI_INT] = std::bind(&Parser::parseIntExpression, this);
-        f8PrefixParsingMap[HKNI_FLOAT] = std::bind(&Parser::parseFloatExpression, this);
-        f8PrefixParsingMap[HKNI_STRING] = std::bind(&Parser::parseStringExpression, this);
+        f8PrefixParsingMap[NULL_HKNI] = std::bind(&Parser::parseNullExpression, this);
+        f8PrefixParsingMap[INT_HKNI] = std::bind(&Parser::parseIntExpression, this);
+        f8PrefixParsingMap[FLOAT_HKNI] = std::bind(&Parser::parseFloatExpression, this);
+        f8PrefixParsingMap[STRING_HKNI] = std::bind(&Parser::parseStringExpression, this);
 
         f8InfixParsingMap[ASSIGN] = std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1);
 
@@ -171,13 +171,13 @@ private:
         f8PrefixParsingMap[LPAREN] = std::bind(&Parser::parseLParenExpression, this);
         f8InfixParsingMap[LPAREN] = std::bind(&Parser::parseCallExpression, this, std::placeholders::_1);
 
-        f8PrefixParsingMap[HKNI_TRUE] = std::bind(&Parser::parseBoolExpression, this);
-        f8PrefixParsingMap[HKNI_FALSE] = std::bind(&Parser::parseBoolExpression, this);
+        f8PrefixParsingMap[TRUE_HKNI] = std::bind(&Parser::parseBoolExpression, this);
+        f8PrefixParsingMap[FALSE_HKNI] = std::bind(&Parser::parseBoolExpression, this);
 
-        f8PrefixParsingMap[HKNI_IF] = std::bind(&Parser::parseIfExpression, this);
-        f8PrefixParsingMap[HKNI_FOR] = std::bind(&Parser::parseForExpression, this);
+        f8PrefixParsingMap[IF_HKNI] = std::bind(&Parser::parseIfExpression, this);
+        f8PrefixParsingMap[FOR_HKNI] = std::bind(&Parser::parseForExpression, this);
 
-        f8PrefixParsingMap[HKNI_FUNC] = std::bind(&Parser::parseFuncExpression, this);
+        f8PrefixParsingMap[FUNC_HKNI] = std::bind(&Parser::parseFuncExpression, this);
     }
 
     void getNextToken() {
@@ -341,7 +341,7 @@ private:
         p7exp->P7ConsequenceStmt = parseBlockStatement();
 
         //else
-        if (nextTokenIs(HKNI_ELSE)) {
+        if (nextTokenIs(ELSE_HKNI)) {
             getNextToken(); //跳过"else"标记
             //{块语句}
             if (!expectNextTokenIs(LBRACE)) {
@@ -495,10 +495,10 @@ private:
     I9Statement *parseStatement() {
         I9Statement *i9stmt;
         switch (nowToken.TokenType) {
-            case HKNI_VAR:
+            case VAR_HKNI:
                 i9stmt = parseVarStatement();
                 break;
-            case HKNI_RETURN:
+            case RETURN_HKNI:
                 i9stmt = parseReturnStatement();
                 break;
             default:

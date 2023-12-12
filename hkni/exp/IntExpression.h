@@ -2,6 +2,7 @@
 #define HKNI_INT_EXPRESSION_H
 
 #include <string>
+
 #include "../Token.h"
 #include "../ast/Expression.h"
 
@@ -11,10 +12,12 @@ namespace ast {
         //####属性
     public:
         Token TokenHKNI;
+        int Value;
         //####方法
     public:
         IntExpression(Token token) {
             this->TokenHKNI = token;
+            this->Value = stoi(token.Literal);
         };
 
         string GetTokenLiteral() override {
@@ -26,6 +29,10 @@ namespace ast {
         }
 
         void ExpressionNode() override {}
+
+        int GetValue() {
+            return this->Value;
+        }
     };
 }
 

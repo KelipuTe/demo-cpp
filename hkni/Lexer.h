@@ -36,23 +36,23 @@ private:
     int nowColumn = 0; //当前读到的列数
 
     map<string, TOKEN_TYPE> keywordMap = {
-            {"true",   HKNI_TRUE},
-            {"false",  HKNI_FALSE},
+            {"true",   TRUE_HKNI},
+            {"false",  FALSE_HKNI},
 
-            {"var",    HKNI_VAR},
-            {"const",  HKNI_CONST},
+            {"var",    VAR_HKNI},
+            {"const",  CONST_HKNI},
 
-            {"if",     HKNI_IF},
-            {"else",   HKNI_ELSE},
+            {"if",     IF_HKNI},
+            {"else",   ELSE_HKNI},
 
-            {"while",  HKNI_WHILE},
-            {"for",    HKNI_FOR},
+            {"while",  WHILE_HKNI},
+            {"for",    FOR_HKNI},
 
-            {"func",   HKNI_FUNC},
-            {"return", HKNI_RETURN},
+            {"func",   FUNC_HKNI},
+            {"return", RETURN_HKNI},
 
-            {"class",  HKNI_CLASS},
-            {"new",    HKNI_NEW},
+            {"class",  CLASS_HKNI},
+            {"new",    NEW_HKNI},
     }; //关键字
     //####方法
 public:
@@ -336,15 +336,15 @@ public:
                 break;
             case '\'':
                 token.Literal = readString('\'');
-                token.TokenType = HKNI_STRING;
+                token.TokenType = STRING_HKNI;
                 break;
             case '"':
                 token.Literal = readString('"');
-                token.TokenType = HKNI_STRING;
+                token.TokenType = STRING_HKNI;
                 break;
             case '`':
                 token.Literal = readString('`');
-                token.TokenType = HKNI_STRING;
+                token.TokenType = STRING_HKNI;
                 break;
             case ';':
                 token.Literal = ";";
@@ -405,7 +405,7 @@ public:
                         exit(1);
                     }
                     token.Literal = t4str;
-                    token.TokenType = isInt ? HKNI_INT : HKNI_FLOAT;
+                    token.TokenType = isInt ? INT_HKNI : FLOAT_HKNI;
                     return token;
                 } else {
                     cout << "未知字符。" << endl;

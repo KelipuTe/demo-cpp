@@ -25,13 +25,13 @@ void testParserDoParse() {
     ParserTestCase *tcList[] = {
 //            new ParserTestCase("IDENTIFIER", "a;", INPUT_MODE),
 
-//            new ParserTestCase("HKNI_NULL", "null;", INPUT_MODE),
-//            new ParserTestCase("HKNI_INT", "10;", INPUT_MODE),
-//            new ParserTestCase("HKNI_INT", "0b10;", INPUT_MODE),
-//            new ParserTestCase("HKNI_INT", "010;", INPUT_MODE),
-//            new ParserTestCase("HKNI_INT", "0x10;", INPUT_MODE),
-//            new ParserTestCase("HKNI_FLOAT", "10.10;", INPUT_MODE),
-//            new ParserTestCase("HKNI_STRING", "\"aaa\";", INPUT_MODE),
+//            new ParserTestCase("NULL_HKNI", "null;", INPUT_MODE),
+//            new ParserTestCase("INT_HKNI", "10;", INPUT_MODE),
+//            new ParserTestCase("INT_HKNI", "0b10;", INPUT_MODE),
+//            new ParserTestCase("INT_HKNI", "010;", INPUT_MODE),
+//            new ParserTestCase("INT_HKNI", "0x10;", INPUT_MODE),
+//            new ParserTestCase("FLOAT_HKNI", "10.10;", INPUT_MODE),
+//            new ParserTestCase("STRING_HKNI", "\"aaa\";", INPUT_MODE),
 //
 //            new ParserTestCase("ASSIGN", "a=1;", INPUT_MODE),
 
@@ -70,8 +70,8 @@ void testParserDoParse() {
 //            new ParserTestCase("BIT_AND", "0b10 & 0b11;", INPUT_MODE),
 //            new ParserTestCase("BIT_OR", "0b10 | 0b11;", INPUT_MODE),
 
-//            new ParserTestCase("HKNI_TRUE", "true;", INPUT_MODE),
-//            new ParserTestCase("HKNI_FALSE", "false;", INPUT_MODE),
+//            new ParserTestCase("TRUE_HKNI", "true;", INPUT_MODE),
+//            new ParserTestCase("FALSE_HKNI", "false;", INPUT_MODE),
 
 //            new ParserTestCase("IF", "if(a==1){b=1;}", INPUT_MODE),
 //            new ParserTestCase("IF", "if(a==1){b=1;}else{b=2;}", INPUT_MODE),

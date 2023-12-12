@@ -13,11 +13,11 @@ enum TOKEN_TYPE {
 
     IDENTIFIER, //标识符
 
-    HKNI_NULL, //空
-    HKNI_INT, //整数
-    HKNI_FLOAT, //浮点数
-    HKNI_STRING, //字符串
-    HKNI_ARRAY, //数组
+    NULL_HKNI, //空
+    INT_HKNI, //整数
+    FLOAT_HKNI, //浮点数
+    STRING_HKNI, //字符串
+    ARRAY_HKNI, //数组
 
     ASSIGN, //等于号或者赋值（=）
 
@@ -64,23 +64,23 @@ enum TOKEN_TYPE {
     RBRACKET, //右中括号（]）
 
     //关键字
-    HKNI_TRUE, //true
-    HKNI_FALSE, //false
+    TRUE_HKNI, //true
+    FALSE_HKNI, //false
 
-    HKNI_VAR, //var 变量定义
-    HKNI_CONST, //const 常量定义
+    VAR_HKNI, //var 变量定义
+    CONST_HKNI, //const 常量定义
 
-    HKNI_IF, //if
-    HKNI_ELSE, //else
+    IF_HKNI, //if
+    ELSE_HKNI, //else
 
-    HKNI_WHILE, //while
-    HKNI_FOR, //for
+    WHILE_HKNI, //while
+    FOR_HKNI, //for
 
-    HKNI_FUNC, //func 函数定义
-    HKNI_RETURN, //return
+    FUNC_HKNI, //func 函数定义
+    RETURN_HKNI, //return
 
-    HKNI_CLASS, //class 类定义
-    HKNI_NEW, //new 类实例化
+    CLASS_HKNI, //class 类定义
+    NEW_HKNI, //new 类实例化
 };
 
 //词法标记

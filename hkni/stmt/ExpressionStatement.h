@@ -2,13 +2,13 @@
 #define HKNI_EXPRESSION_STATEMENT_H
 
 #include <string>
+
 #include "../Token.h"
 #include "../ast/Expression.h"
 #include "../ast/Statement.h"
 
 namespace ast {
     //表达式语句
-    //格式：表达式;
     class ExpressionStatement : public I9Statement {
         //####属性
     public:
