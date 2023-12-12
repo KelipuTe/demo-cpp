@@ -11,7 +11,7 @@ namespace ast {
         //####属性
     public:
         Token TokenHKNI;
-        I9Expression *I9NameExp;
+        IdentifierExpression *I9NameExp;
         string Operation;
         I9Expression *I9ValueExp;
         //####方法

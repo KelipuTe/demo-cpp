@@ -5,7 +5,7 @@
 #include "../ast/Statement.h"
 
 namespace ast {
-    //变量声明语句
+    //var 语句
     //格式：var 标识符表达式 = 表达式;
     class VarStatement : public I9Statement {
         //####属性

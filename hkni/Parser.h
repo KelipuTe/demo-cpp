@@ -18,6 +18,7 @@
 
 #include "exp/PrefixExpression.h"
 #include "exp/InfixExpression.h"
+#include "exp/SuffixExpression.h"
 
 #include "exp/BoolExpression.h"
 #include "exp/IfExpression.h"
@@ -147,6 +148,9 @@ private:
         f8InfixParsingMap[MUL] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
         f8InfixParsingMap[DIV] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
         f8InfixParsingMap[MOD] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
+
+        f8PrefixParsingMap[INC] = std::bind(&Parser::parsePrefixExpression, this);
+        f8PrefixParsingMap[DEC] = std::bind(&Parser::parsePrefixExpression, this);
 
         f8InfixParsingMap[ADD_ASSIGN] = std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1);
         f8InfixParsingMap[SUB_ASSIGN] = std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1);
@@ -462,7 +466,7 @@ private:
 
     AssignExpression *parseAssignExpression(I9Expression *i9exp) {
         auto *p7exp = new AssignExpression(nowToken);
-        p7exp->I9NameExp = i9exp;
+        p7exp->I9NameExp = dynamic_cast<IdentifierExpression*>(i9exp);
         getNextToken();
         p7exp->I9ValueExp = parseExpression(LOWEST_P);
         return p7exp;

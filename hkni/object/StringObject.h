@@ -1,18 +1,18 @@
-#ifndef HKNI_INT_OBJECT_H
-#define HKNI_INT_OBJECT_H
+#ifndef HKNI_STRING_OBJECT_H
+#define HKNI_STRING_OBJECT_H
 
 #include "Object.h"
 
 namespace object {
-    class IntObject : public Object {
+    class StringObject : public Object {
         //####属性
     public:
         OBJECT_TYPE Type;
-        int Value;
+        string Value;
         //####方法
     public:
-        IntObject(int value) {
-            this->Type = INT_HKNI;
+        StringObject(string value) {
+            this->Type = STRING_HKNI;
             this->Value = value;
         }
 
@@ -21,16 +21,16 @@ namespace object {
         }
 
         string GetValue() override {
-            return to_string(this->Value);
+            return this->Value;
         }
 
         string ToString() override {
             string t4str;
             t4str.append("Type=" + to_string(this->Type) + ";");
-            t4str.append("Value=" + to_string(this->Value) + ";");
+            t4str.append("Value=" + this->Value + ";");
             return t4str;
         }
     };
 }
 
-#endif //HKNI_INT_OBJECT_H
+#endif //HKNI_STRING_OBJECT_H

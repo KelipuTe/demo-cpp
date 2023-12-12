@@ -18,11 +18,19 @@ namespace env {
     public:
         Environment() {}
 
-        void SetVariable(string name, Object *value) {
-            variableMap[name] = value;
+        void AddVariable(string name, Object *value) {
+            if (!this->ExistVariable(name)) {
+                variableMap[name] = value;
+            }
         }
 
-        bool IsSetVariable(string name) {
+        void SetVariable(string name, Object *value) {
+            if (this->ExistVariable(name)) {
+                variableMap[name] = value;
+            }
+        }
+
+        bool ExistVariable(string name) {
             auto p7obj = variableMap[name];
             return p7obj != nullptr;
         }

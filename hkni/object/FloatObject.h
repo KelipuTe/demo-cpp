@@ -1,18 +1,18 @@
-#ifndef HKNI_INT_OBJECT_H
-#define HKNI_INT_OBJECT_H
+#ifndef HKNI_FLOAT_OBJECT_H
+#define HKNI_FLOAT_OBJECT_H
 
 #include "Object.h"
 
 namespace object {
-    class IntObject : public Object {
+    class FloatObject : public Object {
         //####属性
     public:
         OBJECT_TYPE Type;
-        int Value;
+        float Value;
         //####方法
     public:
-        IntObject(int value) {
-            this->Type = INT_HKNI;
+        FloatObject(float value) {
+            this->Type = FLOAT_HKNI;
             this->Value = value;
         }
 
@@ -33,4 +33,4 @@ namespace object {
     };
 }
 
-#endif //HKNI_INT_OBJECT_H
+#endif //HKNI_FLOAT_OBJECT_H

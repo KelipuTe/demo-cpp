@@ -11,10 +11,12 @@ namespace ast {
         //####属性
     public:
         Token TokenHKNI;
+        float Value;
         //####方法
     public:
         FloatExpression(Token token) {
             this->TokenHKNI = token;
+            this->Value = stof(token.Literal);
         };
 
         string GetTokenLiteral() override {
@@ -26,6 +28,10 @@ namespace ast {
         }
 
         void ExpressionNode() override {}
+
+        float GetValue() {
+            return this->Value;
+        }
     };
 }
 

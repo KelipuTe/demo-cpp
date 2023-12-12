@@ -28,8 +28,8 @@ private:
     int nowBufferLen = 0; //本次读到缓冲区中的文本长度
     char nextBuffer[1] = {0}; // peek 的时候用的1个字符的缓冲区
 
-    char readChar = 0; //当前读取的字符
-    int readCharIndex = 0; //当前读取的字符下标
+    char nowChar = 0; //当前读取的字符
+    int nowCharIndex = 0; //当前读取的字符下标
     int nextCharIndex = 0; //下一个读取的字符下标
 
     int nowRow = 0; //当前读到的行数
@@ -70,7 +70,7 @@ public:
         ReadNextChar(); //相当于初始化
 
         // 读到非0字符，则至少有一行
-        if (readChar != 0) {
+        if (nowChar != 0) {
             nowRow = 1;
         }
     };
@@ -92,7 +92,7 @@ public:
     }
 
     char GetReadChar() {
-        return readChar;
+        return nowChar;
     }
 
     int GetNowRow() {
@@ -106,14 +106,14 @@ public:
     void ReadNextChar() {
         if (mode == INPUT_MODE) {
             if (nextCharIndex >= input.length()) {
-                readChar = 0;
+                nowChar = 0;
                 return;
             }
-            readChar = input[nextCharIndex];
+            nowChar = input[nextCharIndex];
             nowColumn++;
         } else if (mode == FILE_MODE) {
             if (p7InputFile == nullptr) {
-                readChar = 0;
+                nowChar = 0;
                 return;
             }
 
@@ -127,22 +127,22 @@ public:
                 }
 
                 nextCharIndex = 0;
-                readCharIndex = 0;
+                nowCharIndex = 0;
             }
 
-            readChar = readBuffer[nextCharIndex];
+            nowChar = readBuffer[nextCharIndex];
 
             //读到换行符，行数加一，列数归零
-            if (readChar == '\n') {
+            if (nowChar == '\n') {
                 nowRow++;
                 nowColumn = 0;
             }
-            if (readChar != '\n') {
+            if (nowChar != '\n') {
                 nowColumn++;
             }
 
             //读到文件末尾，关闭文件
-            if (readChar == 0) {
+            if (nowChar == 0) {
                 fclose(p7InputFile);
                 p7InputFile = nullptr;
                 return;
@@ -152,7 +152,7 @@ public:
             exit(1);
         }
 
-        readCharIndex = nextCharIndex;
+        nowCharIndex = nextCharIndex;
         nextCharIndex++;
     }
 
@@ -186,7 +186,7 @@ public:
 
         skipWhiteSpace();
 
-        switch (readChar) {
+        switch (nowChar) {
             case '=':
                 if (PeekNextChar() == '=') {
                     ReadNextChar();
@@ -245,9 +245,9 @@ public:
                     ReadNextChar();
 
                     string t4str = "//";
-                    while (readChar != 0 && readChar != '\n') {
+                    while (nowChar != 0 && nowChar != '\n') {
                         ReadNextChar();
-                        t4str.push_back(readChar);
+                        t4str.push_back(nowChar);
                     }
 
                     token.Literal = t4str;
@@ -257,12 +257,12 @@ public:
                     ReadNextChar();
 
                     string t4str = "/*";
-                    while (readChar != 0) {
+                    while (nowChar != 0) {
                         ReadNextChar();
-                        t4str.push_back(readChar);
-                        if (readChar == '*' && PeekNextChar() == '/') {
+                        t4str.push_back(nowChar);
+                        if (nowChar == '*' && PeekNextChar() == '/') {
                             ReadNextChar();
-                            t4str.push_back(readChar);
+                            t4str.push_back(nowChar);
                             break;
                         }
                     }
@@ -438,56 +438,56 @@ private:
 
     //跳过空白字符（空格、制表符、回车符、换行符）
     void skipWhiteSpace() {
-        while (readChar == ' ' ||
-               readChar == '\t' ||
-               readChar == '\r' ||
-               readChar == '\n') {
+        while (nowChar == ' ' ||
+               nowChar == '\t' ||
+               nowChar == '\r' ||
+               nowChar == '\n') {
             ReadNextChar();
         }
     }
 
     //a~z A~Z _
     bool isAlpha() {
-        return ('a' <= readChar && readChar <= 'z') ||
-               ('A' <= readChar && readChar <= 'Z') ||
-               readChar == '_';
+        return ('a' <= nowChar && nowChar <= 'z') ||
+               ('A' <= nowChar && nowChar <= 'Z') ||
+               nowChar == '_';
     }
 
     //0~9
     bool isNumber() {
-        return ('0' <= readChar && readChar <= '9');
+        return ('0' <= nowChar && nowChar <= '9');
     }
 
     //a~z A~Z _ 0~9
     bool isAlphaAndNumber() {
-        return ('a' <= readChar && readChar <= 'z') ||
-               ('A' <= readChar && readChar <= 'Z') ||
-               readChar == '_' ||
-               ('0' <= readChar && readChar <= '9');
+        return ('a' <= nowChar && nowChar <= 'z') ||
+               ('A' <= nowChar && nowChar <= 'Z') ||
+               nowChar == '_' ||
+               ('0' <= nowChar && nowChar <= '9');
     }
 
     //16进制数字
     bool isHexNumber() {
-        return ('0' <= readChar && readChar <= '9') ||
-               ('a' <= readChar && readChar <= 'f') ||
-               ('A' <= readChar && readChar <= 'F');
+        return ('0' <= nowChar && nowChar <= '9') ||
+               ('a' <= nowChar && nowChar <= 'f') ||
+               ('A' <= nowChar && nowChar <= 'F');
     }
 
     //8进制数字
     bool isOctNumber() {
-        return ('0' <= readChar && readChar <= '7');
+        return ('0' <= nowChar && nowChar <= '7');
     }
 
     //2进制数字
     bool isBinNumber() {
-        return ('0' <= readChar && readChar <= '1');
+        return ('0' <= nowChar && nowChar <= '1');
     }
 
     //读取标识符
     string readIdentifier() {
         string t4str;
         while (isAlphaAndNumber()) {
-            t4str.push_back(readChar);
+            t4str.push_back(nowChar);
             ReadNextChar();
         }
         return t4str;
@@ -498,10 +498,10 @@ private:
         string t4str;
 
         if (isNumber()) {
-            if (readChar != '0') {
+            if (nowChar != '0') {
                 //不是0开头，10进制
-                while (isNumber() || readChar == '.') {
-                    if (readChar == '.') {
+                while (isNumber() || nowChar == '.') {
+                    if (nowChar == '.') {
                         if (*isInt) {
                             *isInt = false;
                         } else {
@@ -509,24 +509,24 @@ private:
                             *isError = true;
                         }
                     }
-                    t4str.push_back(readChar);
+                    t4str.push_back(nowChar);
                     ReadNextChar();
                 }
             } else {
                 int t4num = 0;
                 //这三种类型暂时不支持浮点数
                 ReadNextChar();
-                if (readChar == 'x') {
+                if (nowChar == 'x') {
                     //0x开头，16进制；
                     ReadNextChar();
                     while (isHexNumber()) {
                         t4num = t4num * 16;
                         if (isNumber()) {
-                            t4num = t4num + readChar - '0';
-                        } else if ('a' <= readChar && readChar <= 'f') {
-                            t4num = t4num + readChar - 'a' + 10;
-                        } else if ('A' <= readChar && readChar <= 'F') {
-                            t4num = t4num + readChar - 'A' + 10;
+                            t4num = t4num + nowChar - '0';
+                        } else if ('a' <= nowChar && nowChar <= 'f') {
+                            t4num = t4num + nowChar - 'a' + 10;
+                        } else if ('A' <= nowChar && nowChar <= 'F') {
+                            t4num = t4num + nowChar - 'A' + 10;
                         }
                         ReadNextChar();
                     }
@@ -534,15 +534,15 @@ private:
                 } else if (isNumber()) {
                     //0开头，8进制；
                     while (isOctNumber()) {
-                        t4num = t4num * 8 + readChar - '0';
+                        t4num = t4num * 8 + nowChar - '0';
                         ReadNextChar();
                     }
                     t4str = to_string(t4num);
-                } else if (readChar == 'b') {
+                } else if (nowChar == 'b') {
                     //0b开头，2进制；
                     ReadNextChar();
                     while (isBinNumber()) {
-                        t4num = t4num * 2 + readChar - '0';
+                        t4num = t4num * 2 + nowChar - '0';
                         ReadNextChar();
                     }
                     t4str = to_string(t4num);
@@ -560,18 +560,18 @@ private:
     string readString(char target) {
         string t4str;
         ReadNextChar();
-        while (readChar != target) {
-            if (readChar == '\\') {
+        while (nowChar != target) {
+            if (nowChar == '\\') {
                 ReadNextChar();
-                if (readChar == target) { t4str.push_back(target); }
-                else if (readChar == '\\') { t4str.push_back('\\'); }
-                else if (readChar == '0') { t4str.push_back('\0'); }
-                else if (readChar == 't') { t4str.push_back('\t'); }
-                else if (readChar == 'r') { t4str.push_back('\r'); }
-                else if (readChar == 'n') { t4str.push_back('\n'); }
-                else { t4str.push_back(readChar); }
+                if (nowChar == target) { t4str.push_back(target); }
+                else if (nowChar == '\\') { t4str.push_back('\\'); }
+                else if (nowChar == '0') { t4str.push_back('\0'); }
+                else if (nowChar == 't') { t4str.push_back('\t'); }
+                else if (nowChar == 'r') { t4str.push_back('\r'); }
+                else if (nowChar == 'n') { t4str.push_back('\n'); }
+                else { t4str.push_back(nowChar); }
             } else {
-                t4str.push_back(readChar);
+                t4str.push_back(nowChar);
             }
             ReadNextChar();
         }

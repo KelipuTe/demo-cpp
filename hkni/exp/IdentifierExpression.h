@@ -11,12 +11,10 @@ namespace ast {
         //####属性
     public:
         Token TokenHKNI;
-        string Value;
         //####方法
     public:
         IdentifierExpression(Token token) {
             this->TokenHKNI = token;
-            this->Value = token.Literal;
         };
 
         string GetTokenLiteral() override {

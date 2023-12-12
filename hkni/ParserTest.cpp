@@ -23,6 +23,8 @@ public:
 
 void testParserDoParse() {
     ParserTestCase *tcList[] = {
+//                        new ParserTestCase("COMMENT", "//a", INPUT_MODE),
+
 //            new ParserTestCase("IDENTIFIER", "a;", INPUT_MODE),
 
 //            new ParserTestCase("NULL_HKNI", "null;", INPUT_MODE),
@@ -30,9 +32,14 @@ void testParserDoParse() {
 //            new ParserTestCase("INT_HKNI", "0b10;", INPUT_MODE),
 //            new ParserTestCase("INT_HKNI", "010;", INPUT_MODE),
 //            new ParserTestCase("INT_HKNI", "0x10;", INPUT_MODE),
-//            new ParserTestCase("FLOAT_HKNI", "10.10;", INPUT_MODE),
-//            new ParserTestCase("STRING_HKNI", "\"aaa\";", INPUT_MODE),
-//
+//            new ParserTestCase("FLOAT_HKNI", "10.00;", INPUT_MODE),
+//            new ParserTestCase("FLOAT_HKNI", "10.50;", INPUT_MODE),
+//            new ParserTestCase("STRING_HKNI", "\"a\";", INPUT_MODE),
+//            new ParserTestCase("STRING_HKNI", "\"aa\";", INPUT_MODE),
+//            new ParserTestCase("STRING_HKNI", "\"aa\\nbb\";", INPUT_MODE),
+//            new ParserTestCase("STRING_HKNI", "\"aa'bb'\";", INPUT_MODE),
+//            new ParserTestCase("STRING_HKNI", "\"aa\\\"bb\\\"\";", INPUT_MODE),
+
 //            new ParserTestCase("ASSIGN", "a=1;", INPUT_MODE),
 
 //            new ParserTestCase("ADD", "1+2;", INPUT_MODE),
@@ -47,8 +54,8 @@ void testParserDoParse() {
 //            new ParserTestCase("ADD_MUL", "1+2*3;", INPUT_MODE),
 //            new ParserTestCase("ADD_LPAREN_MUL", "(1+2)*3;", INPUT_MODE),
 
-//            new ParserTestCase("INC", "i++;", INPUT_MODE),
-//            new ParserTestCase("DEC", "i--;", INPUT_MODE),
+//            new ParserTestCase("INC", "++i;", INPUT_MODE),
+//            new ParserTestCase("DEC", "--i;", INPUT_MODE),
 
 //            new ParserTestCase("ADD_ASSIGN", "a+=2;", INPUT_MODE),
 //            new ParserTestCase("SUB_ASSIGN", "a-=2;", INPUT_MODE),
@@ -73,10 +80,12 @@ void testParserDoParse() {
 //            new ParserTestCase("TRUE_HKNI", "true;", INPUT_MODE),
 //            new ParserTestCase("FALSE_HKNI", "false;", INPUT_MODE),
 
+//            new ParserTestCase("VAR", "var a=1;",  INPUT_MODE),
+
 //            new ParserTestCase("IF", "if(a==1){b=1;}", INPUT_MODE),
 //            new ParserTestCase("IF", "if(a==1){b=1;}else{b=2;}", INPUT_MODE),
 
-            new ParserTestCase("FOR", "for(i=1;i<10;i+=1){}", INPUT_MODE),
+//            new ParserTestCase("FOR", "for(i=1;i<10;i+=1){}", INPUT_MODE),
 
 //            new ParserTestCase("FUNC", "func hello(){}", INPUT_MODE),
 //            new ParserTestCase("FUNC", "func hello(a){a;}", INPUT_MODE),

@@ -26,10 +26,18 @@ void testInterpreterDoInterpreter() {
 //            new InterpreterTestCase("INT_HKNI", "0b10;", INPUT_MODE),
 //            new InterpreterTestCase("INT_HKNI", "010;", INPUT_MODE),
 //            new InterpreterTestCase("INT_HKNI", "0x10;", INPUT_MODE),
-            //            new InterpreterTestCase("FLOAT_HKNI", "10.10;", INPUT_MODE),
-            //            new InterpreterTestCase("STRING_HKNI", "\"aaa\";", INPUT_MODE),
+//                        new InterpreterTestCase("FLOAT_HKNI", "10.10;", INPUT_MODE),
+//                        new InterpreterTestCase("FLOAT_HKNI", "10.50;", INPUT_MODE),
+//                        new InterpreterTestCase("STRING_HKNI", "\"a\";", INPUT_MODE),
+//                        new InterpreterTestCase("STRING_HKNI", "\"aa\";", INPUT_MODE),
+//                        new InterpreterTestCase("STRING_HKNI", "\"aa\\nbb\";", INPUT_MODE),
+//                        new InterpreterTestCase("STRING_HKNI", "\"aa'bb'\";", INPUT_MODE),
+//                        new InterpreterTestCase("STRING_HKNI", "\"aa\\\"bb\\\"\";", INPUT_MODE),
 
-            new InterpreterTestCase("VAR", "var a=1;", INPUT_MODE),
+//                        new InterpreterTestCase("ASSIGN", "a=1;", INPUT_MODE),
+                        new InterpreterTestCase("ASSIGN", "var a=1;a=2;", INPUT_MODE),
+
+//            new InterpreterTestCase("VAR", "var a=1;", INPUT_MODE),
     };
 
     int tcListLen = sizeof(tcList) / sizeof(tcList[0]);
@@ -41,7 +49,7 @@ void testInterpreterDoInterpreter() {
         Interpreter *p7interpreter = new Interpreter();
         Environment *p7env = new Environment();
         Object *p7obj = p7interpreter->DoInterpret(p7program, p7env);
-        cout << p7obj->GetValue() << endl;
+        cout << p7obj->ToString() << endl;
 
         delete p7program;
         delete p7parser;

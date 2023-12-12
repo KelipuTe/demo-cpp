@@ -5,14 +5,16 @@
 
 #include "ast/Program.h"
 
-#include "object/Object.h"
-#include "object/IntObject.h"
-
 #include "Environment.h"
 
+#include "object/IntObject.h"
+#include "object/FloatObject.h"
+#include "object/StringObject.h"
+#include "object/ErrorObject.h"
+
 using namespace ast;
-using namespace object;
 using namespace env;
+using namespace object;
 
 class Interpreter {
 public:
@@ -30,7 +32,17 @@ public:
         } else if (typeid(*i9node) == typeid(IntExpression)) {
             auto *p7exp = dynamic_cast<IntExpression *>(i9node);
             return new IntObject(p7exp->GetValue());
+        } else if (typeid(*i9node) == typeid(FloatExpression)) {
+            auto *p7exp = dynamic_cast<FloatExpression *>(i9node);
+            return new FloatObject(p7exp->GetValue());
+        } else if (typeid(*i9node) == typeid(StringExpression)) {
+            auto *p7exp = dynamic_cast<StringExpression *>(i9node);
+            return new StringObject(p7exp->GetTokenLiteral());
+        }else if (typeid(*i9node) == typeid(AssignExpression)) {
+            auto *p7exp = dynamic_cast<AssignExpression *>(i9node);
+            return interpretAssignExpression(p7exp,p7env);
         }
+        return nullptr;
     }
 
     Object *interpretProgram(Program *p7program, Environment *p7env) {
@@ -42,8 +54,18 @@ public:
     }
 
     Object *interpretVarStatement(VarStatement *p7stmt, Environment *p7env) {
-        string name = p7stmt->P7NameExp->Value;
+        string name = p7stmt->P7NameExp->GetTokenLiteral();
         auto p7ValueObj = this->DoInterpret(p7stmt->I9ValueExp, p7env);
+        p7env->AddVariable(name, p7ValueObj);
+        return nullptr;
+    }
+
+    Object *interpretAssignExpression(AssignExpression *p7exp, Environment *p7env) {
+        string name = p7exp->I9NameExp->GetTokenLiteral();
+        if(!p7env->ExistVariable(name)){
+            return new ErrorObject("想要赋值，先要有变量。");
+        }
+        auto p7ValueObj = this->DoInterpret(p7exp->I9ValueExp, p7env);
         p7env->SetVariable(name, p7ValueObj);
         return nullptr;
     }
