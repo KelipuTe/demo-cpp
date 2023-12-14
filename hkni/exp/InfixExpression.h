@@ -13,14 +13,14 @@ namespace ast {
     public:
         Token TokenHKNI;
         I9Expression *I9LeftExp;
-        string Operation;
+        string OperatorStr;
         I9Expression *I9RightExp;
         //####方法
     public:
         InfixExpression(Token token) {
             this->TokenHKNI = token;
             this->I9LeftExp = nullptr;
-            this->Operation = token.Literal;
+            this->OperatorStr = token.Literal;
             this->I9RightExp = nullptr;
         };
 
@@ -32,7 +32,7 @@ namespace ast {
             string t4str;
             t4str.append("(");
             t4str.append(this->I9LeftExp->ToString());
-            t4str.append(" " + this->Operation + " ");
+            t4str.append(" " + this->OperatorStr + " ");
             t4str.append(this->I9RightExp->ToString());
             t4str.append(")");
             return t4str;

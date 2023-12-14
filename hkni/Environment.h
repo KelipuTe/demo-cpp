@@ -18,19 +18,30 @@ namespace env {
     public:
         Environment() {}
 
-        void AddVariable(string name, Object *value) {
-            if (!this->ExistVariable(name)) {
-                variableMap[name] = value;
+        //添加变量，不可重复
+        void AddVariable(string name, Object *p7ValueObj) {
+            if (!this->IsExistVariable(name)) {
+                variableMap[name] = p7ValueObj;
             }
         }
 
-        void SetVariable(string name, Object *value) {
-            if (this->ExistVariable(name)) {
-                variableMap[name] = value;
+        //获取变量
+        Object *GetVariable(string name) {
+            if (this->IsExistVariable(name)) {
+                return variableMap[name];
+            }
+            return nullptr;
+        }
+
+        //修改变量
+        void EditVariable(string name, Object *p7ValueObj) {
+            if (this->IsExistVariable(name)) {
+                variableMap[name] = p7ValueObj;
             }
         }
 
-        bool ExistVariable(string name) {
+        //变量是否存在
+        bool IsExistVariable(string name) {
             auto p7obj = variableMap[name];
             return p7obj != nullptr;
         }

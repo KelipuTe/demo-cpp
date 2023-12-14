@@ -14,6 +14,7 @@
 #include "exp/IntExpression.h"
 #include "exp/FloatExpression.h"
 #include "exp/StringExpression.h"
+
 #include "exp/AssignExpression.h"
 
 #include "exp/PrefixExpression.h"
@@ -23,6 +24,7 @@
 #include "exp/BoolExpression.h"
 #include "exp/IfExpression.h"
 #include "exp/ForExpression.h"
+
 #include "exp/FuncExpression.h"
 #include "exp/CallExpression.h"
 
@@ -34,8 +36,7 @@
 
 using namespace ast;
 
-//语法分析器
-//基于运算符优先级和递归的实现
+//语法分析器，基于运算符优先级和递归的实现。
 class Parser {
     //####属性
 private:
@@ -45,10 +46,10 @@ private:
 
     Lexer *p7lexer; //词法分析器
 
-    Token nowToken;
-    Token nextToken;
+    Token nowToken; //当前token
+    Token nextToken; //下一个token
 
-    std::map<TOKEN_TYPE, PRECEDENCE> precedenceMap; //词法标记优先级
+    std::map<TOKEN_TYPE, PRECEDENCE> precedenceMap; //词法标记的优先级
     std::map<TOKEN_TYPE, f8PrefixParsing> f8PrefixParsingMap; //前缀词法标记的解析方法
     std::map<TOKEN_TYPE, f8InfixParsing> f8InfixParsingMap; //中缀词法标记的解析方法
 
@@ -66,10 +67,8 @@ public:
         getNextToken();
     };
 
-    ~Parser() {};
-
     Program *DoParse() {
-        Program *p7program = new Program();
+        auto *p7program = new Program();
 
         while (nowToken.TokenType != END) {
             if (nowToken.TokenType == ILLEGAL) {
@@ -93,8 +92,7 @@ public:
         return p7program;
     };
 private:
-    //初始化词法标记优先级
-    //如果在map里没找到，会返回默认值0，LOWEST_P就是0
+    //初始化词法标记优先级。如果在map里没找到，会返回默认值0，LOWEST_P就是0。
     void initPrecedence() {
         precedenceMap[ASSIGN] = ASSIGN_P;
 
@@ -130,19 +128,19 @@ private:
         precedenceMap[LPAREN] = LPAREN_P;
     }
 
-    //初始化词法标记的解析方法，前缀和中缀两个map
-    //如果在map里没找到，会返回默认值nullptr
+    //初始化词法标记的解析方法，前缀和中缀两个map。如果在map里没找到，会返回默认值nullptr。
     void initParsingFunction() {
         f8PrefixParsingMap[IDENTIFIER] = std::bind(&Parser::parseIdentifierExpression, this);
 
         f8PrefixParsingMap[NULL_HKNI] = std::bind(&Parser::parseNullExpression, this);
-        f8PrefixParsingMap[INT_HKNI] = std::bind(&Parser::parseIntExpression, this);
-        f8PrefixParsingMap[FLOAT_HKNI] = std::bind(&Parser::parseFloatExpression, this);
-        f8PrefixParsingMap[STRING_HKNI] = std::bind(&Parser::parseStringExpression, this);
+        f8PrefixParsingMap[INT_VALUE] = std::bind(&Parser::parseIntExpression, this);
+        f8PrefixParsingMap[FLOAT_VALUE] = std::bind(&Parser::parseFloatExpression, this);
+        f8PrefixParsingMap[STRING_VALUE] = std::bind(&Parser::parseStringExpression, this);
 
         f8InfixParsingMap[ASSIGN] = std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1);
 
         f8InfixParsingMap[ADD] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
+        //负号和减号都是SUB，但是负号是前缀，减号是中缀
         f8PrefixParsingMap[SUB] = std::bind(&Parser::parsePrefixExpression, this);
         f8InfixParsingMap[SUB] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
         f8InfixParsingMap[MUL] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
@@ -172,11 +170,12 @@ private:
         f8InfixParsingMap[BIT_AND] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
         f8InfixParsingMap[BIT_OR] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1);
 
+        //左括号和函数调用都是LPAREN，但是左括号是前缀，函数调用是中缀
         f8PrefixParsingMap[LPAREN] = std::bind(&Parser::parseLParenExpression, this);
         f8InfixParsingMap[LPAREN] = std::bind(&Parser::parseCallExpression, this, std::placeholders::_1);
 
-        f8PrefixParsingMap[TRUE_HKNI] = std::bind(&Parser::parseBoolExpression, this);
-        f8PrefixParsingMap[FALSE_HKNI] = std::bind(&Parser::parseBoolExpression, this);
+        f8PrefixParsingMap[TRUE_VALUE] = std::bind(&Parser::parseBoolExpression, this);
+        f8PrefixParsingMap[FALSE_VALUE] = std::bind(&Parser::parseBoolExpression, this);
 
         f8PrefixParsingMap[IF_HKNI] = std::bind(&Parser::parseIfExpression, this);
         f8PrefixParsingMap[FOR_HKNI] = std::bind(&Parser::parseForExpression, this);
@@ -197,7 +196,7 @@ private:
         return nextToken.TokenType == type;
     };
 
-    void reportError(){
+    void reportError() {
         string modeStr = this->p7lexer->GetModeStr();
         string rowStr = std::to_string(this->p7lexer->GetNowRow());
         string columnStr = std::to_string(this->p7lexer->GetNowColumn());
@@ -383,7 +382,7 @@ private:
             return nullptr;
         }
 
-        if(!expectNextTokenIs(LBRACE)){
+        if (!expectNextTokenIs(LBRACE)) {
             return nullptr;
         }
 
@@ -466,7 +465,7 @@ private:
 
     AssignExpression *parseAssignExpression(I9Expression *i9exp) {
         auto *p7exp = new AssignExpression(nowToken);
-        p7exp->I9NameExp = dynamic_cast<IdentifierExpression*>(i9exp);
+        p7exp->I9NameExp = dynamic_cast<IdentifierExpression *>(i9exp);
         getNextToken();
         p7exp->I9ValueExp = parseExpression(LOWEST_P);
         return p7exp;
@@ -475,7 +474,8 @@ private:
     PrefixExpression *parsePrefixExpression() {
         auto *p7exp = new PrefixExpression(nowToken);
         getNextToken(); //跳过前缀标记
-        p7exp->I9Exp = parseExpression(SUB_INC_DEC_NOT_P); //这里直接传负号的优先级，负号和减号冲突了
+        //这几个前缀符号的优先级基本是括号下面最高的优先级了
+        p7exp->I9RightExp = parseExpression(SUB_INC_DEC_NOT_P);
         return p7exp;
     }
 
@@ -496,10 +496,14 @@ private:
 
     //####解析语句
 
+    //解析语句，递归入口
     I9Statement *parseStatement() {
         I9Statement *i9stmt;
         switch (nowToken.TokenType) {
-            case VAR_HKNI:
+            case BOOL_TYPE:
+            case INT_TYPE:
+            case FLOAT_TYPE:
+            case STRING_TYPE:
                 i9stmt = parseVarStatement();
                 break;
             case RETURN_HKNI:
@@ -520,17 +524,20 @@ private:
         }
         p7stmt->P7NameExp = new IdentifierExpression(nowToken);
 
+        if (this->nextTokenIs(SEMICOLON)) {
+            this->getNextToken();
+            return p7stmt; //var 标识符表达式;
+        }
+
         if (!expectNextTokenIs(ASSIGN)) {
             return nullptr;
         }
         this->getNextToken();
         p7stmt->I9ValueExp = parseExpression(LOWEST_P);
-
         if (this->nextTokenIs(SEMICOLON)) {
             this->getNextToken();
         }
-
-        return p7stmt;
+        return p7stmt; //var 标识符表达式 = 表达式;
     }
 
     ReturnStatement *parseReturnStatement() {

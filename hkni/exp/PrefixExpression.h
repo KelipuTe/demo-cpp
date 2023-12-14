@@ -12,14 +12,14 @@ namespace ast {
         //####属性
     public:
         Token TokenHKNI;
-        string Operation;
-        I9Expression *I9Exp;
+        string OperatorStr;
+        I9Expression *I9RightExp;
         //####方法
     public:
         PrefixExpression(Token token) {
             this->TokenHKNI = token;
-            this->Operation = token.Literal;
-            this->I9Exp = nullptr;
+            this->OperatorStr = token.Literal;
+            this->I9RightExp = nullptr;
         };
 
         string GetTokenLiteral() override {
@@ -29,8 +29,8 @@ namespace ast {
         string ToString() override {
             string t4str;
             t4str.append("(");
-            t4str.append(this->Operation);
-            t4str.append(this->I9Exp->ToString());
+            t4str.append(this->OperatorStr);
+            t4str.append(this->I9RightExp->ToString());
             t4str.append(")");
             return t4str;
         }

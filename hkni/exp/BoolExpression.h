@@ -10,19 +10,23 @@ namespace ast {
     class BoolExpression : public I9Expression {
         //####属性
     public:
-        Token TokenHKNI;
+        Token token; //就是true或false
         //####方法
     public:
         BoolExpression(Token token) {
-            this->TokenHKNI = token;
+            this->token = token;
         };
 
+        TOKEN_TYPE GetTokenType(){
+            return token.TokenType;
+        }
+
         string GetTokenLiteral() override {
-            return this->TokenHKNI.Literal;
+            return this->token.Literal;
         }
 
         string ToString() override {
-            return this->TokenHKNI.Literal;
+            return this->token.Literal;
         }
 
         void ExpressionNode() override {}

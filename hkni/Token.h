@@ -9,33 +9,33 @@ using namespace std;
 enum TOKEN_TYPE {
     ILLEGAL, //非法
     END, //结束
+
     COMMENT, //注释
 
-    IDENTIFIER, //标识符
+    NULL_HKNI, //null值（null）
 
-    NULL_HKNI, //空
-    INT_HKNI, //整数
-    FLOAT_HKNI, //浮点数
-    STRING_HKNI, //字符串
-    ARRAY_HKNI, //数组
+    BOOL_TYPE, //布尔类型（bool）
+    TRUE_VALUE, //布尔真值（true）
+    FALSE_VALUE, //布尔假值（false）
 
-    ASSIGN, //等于号或者赋值（=）
+    INT_TYPE, //整数类型（int）
+    INT_VALUE, //整数类值
+
+    FLOAT_TYPE, //浮点数类型（float）
+    FLOAT_VALUE, //浮点数值
+
+    STRING_TYPE, //字符串类型（string）
+    STRING_VALUE, //字符串值
+
+    ARRAY_TYPE, //数组类型（array）
+    ARRAY_VALUE, //数组值
+    ARRAY_ASSIGN, //数组赋值（=>）
 
     ADD, //加号（+）
     SUB, //减号，负号（-）
     MUL, //乘号（*）
     DIV, //除号（/）
     MOD, //取模（%）
-
-    INC, //自增（++）
-    DEC, //自减（--）
-
-    ADD_ASSIGN, //加赋值（+=）
-    SUB_ASSIGN, //减赋值（-=）
-    MUL_ASSIGN, //乘赋值（*=）
-    DIV_ASSIGN, //除赋值（/=）
-    MOD_ASSIGN, //取模赋值（%=）
-    ARRAY_ASSIGN, //数组赋值（=>）
 
     EQ, //等于号（==）
     NEQ, //不等于号（!=）
@@ -51,36 +51,42 @@ enum TOKEN_TYPE {
     BIT_AND, //位与（&）
     BIT_OR, //位或（|）
 
+    IDENTIFIER, //标识符
+
+    CONST_HKNI, //常量声明（const）
+
+    ASSIGN, //赋值（=）
+    ADD_ASSIGN, //加赋值（+=）
+    SUB_ASSIGN, //减赋值（-=）
+    MUL_ASSIGN, //乘赋值（*=）
+    DIV_ASSIGN, //除赋值（/=）
+    MOD_ASSIGN, //取模赋值（%=）
+
+    INC, //自增（++）
+    DEC, //自减（--）
+
     SEMICOLON, //分号（;）
     COLON, //冒号（:）
     COMMA, //逗号（,）
-    DOT, //点（.）
+    DOT, //点，用于类调用属性和方法（.）
 
     LPAREN, //左括号（(）
     RPAREN, //右括号（)）
-    LBRACE, //左大括号（{）
-    RBRACE, //右大括号（}）
     LBRACKET, //左中括号（[）
     RBRACKET, //右中括号（]）
+    LBRACE, //左大括号（{）
+    RBRACE, //右大括号（}）
 
-    //关键字
-    TRUE_HKNI, //true
-    FALSE_HKNI, //false
+    IF_HKNI, //if语句
+    ELSE_HKNI, //else语句
 
-    VAR_HKNI, //var 变量定义
-    CONST_HKNI, //const 常量定义
+    FOR_HKNI, //for循环语句
 
-    IF_HKNI, //if
-    ELSE_HKNI, //else
+    FUNC_HKNI, //函数定义（func）
+    RETURN_HKNI, //return语句
 
-    WHILE_HKNI, //while
-    FOR_HKNI, //for
-
-    FUNC_HKNI, //func 函数定义
-    RETURN_HKNI, //return
-
-    CLASS_HKNI, //class 类定义
-    NEW_HKNI, //new 类实例化
+    CLASS_HKNI, //类定义（class）
+    NEW_HKNI, //类实例化（new）
 };
 
 //词法标记

@@ -5,29 +5,31 @@
 #include "../ast/Statement.h"
 
 namespace ast {
-    //var 语句
-    //格式：var 标识符表达式 = 表达式;
+    //变量声明语句
+    //格式：变量类型 标识符表达式; 变量类型 标识符表达式 = 表达式;
     class VarStatement : public I9Statement {
         //####属性
     public:
-        Token TokenHKNI;
-        IdentifierExpression *P7NameExp;
-        I9Expression *I9ValueExp;
+        Token token; //就是变量类型
+        TOKEN_TYPE tokenType;
+        IdentifierExpression *P7NameExp; //标识符表达式
+        I9Expression *I9ValueExp; //值表达式，需要先解释出来
         //####方法
     public:
         VarStatement(Token token) {
-            this->TokenHKNI = token;
+            this->token = token;
+            this->tokenType = token.TokenType;
             this->P7NameExp = nullptr;
             this->I9ValueExp = nullptr;
         };
 
         string GetTokenLiteral() override {
-            return this->TokenHKNI.Literal;
+            return token.Literal;
         }
 
         string ToString() override {
             string t4str;
-            t4str.append(TokenHKNI.Literal + " ");
+            t4str.append(token.Literal + " ");
             t4str.append(P7NameExp->ToString());
             if (I9ValueExp != nullptr) {
                 t4str.append(" = ");

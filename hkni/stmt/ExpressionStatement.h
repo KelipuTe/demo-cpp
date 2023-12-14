@@ -2,7 +2,6 @@
 #define HKNI_EXPRESSION_STATEMENT_H
 
 #include <string>
-
 #include "../Token.h"
 #include "../ast/Expression.h"
 #include "../ast/Statement.h"

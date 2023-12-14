@@ -12,7 +12,7 @@ namespace object {
         //####方法
     public:
         StringObject(string value) {
-            this->Type = STRING_HKNI;
+            this->Type = STRING_OBJ;
             this->Value = value;
         }
 
@@ -20,13 +20,13 @@ namespace object {
             return this->Type;
         }
 
-        string GetValue() override {
+        string GetLiteral() override {
             return this->Value;
         }
 
         string ToString() override {
             string t4str;
-            t4str.append("Type=" + to_string(this->Type) + ";");
+            t4str.append("Object Type=" + to_string(this->Type) + ";");
             t4str.append("Value=" + this->Value + ";");
             return t4str;
         }

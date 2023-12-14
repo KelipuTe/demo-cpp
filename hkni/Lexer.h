@@ -14,19 +14,22 @@ enum LEXER_MODE {
     FILE_MODE = 2, //文件模式
 };
 
+const string ERR_LEXER_MODE = "错误。词法分析模式错误。";
+
 //词法分析器
 class Lexer {
     //####属性
 private:
     string input; //输入
-    int mode; //模式
+    LEXER_MODE mode; //模式
 
     FILE *p7InputFile = nullptr; //文件模式打开的文件
 
-    const int readBufferLen = 128; //读取缓冲区的长度
     char readBuffer[128] = {0}; //读取缓冲区
-    int nowBufferLen = 0; //本次读到缓冲区中的文本长度
-    char nextBuffer[1] = {0}; // peek 的时候用的1个字符的缓冲区
+    const int readBufferLen = 128; //读取缓冲区的长度
+    int nowReadBufferLen = 0; //本次读到缓冲区中的文本长度
+
+    char nextCharBuffer[1] = {0}; // 读取下一个字符的时候用的1个字节的缓冲区
 
     char nowChar = 0; //当前读取的字符
     int nowCharIndex = 0; //当前读取的字符下标
@@ -36,16 +39,21 @@ private:
     int nowColumn = 0; //当前读到的列数
 
     map<string, TOKEN_TYPE> keywordMap = {
-            {"true",   TRUE_HKNI},
-            {"false",  FALSE_HKNI},
+            {"null",   NULL_HKNI},
 
-            {"var",    VAR_HKNI},
+            {"bool",   BOOL_TYPE},
+            {"true",   TRUE_VALUE},
+            {"false",  FALSE_VALUE},
+
+            {"int",    INT_TYPE},
+            {"float",  FLOAT_TYPE},
+            {"string", STRING_TYPE},
+
             {"const",  CONST_HKNI},
 
             {"if",     IF_HKNI},
             {"else",   ELSE_HKNI},
 
-            {"while",  WHILE_HKNI},
             {"for",    FOR_HKNI},
 
             {"func",   FUNC_HKNI},
@@ -60,14 +68,14 @@ public:
      * @param input 代码文本、文件路径
      * @param mode
      */
-    Lexer(string input, int mode) {
+    Lexer(string input, LEXER_MODE mode) {
         this->input = input;
         this->mode = mode;
         if (mode == FILE_MODE) {
             f8OpenFile(input);
         }
 
-        ReadNextChar(); //相当于初始化
+        readNextChar(); //相当于初始化
 
         // 读到非0字符，则至少有一行
         if (nowChar != 0) {
@@ -82,17 +90,13 @@ public:
     };
 
     string GetModeStr() {
-        if (this->mode == INPUT_MODE) {
+        if (mode == INPUT_MODE) {
             return "代码模式。";
-        } else if (this->mode == FILE_MODE) {
-            return "文件模式：" + this->input + "。";
+        } else if (mode == FILE_MODE) {
+            return "文件模式：" + input + "。";
         } else {
-            return "词法分析模式错误。";
+            return ERR_LEXER_MODE;
         }
-    }
-
-    char GetReadChar() {
-        return nowChar;
     }
 
     int GetNowRow() {
@@ -103,107 +107,19 @@ public:
         return nowColumn;
     }
 
-    void ReadNextChar() {
-        if (mode == INPUT_MODE) {
-            if (nextCharIndex >= input.length()) {
-                nowChar = 0;
-                return;
-            }
-            nowChar = input[nextCharIndex];
-            nowColumn++;
-        } else if (mode == FILE_MODE) {
-            if (p7InputFile == nullptr) {
-                nowChar = 0;
-                return;
-            }
-
-            // 缓冲区中的数据已经处理完了，需要从文件中读取下一段数据
-            if (nextCharIndex == nowBufferLen) {
-                size_t t4size = fread(readBuffer, 1, readBufferLen, p7InputFile);
-                nowBufferLen = (int) t4size;
-
-                if (nowBufferLen == 0) {
-                    readBuffer[0] = 0;
-                }
-
-                nextCharIndex = 0;
-                nowCharIndex = 0;
-            }
-
-            nowChar = readBuffer[nextCharIndex];
-
-            //读到换行符，行数加一，列数归零
-            if (nowChar == '\n') {
-                nowRow++;
-                nowColumn = 0;
-            }
-            if (nowChar != '\n') {
-                nowColumn++;
-            }
-
-            //读到文件末尾，关闭文件
-            if (nowChar == 0) {
-                fclose(p7InputFile);
-                p7InputFile = nullptr;
-                return;
-            }
-        } else {
-            cout << "词法分析器模式错误。" << endl;
-            exit(1);
-        }
-
-        nowCharIndex = nextCharIndex;
-        nextCharIndex++;
-    }
-
-    char PeekNextChar() {
-        if (this->mode == INPUT_MODE) {
-            if (this->nextCharIndex >= this->input.length()) {
-                return 0;
-            }
-            return input[nextCharIndex];
-        } else if (mode == FILE_MODE) {
-            int nextBufferLen;
-            // 缓冲区中的数据已经处理完了，需要从文件中读取下一个字符
-            if (nextCharIndex == nowBufferLen) {
-                nextBuffer[0] = 0; //重置缓冲区
-                nextBufferLen = fread(nextBuffer, 1, 1, p7InputFile);
-                if (nextBufferLen == 1) {
-                    return nextBuffer[0];
-                } else {
-                    return 0;
-                }
-            }
-            return readBuffer[nextCharIndex];
-        } else {
-            cout << "词法分析器模式错误。" << endl;
-            exit(1);
-        }
-    }
-
     Token GetNextToken() {
         Token token;
 
         skipWhiteSpace();
 
         switch (nowChar) {
-            case '=':
-                if (PeekNextChar() == '=') {
-                    ReadNextChar();
-                    token.Literal = "==";
-                    token.TokenType = EQ;
-                } else {
-                    token.Literal = "=";
-                    token.TokenType = ASSIGN;
-                }
-                break;
             case '+':
-                if (PeekNextChar() == '=') {
-                    ReadNextChar();
+                if (peekNextChar() == '=') {
+                    readNextChar();
                     token.Literal = "+=";
                     token.TokenType = ADD_ASSIGN;
-                } else if (PeekNextChar() == '+') {
-                    ReadNextChar();
+                } else if (peekNextChar() == '+') {
+                    readNextChar();
                     token.Literal = "++";
                     token.TokenType = INC;
                 } else {
@@ -212,12 +128,12 @@ public:
                 }
                 break;
             case '-':
-                if (PeekNextChar() == '=') {
-                    ReadNextChar();
+                if (peekNextChar() == '=') {
+                    readNextChar();
                     token.Literal = "-=";
                     token.TokenType = SUB_ASSIGN;
-                } else if (PeekNextChar() == '-') {
-                    ReadNextChar();
+                } else if (peekNextChar() == '-') {
+                    readNextChar();
                     token.Literal = "--";
                     token.TokenType = DEC;
                 } else {
@@ -226,8 +142,8 @@ public:
                 }
                 break;
             case '*':
-                if (PeekNextChar() == '=') {
-                    ReadNextChar();
+                if (peekNextChar() == '=') {
+                    readNextChar();
                     token.Literal = "*=";
                     token.TokenType = MUL_ASSIGN;
                 } else {
@@ -236,32 +152,32 @@ public:
                 }
                 break;
             case '/':
-                if (PeekNextChar() == '=') {
-                    ReadNextChar();
+                if (peekNextChar() == '=') {
+                    readNextChar();
                     token.Literal = "/=";
                     token.TokenType = DIV_ASSIGN;
-                } else if (PeekNextChar() == '/') {
+                } else if (peekNextChar() == '/') {
                     //单行注释
-                    ReadNextChar();
+                    readNextChar();
 
                     string t4str = "//";
                     while (nowChar != 0 && nowChar != '\n') {
-                        ReadNextChar();
+                        readNextChar();
                         t4str.push_back(nowChar);
                     }
 
                     token.Literal = t4str;
                     token.TokenType = COMMENT;
-                } else if (PeekNextChar() == '*') {
+                } else if (peekNextChar() == '*') {
                     //多行注释
-                    ReadNextChar();
+                    readNextChar();
 
                     string t4str = "/*";
                     while (nowChar != 0) {
-                        ReadNextChar();
+                        readNextChar();
                         t4str.push_back(nowChar);
-                        if (nowChar == '*' && PeekNextChar() == '/') {
-                            ReadNextChar();
+                        if (nowChar == '*' && peekNextChar() == '/') {
+                            readNextChar();
                             t4str.push_back(nowChar);
                             break;
                         }
@@ -275,8 +191,8 @@ public:
                 }
                 break;
             case '%':
-                if (PeekNextChar() == '=') {
-                    ReadNextChar();
+                if (peekNextChar() == '=') {
+                    readNextChar();
                     token.Literal = "%=";
                     token.TokenType = MOD_ASSIGN;
                 } else {
@@ -284,9 +200,19 @@ public:
                     token.TokenType = MOD;
                 }
                 break;
+            case '=':
+                if (peekNextChar() == '=') {
+                    readNextChar();
+                    token.Literal = "==";
+                    token.TokenType = EQ;
+                } else {
+                    token.Literal = "=";
+                    token.TokenType = ASSIGN;
+                }
+                break;
             case '>':
-                if (PeekNextChar() == '=') {
-                    ReadNextChar();
+                if (peekNextChar() == '=') {
+                    readNextChar();
                     token.Literal = ">=";
                     token.TokenType = GTE;
                 } else {
@@ -295,8 +221,8 @@ public:
                 }
                 break;
             case '<':
-                if (PeekNextChar() == '=') {
-                    ReadNextChar();
+                if (peekNextChar() == '=') {
+                    readNextChar();
                     token.Literal = "<=";
                     token.TokenType = LTE;
                 } else {
@@ -305,8 +231,8 @@ public:
                 }
                 break;
             case '&':
-                if (PeekNextChar() == '&') {
-                    ReadNextChar();
+                if (peekNextChar() == '&') {
+                    readNextChar();
                     token.Literal = "&&";
                     token.TokenType = AND;
                 } else {
@@ -315,8 +241,8 @@ public:
                 }
                 break;
             case '|':
-                if (PeekNextChar() == '|') {
-                    ReadNextChar();
+                if (peekNextChar() == '|') {
+                    readNextChar();
                     token.Literal = "||";
                     token.TokenType = OR;
                 } else {
@@ -325,8 +251,8 @@ public:
                 }
                 break;
             case '!':
-                if (PeekNextChar() == '=') {
-                    ReadNextChar();
+                if (peekNextChar() == '=') {
+                    readNextChar();
                     token.Literal = "!=";
                     token.TokenType = NEQ;
                 } else {
@@ -336,15 +262,15 @@ public:
                 break;
             case '\'':
                 token.Literal = readString('\'');
-                token.TokenType = STRING_HKNI;
+                token.TokenType = STRING_VALUE;
                 break;
             case '"':
                 token.Literal = readString('"');
-                token.TokenType = STRING_HKNI;
+                token.TokenType = STRING_VALUE;
                 break;
             case '`':
                 token.Literal = readString('`');
-                token.TokenType = STRING_HKNI;
+                token.TokenType = STRING_VALUE;
                 break;
             case ';':
                 token.Literal = ";";
@@ -370,14 +296,6 @@ public:
                 token.Literal = ")";
                 token.TokenType = RPAREN;
                 break;
-            case '{':
-                token.Literal = "{";
-                token.TokenType = LBRACE;
-                break;
-            case '}':
-                token.Literal = "}";
-                token.TokenType = RBRACE;
-                break;
             case '[':
                 token.Literal = "[";
                 token.TokenType = LBRACKET;
@@ -385,6 +303,14 @@ public:
             case ']':
                 token.Literal = "]";
                 token.TokenType = RBRACKET;
+                break;
+            case '{':
+                token.Literal = "{";
+                token.TokenType = LBRACE;
+                break;
+            case '}':
+                token.Literal = "}";
+                token.TokenType = RBRACE;
                 break;
             case 0:
                 token.Literal = "";
@@ -401,19 +327,19 @@ public:
                     bool isError = false;
                     string t4str = readNumber(&isInt, &isError);
                     if (isError) {
-                        cout << "数字格式错误。" << endl;
+                        cout << "错误。数字格式错误。" << endl;
                         exit(1);
                     }
                     token.Literal = t4str;
-                    token.TokenType = isInt ? INT_HKNI : FLOAT_HKNI;
+                    token.TokenType = isInt ? INT_VALUE : FLOAT_VALUE;
                     return token;
                 } else {
-                    cout << "未知字符。" << endl;
+                    cout << "错误。词法标记异常。" << endl;
                     exit(1);
                 }
         }
 
-        ReadNextChar();
+        readNextChar();
 
         return token;
     }
@@ -422,27 +348,108 @@ private:
     void f8OpenFile(string path) {
         p7InputFile = fopen(path.c_str(), "r");
         if (p7InputFile == nullptr) {
-            cout << "文件 " << p7InputFile << " 打开失败。" << endl;
+            cout << "错误。文件 " << p7InputFile << " 打开失败。" << endl;
             exit(1);
         }
     };
 
-    //匹配关键字
+    //传入词法标记原始值，看看是不是关键字，如果不是关键字，那就是标识符
     TOKEN_TYPE f8MatchKeyword(string literal) {
-        auto token_type = keywordMap.find(literal);
-        if (token_type != keywordMap.end()) {
-            return token_type->second; //关键字
+        auto tokenType = keywordMap.find(literal);
+        if (tokenType != keywordMap.end()) {
+            return tokenType->second; //关键字
         }
         return IDENTIFIER; //标识符
     }
 
-    //跳过空白字符（空格、制表符、回车符、换行符）
+    //跳过空白字符，空格、制表符、回车符、换行符
     void skipWhiteSpace() {
-        while (nowChar == ' ' ||
-               nowChar == '\t' ||
-               nowChar == '\r' ||
-               nowChar == '\n') {
-            ReadNextChar();
+        while (nowChar == ' ' || nowChar == '\t' || nowChar == '\r' || nowChar == '\n') {
+            readNextChar();
+        }
+    }
+
+    //读取下一个字符，移动当前读取到的下标位置
+    void readNextChar() {
+        if (mode == INPUT_MODE) {
+            if (nextCharIndex >= input.length()) {
+                nowChar = 0;
+                return;
+            }
+
+            nowChar = input[nextCharIndex];
+
+            nowColumn++;
+        } else if (mode == FILE_MODE) {
+            if (p7InputFile == nullptr) {
+                nowChar = 0;
+                return;
+            }
+
+            if (nextCharIndex == nowReadBufferLen) {
+                // 缓冲区中的数据已经处理完了，需要从文件中读取下一段数据
+
+                size_t freadSize = fread(readBuffer, 1, readBufferLen, p7InputFile);
+                nowReadBufferLen = (int) freadSize;
+
+                if (nowReadBufferLen == 0) {
+                    readBuffer[0] = 0;
+                }
+
+                nextCharIndex = 0;
+                nowCharIndex = 0;
+            }
+
+            nowChar = readBuffer[nextCharIndex];
+
+            if (nowChar == '\n') {
+                //读到换行符，行数加一，列数归零
+                nowRow++;
+                nowColumn = 0;
+            } else {
+                //不是换行符，行数不变，列数加一
+                nowColumn++;
+            }
+
+            //读到文件末尾，关闭文件
+            if (nowChar == 0) {
+                fclose(p7InputFile);
+                p7InputFile = nullptr;
+                return;
+            }
+        } else {
+            cout << ERR_LEXER_MODE << endl;
+            exit(1);
+        }
+
+        nowCharIndex = nextCharIndex;
+        nextCharIndex++;
+    }
+
+    //读取下一个字符，但是不移动当前读取到的下标位置
+    char peekNextChar() {
+        if (mode == INPUT_MODE) {
+            if (nextCharIndex >= input.length()) {
+                return 0;
+            }
+            return input[nextCharIndex];
+        } else if (mode == FILE_MODE) {
+
+            if (nextCharIndex == nowReadBufferLen) {
+                // 缓冲区中的数据已经处理完了，需要从文件中读取下一个字符
+
+                nextCharBuffer[0] = 0; //重置缓冲区
+                size_t freadSize = fread(nextCharBuffer, 1, 1, p7InputFile);
+                if (freadSize == 1) {
+                    return nextCharBuffer[0];
+                } else {
+                    return 0;
+                }
+            }
+            return readBuffer[nextCharIndex];
+        } else {
+            cout << ERR_LEXER_MODE << endl;
+            exit(1);
         }
     }
 
@@ -466,11 +473,9 @@ private:
                ('0' <= nowChar && nowChar <= '9');
     }
 
-    //16进制数字
-    bool isHexNumber() {
-        return ('0' <= nowChar && nowChar <= '9') ||
-               ('a' <= nowChar && nowChar <= 'f') ||
-               ('A' <= nowChar && nowChar <= 'F');
+    //2进制数字
+    bool isBinNumber() {
+        return ('0' <= nowChar && nowChar <= '1');
     }
 
     //8进制数字
@@ -478,9 +483,11 @@ private:
         return ('0' <= nowChar && nowChar <= '7');
     }
 
-    //2进制数字
-    bool isBinNumber() {
-        return ('0' <= nowChar && nowChar <= '1');
+    //16进制数字
+    bool isHexNumber() {
+        return ('0' <= nowChar && nowChar <= '9') ||
+               ('a' <= nowChar && nowChar <= 'f') ||
+               ('A' <= nowChar && nowChar <= 'F');
     }
 
     //读取标识符
@@ -488,7 +495,7 @@ private:
         string t4str;
         while (isAlphaAndNumber()) {
             t4str.push_back(nowChar);
-            ReadNextChar();
+            readNextChar();
         }
         return t4str;
     }
@@ -505,20 +512,34 @@ private:
                         if (*isInt) {
                             *isInt = false;
                         } else {
-                            //小数点出现两次
-                            *isError = true;
+                            *isError = true; //错误，小数点出现两次
                         }
                     }
                     t4str.push_back(nowChar);
-                    ReadNextChar();
+                    readNextChar();
                 }
             } else {
                 int t4num = 0;
-                //这三种类型暂时不支持浮点数
-                ReadNextChar();
-                if (nowChar == 'x') {
+                //2进制、8进制、16进制暂时不支持浮点数
+                readNextChar();
+                if (nowChar == 'b') {
+                    //0b开头，2进制；
+                    readNextChar();
+                    while (isBinNumber()) {
+                        t4num = t4num * 2 + nowChar - '0';
+                        readNextChar();
+                    }
+                    t4str = to_string(t4num);
+                } else if (isNumber()) {
+                    //0开头，8进制；
+                    while (isOctNumber()) {
+                        t4num = t4num * 8 + nowChar - '0';
+                        readNextChar();
+                    }
+                    t4str = to_string(t4num);
+                } else if (nowChar == 'x') {
                     //0x开头，16进制；
-                    ReadNextChar();
+                    readNextChar();
                     while (isHexNumber()) {
                         t4num = t4num * 16;
                         if (isNumber()) {
@@ -528,27 +549,11 @@ private:
                         } else if ('A' <= nowChar && nowChar <= 'F') {
                             t4num = t4num + nowChar - 'A' + 10;
                         }
-                        ReadNextChar();
-                    }
-                    t4str = to_string(t4num);
-                } else if (isNumber()) {
-                    //0开头，8进制；
-                    while (isOctNumber()) {
-                        t4num = t4num * 8 + nowChar - '0';
-                        ReadNextChar();
-                    }
-                    t4str = to_string(t4num);
-                } else if (nowChar == 'b') {
-                    //0b开头，2进制；
-                    ReadNextChar();
-                    while (isBinNumber()) {
-                        t4num = t4num * 2 + nowChar - '0';
-                        ReadNextChar();
+                        readNextChar();
                     }
                     t4str = to_string(t4num);
                 } else {
-                    //小数点出现两次
-                    *isError = true;
+                    *isError = true; //错误，识别不出来
                 }
             }
         }
@@ -559,10 +564,10 @@ private:
     //字符串，target可以传：单引号（'）、双引号（"）、反引号（`）
     string readString(char target) {
         string t4str;
-        ReadNextChar();
+        readNextChar();
         while (nowChar != target) {
             if (nowChar == '\\') {
-                ReadNextChar();
+                readNextChar();
                 if (nowChar == target) { t4str.push_back(target); }
                 else if (nowChar == '\\') { t4str.push_back('\\'); }
                 else if (nowChar == '0') { t4str.push_back('\0'); }
@@ -573,7 +578,7 @@ private:
             } else {
                 t4str.push_back(nowChar);
             }
-            ReadNextChar();
+            readNextChar();
         }
         return t4str;
     }

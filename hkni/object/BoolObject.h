@@ -1,18 +1,18 @@
-#ifndef HKNI_FLOAT_OBJECT_H
-#define HKNI_FLOAT_OBJECT_H
+#ifndef HKNI_BOOL_OBJECT_H
+#define HKNI_BOOL_OBJECT_H
 
 #include "Object.h"
 
 namespace object {
-    class FloatObject : public Object {
+    class BoolObject : public Object {
         //####属性
     public:
         OBJECT_TYPE Type;
-        float Value;
+        bool Value;
         //####方法
     public:
-        FloatObject(float value) {
-            this->Type = FLOAT_OBJ;
+        BoolObject(int value) {
+            this->Type = BOOL_OBJ;
             this->Value = value;
         }
 
@@ -21,16 +21,17 @@ namespace object {
         }
 
         string GetLiteral() override {
-            return to_string(this->Value);
+            return this->Value ? "true" : "false";
         }
 
         string ToString() override {
             string t4str;
             t4str.append("Object Type=" + to_string(this->Type) + ";");
-            t4str.append("Value=" + to_string(this->Value) + ";");
+            string valueStr = this->Value ? "true" : "false";
+            t4str.append("Value=" + valueStr + ";");
             return t4str;
         }
     };
 }
 
-#endif //HKNI_FLOAT_OBJECT_H
+#endif //HKNI_BOOL_OBJECT_H
