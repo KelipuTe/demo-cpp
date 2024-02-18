@@ -20,23 +20,31 @@ namespace env {
 
         //添加变量，不可重复
         void AddVariable(string name, Object *p7ValueObj) {
-            if (!this->IsExistVariable(name)) {
+            if (!IsExistVariable(name)) {
                 variableMap[name] = p7ValueObj;
             }
         }
 
         //获取变量
         Object *GetVariable(string name) {
-            if (this->IsExistVariable(name)) {
+            if (IsExistVariable(name)) {
                 return variableMap[name];
+            }
+            if (p7outer != nullptr && p7outer->IsExistVariable(name)) {
+                return p7outer->GetVariable(name);
             }
             return nullptr;
         }
 
         //修改变量
         void EditVariable(string name, Object *p7ValueObj) {
-            if (this->IsExistVariable(name)) {
+            if (IsExistVariable(name)) {
                 variableMap[name] = p7ValueObj;
+                return;
+            }
+            if (p7outer != nullptr && p7outer->IsExistVariable(name)) {
+                p7outer->variableMap[name] = p7ValueObj;
+                return;
             }
         }
 

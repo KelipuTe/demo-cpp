@@ -10,15 +10,16 @@ namespace ast {
     class VarStatement : public I9Statement {
         //####属性
     public:
-        Token token; //就是变量类型
-        TOKEN_TYPE tokenType;
+        TOKEN_TYPE ValueType; //变量类型
         IdentifierExpression *P7NameExp; //标识符表达式
         I9Expression *I9ValueExp; //值表达式，需要先解释出来
+    private:
+        Token token; //就是变量类型的关键字
         //####方法
     public:
         VarStatement(Token token) {
             this->token = token;
-            this->tokenType = token.TokenType;
+            this->ValueType = token.TokenType;
             this->P7NameExp = nullptr;
             this->I9ValueExp = nullptr;
         };

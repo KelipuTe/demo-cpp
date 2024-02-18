@@ -13,7 +13,7 @@ namespace ast {
     public:
         Token TokenHKNI;
         I9Expression* I9Exp;
-        std::vector<I9Expression*> P7ArgList; //参数列表
+        std::vector<I9Expression*> ArgExpList; //参数列表
         //####方法
     public:
         CallExpression(Token token) {
@@ -29,10 +29,10 @@ namespace ast {
             t4str.append(I9Exp->ToString());
             t4str.append("(");
 
-            int argNum = (int)P7ArgList.size();
+            int argNum = (int)ArgExpList.size();
             if(argNum>0){
                 for (int index=0;index<argNum;index++) {
-                    t4str.append(P7ArgList[index]->ToString());
+                    t4str.append(ArgExpList[index]->ToString());
                     if(index<argNum-1){
                         t4str.append(",");
                     }

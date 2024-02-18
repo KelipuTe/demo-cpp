@@ -128,7 +128,7 @@ private:
         precedenceMap[LPAREN] = LPAREN_P;
     }
 
-    //初始化词法标记的解析方法，前缀和中缀两个map。如果在map里没找到，会返回默认值nullptr。
+    //初始化词法标记的解析方法，前缀和中缀两个map。如果在map里没找到，会返回默认值null。
     void initParsingFunction() {
         f8PrefixParsingMap[IDENTIFIER] = std::bind(&Parser::parseIdentifierExpression, this);
 
@@ -460,7 +460,7 @@ private:
 
         expectNextTokenIs(RPAREN);
 
-        p7exp->P7ArgList = argList;
+        p7exp->ArgExpList = argList;
     }
 
     AssignExpression *parseAssignExpression(I9Expression *i9exp) {

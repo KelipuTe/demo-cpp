@@ -12,14 +12,16 @@ namespace object {
         INT_OBJ, //整数
         FLOAT_OBJ, //浮点数
         STRING_OBJ, //字符串
+        RETURN_OBJ, //错误
+        FUNC_OBJ, //函数
         ERROR, //错误
     };
 
     class Object {
+    protected:
+        bool isConst = false;
     public:
         Object() = default;
-
-        virtual ~Object() = default;
 
         //获取对象类型
         virtual OBJECT_TYPE GetType() = 0;

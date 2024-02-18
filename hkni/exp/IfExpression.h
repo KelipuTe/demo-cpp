@@ -8,27 +8,26 @@
 
 namespace ast {
     //if表达式
-    //格式：
-    //1、if(条件表达式){块语句}
-    //2、if(条件表达式){块语句}else{块语句}
+    //格式：if(条件表达式){块语句}; if(条件表达式){块语句}else{块语句};
     class IfExpression : public I9Expression {
         //####属性
     public:
-        Token TokenHKNI;
         I9Expression *I9ConditionExp; //条件
         BlockStatement *P7ConsequenceStmt; //if块
         BlockStatement *P7AlternativeStmt; //else块
+    private:
+        Token token;
         //####方法
     public:
         IfExpression(Token token) {
-            this->TokenHKNI = token;
+            this->token = token;
             this->I9ConditionExp = nullptr;
             this->P7ConsequenceStmt = nullptr;
             this->P7AlternativeStmt = nullptr;
         };
 
         string GetTokenLiteral() override {
-            return this->TokenHKNI.Literal;
+            return this->token.Literal;
         }
 
         string ToString() override {

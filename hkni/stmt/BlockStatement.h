@@ -10,16 +10,17 @@ namespace ast {
     class BlockStatement : public I9Statement {
         //####属性
     public:
-        Token TokenHKNI;
         std::vector<I9Statement*> BodyStmtList;
+    private:
+        Token token;
         //####方法
     public:
         BlockStatement(Token token) {
-            this->TokenHKNI = token;
+            this->token = token;
         };
 
         string GetTokenLiteral() override {
-            return this->TokenHKNI.Literal;
+            return this->token.Literal;
         }
 
         string ToString() override {
