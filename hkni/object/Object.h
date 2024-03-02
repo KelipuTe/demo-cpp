@@ -8,13 +8,15 @@ using namespace std;
 namespace object {
     //对象类型，避开一些常见的关键字
     enum OBJECT_TYPE {
+        ERROR_OBJ, //错误
+        NULL_OBJ, //空值
         BOOL_OBJ, //布尔值
         INT_OBJ, //整数
         FLOAT_OBJ, //浮点数
         STRING_OBJ, //字符串
-        RETURN_OBJ, //错误
         FUNC_OBJ, //函数
-        ERROR, //错误
+        BUILTIN_FUNC_OBJ, //函数
+        RETURN_OBJ, //返回值
     };
 
     class Object {

@@ -19,7 +19,7 @@ enum TOKEN_TYPE {
     FALSE_VALUE, //布尔假值（false）
 
     INT_TYPE, //整数类型（int）
-    INT_VALUE, //整数类值
+    INT_VALUE, //整数值
 
     FLOAT_TYPE, //浮点数类型（float）
     FLOAT_VALUE, //浮点数值

@@ -102,7 +102,9 @@ void testInterpreterDoInterpreter() {
 //            new InterpreterTestCase("IF", "int a = 1;int b;if(a==2){b=1;}else{b=2;}b;", INPUT_MODE),
 //            new InterpreterTestCase("IF", "int a = 1;int b;int c = 1;if(a==1 && c==1){b=1;}b;", INPUT_MODE),
 
-            new InterpreterTestCase("CALL", "func hello(){} hello();", INPUT_MODE),
+//            new InterpreterTestCase("CALL", "func hello(){} hello();", INPUT_MODE),
+
+            new InterpreterTestCase("BUILTIN_FUNC", "println(\"aaa\");", INPUT_MODE),
     };
 
     int tcListLen = sizeof(tcList) / sizeof(tcList[0]);
@@ -112,6 +114,10 @@ void testInterpreterDoInterpreter() {
         Program *p7program = p7parser->DoParse();
 
         Interpreter *p7interpreter = new Interpreter();
+
+        BuiltinFunc* builtinFunctions = new BuiltinFunc();
+        p7interpreter->registerBuiltinFunctions(builtinFunctions);
+
         Environment *p7env = new Environment();
         Object *p7obj = p7interpreter->DoInterpret(p7program, p7env);
         if (p7obj != nullptr) {

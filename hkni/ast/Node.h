@@ -2,7 +2,7 @@
 #define HKNI_NODE_H
 
 namespace ast {
-    //AST树结点抽象
+    //AST抽象语法树结点
     class I9Node {
     public:
         //获取词法标记原始值

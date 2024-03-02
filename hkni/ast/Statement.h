@@ -4,7 +4,7 @@
 #include "Node.h"
 
 namespace ast {
-    //语句抽象
+    //语句
     class I9Statement : public I9Node {
     public:
         virtual void StatementNode() = 0;

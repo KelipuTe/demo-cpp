@@ -7,19 +7,29 @@
 
 #include "Environment.h"
 
-#include "object/IntObject.h"
-#include "object/FloatObject.h"
-#include "object/StringObject.h"
 #include "object/BoolObject.h"
 #include "object/ErrorObject.h"
+#include "object/FloatObject.h"
 #include "object/FuncObject.h"
+#include "object/IntObject.h"
+#include "object/ReturnObject.h"
+#include "object/StringObject.h"
+
+#include "func/BuiltinFunc.h"
 
 using namespace ast;
 using namespace env;
 using namespace object;
+using namespace func;
 
 class Interpreter {
-    //####方法
+    //##属性
+public:
+    BuiltinFunc* _builtinFunctions;
+    void registerBuiltinFunctions(BuiltinFunc* builtinFunctions) {
+        _builtinFunctions = builtinFunctions;
+    }
+    //##方法
 public:
     //解释器入口，递归入口
     Object *DoInterpret(I9Node *i9node, Environment *p7env) {
@@ -68,6 +78,9 @@ public:
         } else if (typeid(*i9node) == typeid(CallExpression)) {
             auto *p7exp = dynamic_cast<CallExpression *>(i9node); //函数调用表达式
             return interpretCallExpression(p7exp, p7env);
+        }else if (typeid(*i9node) == typeid(ReturnStatement)) {
+            auto *p7stmt = dynamic_cast<ReturnStatement *>(i9node); //返回语句
+            return interpretReturnStatement(p7stmt,p7env);
         }
         return nullptr;
     }
@@ -116,7 +129,7 @@ private:
         Object *p7obj = nullptr;
         for (auto i9stmt: p7stmt->BodyStmtList) {
             p7obj = this->DoInterpret(i9stmt, p7env); //解释每一条语句
-            if (objectIs(p7obj, object::RETURN_OBJ) || objectIs(p7obj, object::ERROR)) {
+            if (objectIs(p7obj, object::RETURN_OBJ) || objectIs(p7obj, object::ERROR_OBJ)) {
                 //如果解释语句的结果是return或者error，直接返回
                 return p7obj;
             }
@@ -306,6 +319,11 @@ private:
         if (p7obj != nullptr) {
             return p7obj;
         }
+        //从内置函数模块找
+        auto func = _builtinFunctions->getBuiltinFunc(name);
+        if (func != nullptr) {
+            return func;
+        }
         return new ErrorObject("错误。找不到变量：" + name);
     }
 
@@ -392,7 +410,8 @@ private:
 
         auto p7FuncObj = this->DoInterpret(p7exp->I9Exp, p7env); //通过函数名得到函数对象
 
-        if (!objectIs(p7FuncObj, object::FUNC_OBJ)) {
+        if (!objectIs(p7FuncObj, object::FUNC_OBJ)
+        && !objectIs(p7FuncObj, object::BUILTIN_FUNC_OBJ)) {
             return new ErrorObject("错误。不是函数对象。");
         }
 
@@ -411,7 +430,7 @@ private:
 
         for (auto argExp: argExpList) {
             auto argObj = this->DoInterpret(argExp, p7env);
-            if (objectIs(argObj, object::ERROR)) {
+            if (objectIs(argObj, object::ERROR_OBJ)) {
                 //如果解释参数的时候出错了，直接返回错误对象
                 argObjList.push_back(argObj);
                 return argObjList;
@@ -427,6 +446,9 @@ private:
             auto *p7FuncObjReal = dynamic_cast<FuncObject *>(p7FuncObj);
             auto p7FuncEnv = this->createFuncEnv(p7FuncObjReal, argObjList);
             return this->DoInterpret(p7FuncObjReal->P7BodyBlockStmt, p7FuncEnv);
+        }else if(typeid(*p7FuncObj) == typeid(BuiltinFuncObj)){
+            BuiltinFuncObj* builtin = dynamic_cast<BuiltinFuncObj*>(p7FuncObj);
+            return builtin->_func(argObjList);
         }
         return new ErrorObject("错误。不是函数对象。");
     }
@@ -438,6 +460,11 @@ private:
             p7env->AddVariable(p7FuncObj->P7ArgList[i]->GetTokenLiteral(), argObjList[i]);
         }
         return p7env;
+    }
+
+    Object *interpretReturnStatement(ReturnStatement *p7stmt, Environment *p7env) {
+        Object *p7obj = this->DoInterpret(p7stmt->I9Exp, p7env);
+        return new ReturnObject(p7obj);
     }
 };
 

@@ -107,14 +107,6 @@ void testParserDoParse() {
             new ParserTestCase("FUNC", "func hello(){return 1;}", INPUT_MODE),
             new ParserTestCase("FUNC", "func hello(){var a=1;return a;}", INPUT_MODE),
 
-            new ParserTestCase("RETURN", "return;", INPUT_MODE),
-            new ParserTestCase("RETURN", "return 1;", INPUT_MODE),
-            new ParserTestCase("RETURN", "return 1+2;", INPUT_MODE),
-            new ParserTestCase("RETURN", "return a;", INPUT_MODE),
-            new ParserTestCase("RETURN", "return a+b;", INPUT_MODE),
-            new ParserTestCase("RETURN", "return a();", INPUT_MODE),
-            new ParserTestCase("RETURN", "return a()+b();", INPUT_MODE),
-
             new ParserTestCase("CALL", "hello();", INPUT_MODE),
             new ParserTestCase("CALL", "hello(1);", INPUT_MODE),
             new ParserTestCase("CALL", "hello(1,2);", INPUT_MODE),
@@ -122,6 +114,14 @@ void testParserDoParse() {
             new ParserTestCase("CALL", "hello(a,b);", INPUT_MODE),
             new ParserTestCase("CALL", "hello(a());", INPUT_MODE),
             new ParserTestCase("CALL", "hello(a(),b());", INPUT_MODE),
+
+            new ParserTestCase("RETURN", "return;", INPUT_MODE),
+            new ParserTestCase("RETURN", "return 1;", INPUT_MODE),
+            new ParserTestCase("RETURN", "return 1+2;", INPUT_MODE),
+            new ParserTestCase("RETURN", "return a;", INPUT_MODE),
+            new ParserTestCase("RETURN", "return a+b;", INPUT_MODE),
+            new ParserTestCase("RETURN", "return a();", INPUT_MODE),
+            new ParserTestCase("RETURN", "return a()+b();", INPUT_MODE),
     };
 
     int tcListLen = sizeof(tcList) / sizeof(tcList[0]);

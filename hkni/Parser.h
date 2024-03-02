@@ -174,6 +174,8 @@ private:
         f8PrefixParsingMap[LPAREN] = std::bind(&Parser::parseLParenExpression, this);
         f8InfixParsingMap[LPAREN] = std::bind(&Parser::parseCallExpression, this, std::placeholders::_1);
 
+//        f8InfixParsingMap[DOT] = std::bind(&Parser::parseDotExpression, this, std::placeholders::_1);
+
         f8PrefixParsingMap[TRUE_VALUE] = std::bind(&Parser::parseBoolExpression, this);
         f8PrefixParsingMap[FALSE_VALUE] = std::bind(&Parser::parseBoolExpression, this);
 
@@ -295,6 +297,7 @@ private:
         return leftExp;
     }
 
+    //解析标识符
     IdentifierExpression *parseIdentifierExpression() {
         return new IdentifierExpression(nowToken);
     }
@@ -451,7 +454,7 @@ private:
         //有参数
         std::vector<I9Expression *> argList;
         this->getNextToken();
-        argList.push_back(new IdentifierExpression(nowToken));
+        argList.push_back(parseExpression(LOWEST_P));
         while (nextTokenIs(COMMA)) {
             this->getNextToken();
             this->getNextToken();
@@ -580,6 +583,8 @@ private:
 
         return p7stmt;
     }
+
+
 
     //####解析语句####
 };
