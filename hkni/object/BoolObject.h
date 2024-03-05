@@ -5,11 +5,11 @@
 
 namespace object {
     class BoolObject : public Object {
-        //####属性
+        //##属性
     public:
         OBJECT_TYPE Type;
         bool Value;
-        //####方法
+        //##方法
     public:
         BoolObject(int value) {
             this->Type = BOOL_OBJ;
@@ -34,4 +34,4 @@ namespace object {
     };
 }
 
-#endif //HKNI_BOOL_OBJECT_H
+#endif

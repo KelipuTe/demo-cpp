@@ -5,11 +5,11 @@
 
 namespace object {
     class ReturnObject : public Object {
-        //####属性
+        //##属性
     public:
         OBJECT_TYPE Type;
         Object * Value;
-        //####方法
+        //##方法
     public:
         ReturnObject(Object *p7obj) {
             this->Type = RETURN_OBJ;
@@ -34,4 +34,4 @@ namespace object {
     };
 }
 
-#endif //HKNI_RETURN_OBJECT_H
+#endif

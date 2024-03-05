@@ -1,19 +1,19 @@
-#ifndef HKNI_NULL_EXPRESSION_H
-#define HKNI_NULL_EXPRESSION_H
+#ifndef HKNI_IDENTIFIER_EXPRESSION_H
+#define HKNI_IDENTIFIER_EXPRESSION_H
 
 #include <string>
 #include "../Token.h"
 #include "../ast/Expression.h"
 
 namespace ast {
-    //null表达式
-    class NullExpression : public I9Expression {
-        //####属性
+    //标识符表达式
+    class IdentifierExpression : public I9Expression {
+        //##属性
     public:
         Token TokenHKNI;
-        //####方法
+        //##方法
     public:
-        NullExpression(Token token) {
+        IdentifierExpression(Token token) {
             this->TokenHKNI = token;
         };
 
@@ -29,4 +29,4 @@ namespace ast {
     };
 }
 
-#endif //HKNI_NULL_EXPRESSION_H
+#endif

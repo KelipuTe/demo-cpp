@@ -9,21 +9,21 @@
 using namespace std;
 
 //词法分析模式
-enum LEXER_MODE {
+enum LexerMode {
     INPUT_MODE = 1, //代码模式
     FILE_MODE = 2, //文件模式
 };
 
-const string ERR_LEXER_MODE = "错误。词法分析模式错误。";
+const string ErrWrongLexerMode = "错误。错误的词法分析模式。";
 
 //词法分析器
 class Lexer {
-    //####属性
+    //##属性
 private:
     string input; //输入
-    LEXER_MODE mode; //模式
+    LexerMode mode; //模式
 
-    FILE *p7InputFile = nullptr; //文件模式打开的文件
+    FILE *p7file = nullptr; //文件模式打开的文件
 
     char readBuffer[128] = {0}; //读取缓冲区
     const int readBufferLen = 128; //读取缓冲区的长度
@@ -38,41 +38,43 @@ private:
     int nowRow = 0; //当前读到的行数
     int nowColumn = 0; //当前读到的列数
 
-    map<string, TOKEN_TYPE> keywordMap = {
-            {"null",   NULL_HKNI},
+    //关键字
+    map<string, TokenType> keywordMap = {
+            {"null",     NULL_HKNI},
 
-            {"bool",   BOOL_TYPE},
-            {"true",   TRUE_VALUE},
-            {"false",  FALSE_VALUE},
+            {"bool",     BOOL_TYPE},
+            {"true",     TRUE_VALUE},
+            {"false",    FALSE_VALUE},
 
-            {"int",    INT_TYPE},
-            {"float",  FLOAT_TYPE},
-            {"string", STRING_TYPE},
+            {"int",      INT_TYPE},
+            {"float",    FLOAT_TYPE},
+            {"string",   STRING_TYPE},
 
-            {"const",  CONST_HKNI},
+            {"var",      VAR_HKNI},
+            {"const",    CONST_HKNI},
 
-            {"if",     IF_HKNI},
-            {"else",   ELSE_HKNI},
+            {"if",       IF_HKNI},
+            {"else",     ELSE_HKNI},
 
-            {"for",    FOR_HKNI},
+            {"for",      FOR_HKNI},
 
-            {"func",   FUNC_HKNI},
-            {"return", RETURN_HKNI},
+            {"function", FUNCTION_HKNI},
+            {"return",   RETURN_HKNI},
 
-            {"class",  CLASS_HKNI},
-            {"new",    NEW_HKNI},
-    }; //关键字
-    //####方法
+            {"struct",   STRUCT_HKNI},
+            {"new",      NEW_HKNI},
+    };
+    //##方法
 public:
     /**
      * @param input 代码文本、文件路径
      * @param mode
      */
-    Lexer(string input, LEXER_MODE mode) {
+    Lexer(string input, LexerMode mode) {
         this->input = input;
         this->mode = mode;
         if (mode == FILE_MODE) {
-            f8OpenFile(input);
+            openFile(input);
         }
 
         readNextChar(); //相当于初始化
@@ -84,8 +86,8 @@ public:
     };
 
     ~Lexer() {
-        if (p7InputFile != nullptr) {
-            fclose(p7InputFile);
+        if (p7file != nullptr) {
+            fclose(p7file);
         }
     };
 
@@ -95,7 +97,7 @@ public:
         } else if (mode == FILE_MODE) {
             return "文件模式：" + input + "。";
         } else {
-            return ERR_LEXER_MODE;
+            return ErrWrongLexerMode;
         }
     }
 
@@ -113,19 +115,61 @@ public:
         skipWhiteSpace();
 
         switch (nowChar) {
-            case '+':
+            case 0:
+                token.Literal = "";
+                token.TokenType = END;
+                break;
+            case '`':
+                token.Literal = readString('`');
+                token.TokenType = STRING_VALUE;
+                break;
+            case '!':
                 if (peekNextChar() == '=') {
                     readNextChar();
-                    token.Literal = "+=";
-                    token.TokenType = ADD_ASSIGN;
-                } else if (peekNextChar() == '+') {
-                    readNextChar();
-                    token.Literal = "++";
-                    token.TokenType = INC;
+                    token.Literal = "!=";
+                    token.TokenType = NEQ;
                 } else {
-                    token.Literal = "+";
-                    token.TokenType = ADD;
+                    token.Literal = "!";
+                    token.TokenType = NOT;
                 }
+                break;
+            case '%':
+                if (peekNextChar() == '=') {
+                    readNextChar();
+                    token.Literal = "%=";
+                    token.TokenType = MOD_ASSIGN;
+                } else {
+                    token.Literal = "%";
+                    token.TokenType = MOD;
+                }
+                break;
+            case '&':
+                if (peekNextChar() == '&') {
+                    readNextChar();
+                    token.Literal = "&&";
+                    token.TokenType = AND;
+                } else {
+                    token.Literal = "&";
+                    token.TokenType = BIT_AND;
+                }
+                break;
+            case '*':
+                if (peekNextChar() == '=') {
+                    readNextChar();
+                    token.Literal = "*=";
+                    token.TokenType = MUL_ASSIGN;
+                } else {
+                    token.Literal = "*";
+                    token.TokenType = MUL;
+                }
+                break;
+            case '(':
+                token.Literal = "(";
+                token.TokenType = LPAREN;
+                break;
+            case ')':
+                token.Literal = ")";
+                token.TokenType = RPAREN;
                 break;
             case '-':
                 if (peekNextChar() == '=') {
@@ -141,14 +185,98 @@ public:
                     token.TokenType = SUB;
                 }
                 break;
-            case '*':
+            case '+':
                 if (peekNextChar() == '=') {
                     readNextChar();
-                    token.Literal = "*=";
-                    token.TokenType = MUL_ASSIGN;
+                    token.Literal = "+=";
+                    token.TokenType = ADD_ASSIGN;
+                } else if (peekNextChar() == '+') {
+                    readNextChar();
+                    token.Literal = "++";
+                    token.TokenType = INC;
                 } else {
-                    token.Literal = "*";
-                    token.TokenType = MUL;
+                    token.Literal = "+";
+                    token.TokenType = ADD;
+                }
+                break;
+            case '=':
+                if (peekNextChar() == '=') {
+                    readNextChar();
+                    token.Literal = "==";
+                    token.TokenType = EQ;
+                } else {
+                    token.Literal = "=";
+                    token.TokenType = ASSIGN;
+                }
+                break;
+            case '[':
+                token.Literal = "[";
+                token.TokenType = LBRACKET;
+                break;
+            case '{':
+                token.Literal = "{";
+                token.TokenType = LBRACE;
+            case ']':
+                token.Literal = "]";
+                token.TokenType = RBRACKET;
+                break;
+                break;
+            case '}':
+                token.Literal = "}";
+                token.TokenType = RBRACE;
+                break;
+            case '|':
+                if (peekNextChar() == '|') {
+                    readNextChar();
+                    token.Literal = "||";
+                    token.TokenType = OR;
+                } else {
+                    token.Literal = "|";
+                    token.TokenType = BIT_OR;
+                }
+                break;
+            case ';':
+                token.Literal = ";";
+                token.TokenType = SEMICOLON;
+                break;
+            case ':':
+                token.Literal = ":";
+                token.TokenType = COLON;
+                break;
+            case '\'':
+                token.Literal = readString('\'');
+                token.TokenType = STRING_VALUE;
+                break;
+            case '"':
+                token.Literal = readString('"');
+                token.TokenType = STRING_VALUE;
+                break;
+            case ',':
+                token.Literal = ",";
+                token.TokenType = COMMA;
+                break;
+            case '<':
+                if (peekNextChar() == '=') {
+                    readNextChar();
+                    token.Literal = "<=";
+                    token.TokenType = LTE;
+                } else {
+                    token.Literal = "<";
+                    token.TokenType = LT;
+                }
+                break;
+            case '.':
+                token.Literal = ".";
+                token.TokenType = DOT;
+                break;
+            case '>':
+                if (peekNextChar() == '=') {
+                    readNextChar();
+                    token.Literal = ">=";
+                    token.TokenType = GTE;
+                } else {
+                    token.Literal = ">";
+                    token.TokenType = GT;
                 }
                 break;
             case '/':
@@ -190,137 +318,11 @@ public:
                     token.TokenType = DIV;
                 }
                 break;
-            case '%':
-                if (peekNextChar() == '=') {
-                    readNextChar();
-                    token.Literal = "%=";
-                    token.TokenType = MOD_ASSIGN;
-                } else {
-                    token.Literal = "%";
-                    token.TokenType = MOD;
-                }
-                break;
-            case '=':
-                if (peekNextChar() == '=') {
-                    readNextChar();
-                    token.Literal = "==";
-                    token.TokenType = EQ;
-                } else {
-                    token.Literal = "=";
-                    token.TokenType = ASSIGN;
-                }
-                break;
-            case '>':
-                if (peekNextChar() == '=') {
-                    readNextChar();
-                    token.Literal = ">=";
-                    token.TokenType = GTE;
-                } else {
-                    token.Literal = ">";
-                    token.TokenType = GT;
-                }
-                break;
-            case '<':
-                if (peekNextChar() == '=') {
-                    readNextChar();
-                    token.Literal = "<=";
-                    token.TokenType = LTE;
-                } else {
-                    token.Literal = "<";
-                    token.TokenType = LT;
-                }
-                break;
-            case '&':
-                if (peekNextChar() == '&') {
-                    readNextChar();
-                    token.Literal = "&&";
-                    token.TokenType = AND;
-                } else {
-                    token.Literal = "&";
-                    token.TokenType = BIT_AND;
-                }
-                break;
-            case '|':
-                if (peekNextChar() == '|') {
-                    readNextChar();
-                    token.Literal = "||";
-                    token.TokenType = OR;
-                } else {
-                    token.Literal = "|";
-                    token.TokenType = BIT_OR;
-                }
-                break;
-            case '!':
-                if (peekNextChar() == '=') {
-                    readNextChar();
-                    token.Literal = "!=";
-                    token.TokenType = NEQ;
-                } else {
-                    token.Literal = "!";
-                    token.TokenType = NOT;
-                }
-                break;
-            case '\'':
-                token.Literal = readString('\'');
-                token.TokenType = STRING_VALUE;
-                break;
-            case '"':
-                token.Literal = readString('"');
-                token.TokenType = STRING_VALUE;
-                break;
-            case '`':
-                token.Literal = readString('`');
-                token.TokenType = STRING_VALUE;
-                break;
-            case ';':
-                token.Literal = ";";
-                token.TokenType = SEMICOLON;
-                break;
-            case ':':
-                token.Literal = ":";
-                token.TokenType = COLON;
-                break;
-            case ',':
-                token.Literal = ",";
-                token.TokenType = COMMA;
-                break;
-            case '.':
-                token.Literal = ".";
-                token.TokenType = DOT;
-                break;
-            case '(':
-                token.Literal = "(";
-                token.TokenType = LPAREN;
-                break;
-            case ')':
-                token.Literal = ")";
-                token.TokenType = RPAREN;
-                break;
-            case '[':
-                token.Literal = "[";
-                token.TokenType = LBRACKET;
-                break;
-            case ']':
-                token.Literal = "]";
-                token.TokenType = RBRACKET;
-                break;
-            case '{':
-                token.Literal = "{";
-                token.TokenType = LBRACE;
-                break;
-            case '}':
-                token.Literal = "}";
-                token.TokenType = RBRACE;
-                break;
-            case 0:
-                token.Literal = "";
-                token.TokenType = END;
-                break;
             default:
-                //如果不是符号或者字符串，那么就是标识符、关键字、数字
+                //如果不是运算符或者字符串，那么就是标识符、关键字、数字
                 if (isAlpha()) {
                     token.Literal = readIdentifier();
-                    token.TokenType = f8MatchKeyword(token.Literal);
+                    token.TokenType = matchKeyword(token.Literal);
                     return token;
                 } else if (isNumber()) {
                     bool isInt = true;
@@ -345,16 +347,16 @@ public:
     }
 
 private:
-    void f8OpenFile(string path) {
-        p7InputFile = fopen(path.c_str(), "r");
-        if (p7InputFile == nullptr) {
-            cout << "错误。文件 " << p7InputFile << " 打开失败。" << endl;
+    void openFile(string path) {
+        p7file = fopen(path.c_str(), "r");
+        if (p7file == nullptr) {
+            cout << "错误。文件 " << p7file << " 打开失败。" << endl;
             exit(1);
         }
     };
 
     //传入词法标记原始值，看看是不是关键字，如果不是关键字，那就是标识符
-    TOKEN_TYPE f8MatchKeyword(string literal) {
+    TokenType matchKeyword(string literal) {
         auto tokenType = keywordMap.find(literal);
         if (tokenType != keywordMap.end()) {
             return tokenType->second; //关键字
@@ -372,7 +374,9 @@ private:
     //读取下一个字符，移动当前读取到的下标位置
     void readNextChar() {
         if (mode == INPUT_MODE) {
+            //代码模式
             if (nextCharIndex >= input.length()) {
+                //读到输入的末尾就结束了
                 nowChar = 0;
                 return;
             }
@@ -381,18 +385,24 @@ private:
 
             nowColumn++;
         } else if (mode == FILE_MODE) {
-            if (p7InputFile == nullptr) {
+            //文件模式
+            if (p7file == nullptr) {
                 nowChar = 0;
                 return;
             }
 
             if (nextCharIndex == nowReadBufferLen) {
-                // 缓冲区中的数据已经处理完了，需要从文件中读取下一段数据
+                //读到缓冲区的末尾，表示缓冲区中的数据已经处理完了
+                //但是这并不表示结束了，文件中有可能还有数据，需要继续读取
+                //要么是第一次调用这个方法，两个值都是 0 的时候进来
+                //要么是一段数据处理完了，需要读取下一段数据的时候进来
 
-                size_t freadSize = fread(readBuffer, 1, readBufferLen, p7InputFile);
+                size_t freadSize = fread(readBuffer, 1, readBufferLen, p7file);
                 nowReadBufferLen = (int) freadSize;
 
                 if (nowReadBufferLen == 0) {
+                    //没读到数据，表示文件已经读取完了
+                    //处理一下缓冲区，让 nowChar 拿到 0，结束读取
                     readBuffer[0] = 0;
                 }
 
@@ -411,14 +421,14 @@ private:
                 nowColumn++;
             }
 
-            //读到文件末尾，关闭文件
             if (nowChar == 0) {
-                fclose(p7InputFile);
-                p7InputFile = nullptr;
+                //读到文件末尾，关闭文件，结束读取
+                fclose(p7file);
+                p7file = nullptr;
                 return;
             }
         } else {
-            cout << ERR_LEXER_MODE << endl;
+            cout << ErrWrongLexerMode << endl;
             exit(1);
         }
 
@@ -434,23 +444,45 @@ private:
             }
             return input[nextCharIndex];
         } else if (mode == FILE_MODE) {
-
             if (nextCharIndex == nowReadBufferLen) {
-                // 缓冲区中的数据已经处理完了，需要从文件中读取下一个字符
-
+                //读到缓冲区的末尾，表示缓冲区中的数据已经处理完了
+                //但是这并不表示结束了，文件中有可能还有数据，需要继续读取
                 nextCharBuffer[0] = 0; //重置缓冲区
-                size_t freadSize = fread(nextCharBuffer, 1, 1, p7InputFile);
-                if (freadSize == 1) {
-                    return nextCharBuffer[0];
-                } else {
+                size_t freadSize = fread(nextCharBuffer, 1, 1, p7file);
+                if (freadSize == 0) {
                     return 0;
+                } else {
+                    return nextCharBuffer[0];
                 }
             }
             return readBuffer[nextCharIndex];
         } else {
-            cout << ERR_LEXER_MODE << endl;
+            cout << ErrWrongLexerMode << endl;
             exit(1);
         }
+    }
+
+
+    //字符串，target可以传：单引号（'）、双引号（"）、反引号（`）
+    string readString(char target) {
+        string str;
+        readNextChar();
+        while (nowChar != target) {
+            if (nowChar == '\\') {
+                readNextChar();
+                if (nowChar == target) { str.push_back(target); }
+                else if (nowChar == '\\') { str.push_back('\\'); }
+                else if (nowChar == '0') { str.push_back('\0'); }
+                else if (nowChar == 't') { str.push_back('\t'); }
+                else if (nowChar == 'r') { str.push_back('\r'); }
+                else if (nowChar == 'n') { str.push_back('\n'); }
+                else { str.push_back(nowChar); }
+            } else {
+                str.push_back(nowChar);
+            }
+            readNextChar();
+        }
+        return str;
     }
 
     //a~z A~Z _
@@ -460,9 +492,14 @@ private:
                nowChar == '_';
     }
 
-    //0~9
-    bool isNumber() {
-        return ('0' <= nowChar && nowChar <= '9');
+    //读取标识符
+    string readIdentifier() {
+        string str;
+        while (isAlphaAndNumber()) {
+            str.push_back(nowChar);
+            readNextChar();
+        }
+        return str;
     }
 
     //a~z A~Z _ 0~9
@@ -471,6 +508,11 @@ private:
                ('A' <= nowChar && nowChar <= 'Z') ||
                nowChar == '_' ||
                ('0' <= nowChar && nowChar <= '9');
+    }
+
+    //0~9
+    bool isNumber() {
+        return ('0' <= nowChar && nowChar <= '9');
     }
 
     //2进制数字
@@ -490,19 +532,9 @@ private:
                ('A' <= nowChar && nowChar <= 'F');
     }
 
-    //读取标识符
-    string readIdentifier() {
-        string t4str;
-        while (isAlphaAndNumber()) {
-            t4str.push_back(nowChar);
-            readNextChar();
-        }
-        return t4str;
-    }
-
     //读取数字
     string readNumber(bool *isInt, bool *isError) {
-        string t4str;
+        string str;
 
         if (isNumber()) {
             if (nowChar != '0') {
@@ -515,73 +547,53 @@ private:
                             *isError = true; //错误，小数点出现两次
                         }
                     }
-                    t4str.push_back(nowChar);
+                    str.push_back(nowChar);
                     readNextChar();
                 }
             } else {
-                int t4num = 0;
+                int num = 0;
                 //2进制、8进制、16进制暂时不支持浮点数
                 readNextChar();
                 if (nowChar == 'b') {
                     //0b开头，2进制；
                     readNextChar();
                     while (isBinNumber()) {
-                        t4num = t4num * 2 + nowChar - '0';
+                        num = num * 2 + nowChar - '0';
                         readNextChar();
                     }
-                    t4str = to_string(t4num);
+                    str = to_string(num);
                 } else if (isNumber()) {
                     //0开头，8进制；
                     while (isOctNumber()) {
-                        t4num = t4num * 8 + nowChar - '0';
+                        num = num * 8 + nowChar - '0';
                         readNextChar();
                     }
-                    t4str = to_string(t4num);
+                    str = to_string(num);
                 } else if (nowChar == 'x') {
                     //0x开头，16进制；
                     readNextChar();
                     while (isHexNumber()) {
-                        t4num = t4num * 16;
+                        num = num * 16;
                         if (isNumber()) {
-                            t4num = t4num + nowChar - '0';
+                            num = num + nowChar - '0';
                         } else if ('a' <= nowChar && nowChar <= 'f') {
-                            t4num = t4num + nowChar - 'a' + 10;
+                            num = num + nowChar - 'a' + 10;
                         } else if ('A' <= nowChar && nowChar <= 'F') {
-                            t4num = t4num + nowChar - 'A' + 10;
+                            num = num + nowChar - 'A' + 10;
                         }
                         readNextChar();
                     }
-                    t4str = to_string(t4num);
+                    str = to_string(num);
                 } else {
                     *isError = true; //错误，识别不出来
                 }
             }
         }
 
-        return t4str;
+        return str;
     }
 
-    //字符串，target可以传：单引号（'）、双引号（"）、反引号（`）
-    string readString(char target) {
-        string t4str;
-        readNextChar();
-        while (nowChar != target) {
-            if (nowChar == '\\') {
-                readNextChar();
-                if (nowChar == target) { t4str.push_back(target); }
-                else if (nowChar == '\\') { t4str.push_back('\\'); }
-                else if (nowChar == '0') { t4str.push_back('\0'); }
-                else if (nowChar == 't') { t4str.push_back('\t'); }
-                else if (nowChar == 'r') { t4str.push_back('\r'); }
-                else if (nowChar == 'n') { t4str.push_back('\n'); }
-                else { t4str.push_back(nowChar); }
-            } else {
-                t4str.push_back(nowChar);
-            }
-            readNextChar();
-        }
-        return t4str;
-    }
+
 };
 
-#endif //HKNI_LEXER_H
+#endif

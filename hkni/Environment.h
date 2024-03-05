@@ -10,11 +10,11 @@ using namespace object;
 namespace env {
     //环境
     class Environment {
-        //####属性
+        //##属性
     public:
         std::map<string, Object *> variableMap; //局部变量
         Environment *p7outer; //外层环境
-        //####方法
+        //##方法
     public:
         Environment() {}
 
@@ -56,4 +56,4 @@ namespace env {
     };
 }
 
-#endif //HKNI_ENVIRONMENT_H
+#endif

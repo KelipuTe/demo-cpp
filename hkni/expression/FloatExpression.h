@@ -1,20 +1,22 @@
-#ifndef HKNI_IDENTIFIER_EXPRESSION_H
-#define HKNI_IDENTIFIER_EXPRESSION_H
+#ifndef HKNI_FLOAT_EXPRESSION_H
+#define HKNI_FLOAT_EXPRESSION_H
 
 #include <string>
 #include "../Token.h"
 #include "../ast/Expression.h"
 
 namespace ast {
-    //标识符表达式
-    class IdentifierExpression : public I9Expression {
-        //####属性
+    //浮点数表达式
+    class FloatExpression : public I9Expression {
+        //##属性
     public:
         Token TokenHKNI;
-        //####方法
+        float Value;
+        //##方法
     public:
-        IdentifierExpression(Token token) {
+        FloatExpression(Token token) {
             this->TokenHKNI = token;
+            this->Value = stof(token.Literal);
         };
 
         string GetTokenLiteral() override {
@@ -26,7 +28,11 @@ namespace ast {
         }
 
         void ExpressionNode() override {}
+
+        float GetValue() {
+            return this->Value;
+        }
     };
 }
 
-#endif //HKNI_IDENTIFIER_EXPRESSION_H
+#endif

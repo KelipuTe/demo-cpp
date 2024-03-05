@@ -21,4 +21,4 @@ enum PRECEDENCE{
     HIGHEST_P, //最高
 };
 
-#endif //HKNI_PRECEDENCE_H
+#endif

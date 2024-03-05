@@ -8,12 +8,12 @@
 namespace ast {
     //块语句
     class BlockStatement : public I9Statement {
-        //####属性
+        //##属性
     public:
         std::vector<I9Statement*> BodyStmtList;
     private:
         Token token;
-        //####方法
+        //##方法
     public:
         BlockStatement(Token token) {
             this->token = token;
@@ -35,4 +35,4 @@ namespace ast {
     };
 }
 
-#endif //HKNI_BLOCK_STATEMENT_H
+#endif

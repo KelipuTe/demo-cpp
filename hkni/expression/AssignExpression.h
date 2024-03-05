@@ -9,13 +9,13 @@ namespace ast {
     //赋值表达式
     //格式：标识符表达式 操作符 表达式
     class AssignExpression : public I9Expression {
-        //####属性
+        //##属性
     public:
         Token TokenHKNI; //就是操作符的字符串
         IdentifierExpression *I9NameExp; //标识符表达式
         string operationStr; //操作符（=、+=、-=、*=、/=、%=）
         I9Expression *I9ValueExp; //值表达式，需要先解释出来
-        //####方法
+        //##方法
     public:
         AssignExpression(Token token) {
             this->TokenHKNI = token;
@@ -40,4 +40,4 @@ namespace ast {
     };
 }
 
-#endif //HKNI_ASSIGN_EXPRESSION_H
+#endif

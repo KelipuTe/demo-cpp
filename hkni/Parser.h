@@ -8,29 +8,29 @@
 
 #include "Precedence.h"
 
-#include "exp/IdentifierExpression.h"
+#include "expression/IdentifierExpression.h"
 
-#include "exp/NullExpression.h"
-#include "exp/IntExpression.h"
-#include "exp/FloatExpression.h"
-#include "exp/StringExpression.h"
+#include "expression/NullExpression.h"
+#include "expression/IntExpression.h"
+#include "expression/FloatExpression.h"
+#include "expression/StringExpression.h"
 
-#include "exp/AssignExpression.h"
+#include "expression/AssignExpression.h"
 
-#include "exp/PrefixExpression.h"
-#include "exp/InfixExpression.h"
-#include "exp/SuffixExpression.h"
+#include "expression/PrefixExpression.h"
+#include "expression/InfixExpression.h"
+#include "expression/SuffixExpression.h"
 
-#include "exp/BoolExpression.h"
-#include "exp/IfExpression.h"
-#include "exp/ForExpression.h"
+#include "expression/BoolExpression.h"
+#include "expression/IfExpression.h"
+#include "expression/ForExpression.h"
 
-#include "exp/FuncExpression.h"
-#include "exp/CallExpression.h"
+#include "expression/FuncExpression.h"
+#include "expression/CallExpression.h"
 
-#include "stmt/VarStatement.h"
-#include "stmt/ReturnStatement.h"
-#include "stmt/ExpressionStatement.h"
+#include "statement/VarStatement.h"
+#include "statement/ReturnStatement.h"
+#include "statement/ExpressionStatement.h"
 
 #include "ast/Program.h"
 
@@ -38,7 +38,7 @@ using namespace ast;
 
 //语法分析器，基于运算符优先级和递归的实现。
 class Parser {
-    //####属性
+    //##属性
 private:
     //类型别名
     using f8PrefixParsing = std::function<I9Expression *()>;
@@ -49,12 +49,12 @@ private:
     Token nowToken; //当前token
     Token nextToken; //下一个token
 
-    std::map<TOKEN_TYPE, PRECEDENCE> precedenceMap; //词法标记的优先级
-    std::map<TOKEN_TYPE, f8PrefixParsing> f8PrefixParsingMap; //前缀词法标记的解析方法
-    std::map<TOKEN_TYPE, f8InfixParsing> f8InfixParsingMap; //中缀词法标记的解析方法
+    std::map<TokenType, PRECEDENCE> precedenceMap; //词法标记的优先级
+    std::map<TokenType, f8PrefixParsing> f8PrefixParsingMap; //前缀词法标记的解析方法
+    std::map<TokenType, f8InfixParsing> f8InfixParsingMap; //中缀词法标记的解析方法
 
     vector<string> errorList; //错误列表
-    //####方法
+    //##方法
 public:
     Parser(Lexer *p7lexer) {
         this->p7lexer = p7lexer;
@@ -75,18 +75,17 @@ public:
                 string modeStr = this->p7lexer->GetModeStr();
                 string rowStr = std::to_string(this->p7lexer->GetNowRow());
                 string columnStr = std::to_string(this->p7lexer->GetNowColumn());
-
                 string t4str = modeStr + rowStr + "行；" + columnStr + "列；DoParse；语法错误：" + nowToken.Literal;
                 errorList.push_back(t4str);
+                return nullptr;
             } else if (nowToken.TokenType == COMMENT) {
-
+                getNextToken();
             } else {
                 I9Statement *i9stmt = this->parseStatement();
                 if (i9stmt != nullptr) {
                     p7program->I9StatementList.push_back(i9stmt);
                 }
             }
-            getNextToken();
         }
 
         return p7program;
@@ -182,7 +181,7 @@ private:
         f8PrefixParsingMap[IF_HKNI] = std::bind(&Parser::parseIfExpression, this);
         f8PrefixParsingMap[FOR_HKNI] = std::bind(&Parser::parseForExpression, this);
 
-        f8PrefixParsingMap[FUNC_HKNI] = std::bind(&Parser::parseFuncExpression, this);
+        f8PrefixParsingMap[FUNCTION_HKNI] = std::bind(&Parser::parseFuncExpression, this);
     }
 
     void getNextToken() {
@@ -190,11 +189,11 @@ private:
         nextToken = p7lexer->GetNextToken();
     };
 
-    bool nowTokenIs(TOKEN_TYPE type) {
+    bool nowTokenIs(TokenType type) {
         return nowToken.TokenType == type;
     };
 
-    bool nextTokenIs(TOKEN_TYPE type) {
+    bool nextTokenIs(TokenType type) {
         return nextToken.TokenType == type;
     };
 
@@ -207,7 +206,9 @@ private:
         errorList.push_back(t4str);
     }
 
-    bool expectNextTokenIs(TOKEN_TYPE type) {
+    //期望下一个token是指定type类型的。
+    //如果是就返回true并跳过；如果不是就返回false并报错；
+    bool expectNextTokenIs(TokenType type) {
         if (nextTokenIs(type)) {
             getNextToken();
             return true;
@@ -225,7 +226,7 @@ private:
         return precedenceMap[nextToken.TokenType];
     }
 
-    //####解析表达式
+    //##解析表达式
 
     //举例 1+2-3;
     //第一层parseExp，1拿到parseIntExp，优先级0<+，进while，+拿到parseInfixExp，进入
@@ -393,7 +394,7 @@ private:
     }
 
     FuncExpression *parseFuncExpression() {
-        //func
+        //function
         FuncExpression *p7exp = new FuncExpression(nowToken);
 
         //函数名
@@ -495,18 +496,15 @@ private:
         return new BoolExpression(nowToken);
     };
 
-    //####解析表达式####
+    //##解析表达式##
 
-    //####解析语句
+    //##解析语句
 
     //解析语句，递归入口
     I9Statement *parseStatement() {
         I9Statement *i9stmt;
         switch (nowToken.TokenType) {
-            case BOOL_TYPE:
-            case INT_TYPE:
-            case FLOAT_TYPE:
-            case STRING_TYPE:
+            case VAR_HKNI:
                 i9stmt = parseVarStatement();
                 break;
             case RETURN_HKNI:
@@ -520,16 +518,25 @@ private:
     }
 
     VarStatement *parseVarStatement() {
-        auto *p7stmt = new VarStatement(nowToken);
+        auto *p7stmt = new VarStatement();
 
         if (!expectNextTokenIs(IDENTIFIER)) {
             return nullptr;
         }
-        p7stmt->P7NameExp = new IdentifierExpression(nowToken);
+        p7stmt->P7IdentifierExp = new IdentifierExpression(nowToken);
+
+        if (!this->nextTokenIs(INT_TYPE) &&
+            !this->nextTokenIs(FLOAT_TYPE) &&
+            !this->nextTokenIs(STRING_TYPE)) {
+            reportError();
+            return nullptr;
+        }
+        this->getNextToken();
+        p7stmt->SetToken(nowToken);
 
         if (this->nextTokenIs(SEMICOLON)) {
             this->getNextToken();
-            return p7stmt; //var 标识符表达式;
+            return p7stmt; //var 标识符 类型;
         }
 
         if (!expectNextTokenIs(ASSIGN)) {
@@ -540,7 +547,8 @@ private:
         if (this->nextTokenIs(SEMICOLON)) {
             this->getNextToken();
         }
-        return p7stmt; //var 标识符表达式 = 表达式;
+        getNextToken();
+        return p7stmt; //var 标识符 类型 = 值;
     }
 
     ReturnStatement *parseReturnStatement() {
@@ -550,6 +558,7 @@ private:
         if (this->nextTokenIs(SEMICOLON)) {
             this->getNextToken();
         }
+        getNextToken();
         return p7stmt;
     }
 
@@ -559,6 +568,7 @@ private:
         if (nextTokenIs(SEMICOLON)) {
             getNextToken();
         }
+        getNextToken();
         return p7stmt;
     }
 
@@ -586,7 +596,7 @@ private:
 
 
 
-    //####解析语句####
+    //##解析语句##
 };
 
-#endif //HKNI_PARSER_H
+#endif

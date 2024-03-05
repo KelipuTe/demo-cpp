@@ -4,20 +4,20 @@
 #include <string>
 #include "../Token.h"
 #include "../ast/Expression.h"
-#include "../exp/IdentifierExpression.h"
-#include "../stmt/BlockStatement.h"
+#include "../expression/IdentifierExpression.h"
+#include "../statement/BlockStatement.h"
 
 namespace ast {
     //函数声明表达式
-    //格式：func 函数名(参数列表){块语句}
+    //格式：function 函数名(参数列表){块语句}
     class FuncExpression : public I9Expression {
-        //####属性
+        //##属性
     public:
         Token TokenHKNI;
         IdentifierExpression *P7NameExp; //函数名
         std::vector<IdentifierExpression*> P7ArgList; //参数列表
         BlockStatement* P7BodyBlockStmt; //函数体
-        //####方法
+        //##方法
     public:
         FuncExpression(Token token) {
             this->TokenHKNI = token;
@@ -30,7 +30,7 @@ namespace ast {
 
         string ToString() override {
             string t4str;
-            t4str.append("func ");
+            t4str.append("function ");
             t4str.append(P7NameExp->ToString());
             t4str.append("(");
 
@@ -55,4 +55,4 @@ namespace ast {
 
     };
 }
-#endif //HKNI_FUNC_EXPRESSION_H
+#endif

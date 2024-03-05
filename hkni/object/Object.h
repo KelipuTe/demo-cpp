@@ -35,4 +35,4 @@ namespace object {
     };
 }
 
-#endif //HKNI_OBJECT_H
+#endif

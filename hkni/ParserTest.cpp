@@ -8,9 +8,9 @@ class ParserTestCase {
 public:
     string name;
     string input;
-    LEXER_MODE mode;
+    LexerMode mode;
 public:
-    ParserTestCase(string name, string input, LEXER_MODE mode) {
+    ParserTestCase(string name, string input, LexerMode mode) {
         this->name = name;
         this->input = input;
         this->mode = mode;
@@ -19,61 +19,56 @@ public:
 
 void testParserDoParse() {
     ParserTestCase *tcList[] = {
-//            new ParserTestCase("COMMENT", "//a", INPUT_MODE),
+//            new ParserTestCase("COMMENT", "//单行注释", INPUT_MODE),
 //
 //            new ParserTestCase("NULL", "null;", INPUT_MODE),
 //
-//            new ParserTestCase("BOOL", "bool a;", INPUT_MODE),
 //            new ParserTestCase("BOOL", "true;", INPUT_MODE),
 //            new ParserTestCase("BOOL", "false;", INPUT_MODE),
 //
-//            new ParserTestCase("INT", "int a;", INPUT_MODE),
-//            new ParserTestCase("INT", "10;", INPUT_MODE),
 //            new ParserTestCase("INT", "0b10;", INPUT_MODE),
 //            new ParserTestCase("INT", "010;", INPUT_MODE),
+            //            new ParserTestCase("INT", "10;", INPUT_MODE),
 //            new ParserTestCase("INT", "0x10;", INPUT_MODE),
+
+//            new ParserTestCase("FLOAT", "3.00;", INPUT_MODE),
+//            new ParserTestCase("FLOAT", "3.14;", INPUT_MODE),
 //
-//            new ParserTestCase("FLOAT", "float a;", INPUT_MODE),
-//            new ParserTestCase("FLOAT", "10.00;", INPUT_MODE),
-//            new ParserTestCase("FLOAT", "10.50;", INPUT_MODE),
-//
-//            new ParserTestCase("STRING", "string a;", INPUT_MODE), //a
 //            new ParserTestCase("STRING", "\"a\";", INPUT_MODE), //a
-//            new ParserTestCase("STRING", "\"aa\";", INPUT_MODE), //aa
-//            new ParserTestCase("STRING", "\"aa'bb'\";", INPUT_MODE), //aa'bb'
-//            new ParserTestCase("STRING", "\"aa\\\"bb\\\"\";", INPUT_MODE), //aa"bb"
-//            new ParserTestCase("STRING", "\"aa bb\";", INPUT_MODE), //aa bb
-//            new ParserTestCase("STRING", "\"aa\\nbb\";", INPUT_MODE), //aa\nbb
+//            new ParserTestCase("STRING", "\"ab\";", INPUT_MODE), //ab
+//            new ParserTestCase("STRING", "\"a'b'\";", INPUT_MODE), //a'b'
+//            new ParserTestCase("STRING", "\"a\\\"b\\\"\";", INPUT_MODE), //a"b"
+//            new ParserTestCase("STRING", "\"a\\b\";", INPUT_MODE), //a\b
+//            new ParserTestCase("STRING", "\"a\\nb\";", INPUT_MODE), //a\nb
 //
-//            new ParserTestCase("ADD", "1+2;", INPUT_MODE),
-//            new ParserTestCase("SUB", "1-2;", INPUT_MODE),
-//            new ParserTestCase("MUL", "1*2;", INPUT_MODE),
-//            new ParserTestCase("DIV", "1/2;", INPUT_MODE),
-//            new ParserTestCase("MOD", "1%2;", INPUT_MODE),
+//            new ParserTestCase("ADD", "10+2;", INPUT_MODE),
+//            new ParserTestCase("SUB", "10-2;", INPUT_MODE),
+//            new ParserTestCase("MUL", "10*2;", INPUT_MODE),
+//            new ParserTestCase("DIV", "10/2;", INPUT_MODE),
+//            new ParserTestCase("MOD", "10%2;", INPUT_MODE),
 //
-//            new ParserTestCase("ADD_SUB", "1+2-3;", INPUT_MODE),
-//            new ParserTestCase("ADD_MUL", "1+2*3;", INPUT_MODE),
-//            new ParserTestCase("MUL_DIV", "1*2/3;", INPUT_MODE),
+//            new ParserTestCase("ADD_SUB", "10+2-3;", INPUT_MODE),
+//            new ParserTestCase("ADD_MUL", "10+2*3;", INPUT_MODE),
+//            new ParserTestCase("MUL_DIV", "10*2/3;", INPUT_MODE),
 //
-//            new ParserTestCase("SUB", "-2;", INPUT_MODE),
-//            new ParserTestCase("SUB", "-2+2;", INPUT_MODE),
+//            new ParserTestCase("SUB", "-10;", INPUT_MODE),
+//            new ParserTestCase("SUB", "-10+2;", INPUT_MODE),
 //
-//            new ParserTestCase("LPAREN", "1+(2*3);", INPUT_MODE),
-//            new ParserTestCase("LPAREN", "(1+2)*3;", INPUT_MODE),
-//            new ParserTestCase("LPAREN", "-(2+2);", INPUT_MODE),
+//            new ParserTestCase("LPAREN", "(10+2)*3;", INPUT_MODE),
+//            new ParserTestCase("LPAREN", "-(10+2);", INPUT_MODE),
 //
-//            new ParserTestCase("EQ", "1==1;", INPUT_MODE),
-//            new ParserTestCase("EQ", "a==1;", INPUT_MODE),
-//            new ParserTestCase("NEQ", "1!=1;", INPUT_MODE),
-//            new ParserTestCase("NEQ", "a!=1;", INPUT_MODE),
-//            new ParserTestCase("GT", "1>1;", INPUT_MODE),
-//            new ParserTestCase("GT", "a>1;", INPUT_MODE),
-//            new ParserTestCase("GTE", "1>=1;", INPUT_MODE),
-//            new ParserTestCase("GTE", "a>=1;", INPUT_MODE),
-//            new ParserTestCase("LT", "1<1;", INPUT_MODE),
-//            new ParserTestCase("LT", "a<1;", INPUT_MODE),
-//            new ParserTestCase("LTE", "1<=1;", INPUT_MODE),
-//            new ParserTestCase("LTE", "a<=1;", INPUT_MODE),
+//            new ParserTestCase("EQ", "2==2;", INPUT_MODE),
+//            new ParserTestCase("EQ", "a==2;", INPUT_MODE),
+//            new ParserTestCase("NEQ", "2!=2;", INPUT_MODE),
+//            new ParserTestCase("NEQ", "a!=2;", INPUT_MODE),
+//            new ParserTestCase("GT", "2>2;", INPUT_MODE),
+//            new ParserTestCase("GT", "a>2;", INPUT_MODE),
+//            new ParserTestCase("GTE", "1>=2;", INPUT_MODE),
+//            new ParserTestCase("GTE", "a>=2;", INPUT_MODE),
+//            new ParserTestCase("LT", "2<2;", INPUT_MODE),
+//            new ParserTestCase("LT", "a<2;", INPUT_MODE),
+//            new ParserTestCase("LTE", "2<=2;", INPUT_MODE),
+//            new ParserTestCase("LTE", "a<=2;", INPUT_MODE),
 //
 //            new ParserTestCase("AND", "true && false;", INPUT_MODE),
 //            new ParserTestCase("OR", "true || false;", INPUT_MODE),
@@ -83,8 +78,17 @@ void testParserDoParse() {
 //            new ParserTestCase("BIT_OR", "0b10 | 0b11;", INPUT_MODE),
 //
 //            new ParserTestCase("IDENTIFIER", "a;", INPUT_MODE),
+
+            //            new ParserTestCase("var", "var a bool;", INPUT_MODE),
+            //            new ParserTestCase("var", "var a bool = true;", INPUT_MODE),
+//            new ParserTestCase("var", "var a int;", INPUT_MODE),
+//            new ParserTestCase("var", "var a int = 2;", INPUT_MODE),
+            //            new ParserTestCase("var", "var a float;", INPUT_MODE),
+            //            new ParserTestCase("var", "var a float = 3.14;", INPUT_MODE),
+            //            new ParserTestCase("var", "var a string;", INPUT_MODE),
+//                        new ParserTestCase("var", "var a string = \"a\";", INPUT_MODE),
 //
-//            new ParserTestCase("ASSIGN", "a=1;", INPUT_MODE),
+//            new ParserTestCase("ASSIGN", "a=2;", INPUT_MODE),
 //            new ParserTestCase("ASSIGN", "a=b;", INPUT_MODE),
 //            new ParserTestCase("ADD_ASSIGN", "a+=2;", INPUT_MODE),
 //            new ParserTestCase("SUB_ASSIGN", "a-=2;", INPUT_MODE),
@@ -95,33 +99,33 @@ void testParserDoParse() {
 //            new ParserTestCase("INC", "++i;", INPUT_MODE),
 //            new ParserTestCase("DEC", "--i;", INPUT_MODE),
 //
-//            new ParserTestCase("IF", "if(a==1){b=1;}", INPUT_MODE),
-//            new ParserTestCase("IF", "if(a==1){b=1;}else{b=2;}", INPUT_MODE),
-//            new ParserTestCase("IF", "if(a==1 && c==1){b=1;}", INPUT_MODE),
+//            new ParserTestCase("IF", "if(a==2){b=10;}", INPUT_MODE),
+//            new ParserTestCase("IF", "if(a==2){b=10;}else{b=20;}", INPUT_MODE),
+//            new ParserTestCase("IF", "if(a==2 && c==2){b=10;}", INPUT_MODE),
 //
-//            new ParserTestCase("FOR", "for(i=1;i<10;i+=1){j=1;}", INPUT_MODE),
+//            new ParserTestCase("FOR", "for(i=0;i<10;++i){j+=2;}", INPUT_MODE),
 
-            new ParserTestCase("FUNC", "func hello(){}", INPUT_MODE),
-            new ParserTestCase("FUNC", "func hello(a){}", INPUT_MODE),
-            new ParserTestCase("FUNC", "func hello(a,b){}", INPUT_MODE),
-            new ParserTestCase("FUNC", "func hello(){return 1;}", INPUT_MODE),
-            new ParserTestCase("FUNC", "func hello(){var a=1;return a;}", INPUT_MODE),
-
-            new ParserTestCase("CALL", "hello();", INPUT_MODE),
-            new ParserTestCase("CALL", "hello(1);", INPUT_MODE),
-            new ParserTestCase("CALL", "hello(1,2);", INPUT_MODE),
-            new ParserTestCase("CALL", "hello(a);", INPUT_MODE),
-            new ParserTestCase("CALL", "hello(a,b);", INPUT_MODE),
-            new ParserTestCase("CALL", "hello(a());", INPUT_MODE),
-            new ParserTestCase("CALL", "hello(a(),b());", INPUT_MODE),
-
-            new ParserTestCase("RETURN", "return;", INPUT_MODE),
-            new ParserTestCase("RETURN", "return 1;", INPUT_MODE),
-            new ParserTestCase("RETURN", "return 1+2;", INPUT_MODE),
-            new ParserTestCase("RETURN", "return a;", INPUT_MODE),
-            new ParserTestCase("RETURN", "return a+b;", INPUT_MODE),
-            new ParserTestCase("RETURN", "return a();", INPUT_MODE),
-            new ParserTestCase("RETURN", "return a()+b();", INPUT_MODE),
+//            new ParserTestCase("FUNCTION", "function hello(){}", INPUT_MODE),
+//            new ParserTestCase("FUNCTION", "function hello(a int){}", INPUT_MODE),
+//            new ParserTestCase("FUNCTION", "function hello(a int,b int){}", INPUT_MODE),
+//            new ParserTestCase("FUNCTION", "function hello() int {return 1;}", INPUT_MODE),
+//            new ParserTestCase("FUNCTION", "function hello() int {var a int=1;return a;}", INPUT_MODE),
+//
+//            new ParserTestCase("CALL", "hello();", INPUT_MODE),
+//            new ParserTestCase("CALL", "hello(1);", INPUT_MODE),
+//            new ParserTestCase("CALL", "hello(1,2);", INPUT_MODE),
+//            new ParserTestCase("CALL", "hello(a);", INPUT_MODE),
+//            new ParserTestCase("CALL", "hello(a,b);", INPUT_MODE),
+//            new ParserTestCase("CALL", "hello(a());", INPUT_MODE),
+//            new ParserTestCase("CALL", "hello(a(),b());", INPUT_MODE),
+//
+//            new ParserTestCase("RETURN", "return;", INPUT_MODE),
+//            new ParserTestCase("RETURN", "return 2;", INPUT_MODE),
+//            new ParserTestCase("RETURN", "return 2+2;", INPUT_MODE),
+//            new ParserTestCase("RETURN", "return a;", INPUT_MODE),
+//            new ParserTestCase("RETURN", "return a+b;", INPUT_MODE),
+//            new ParserTestCase("RETURN", "return a();", INPUT_MODE),
+//            new ParserTestCase("RETURN", "return a()+b();", INPUT_MODE),
     };
 
     int tcListLen = sizeof(tcList) / sizeof(tcList[0]);

@@ -4,20 +4,20 @@
 #include <string>
 #include "../Token.h"
 #include "../ast/Expression.h"
-#include "../stmt/BlockStatement.h"
+#include "../statement/BlockStatement.h"
 
 namespace ast {
     //if表达式
     //格式：if(条件表达式){块语句}; if(条件表达式){块语句}else{块语句};
     class IfExpression : public I9Expression {
-        //####属性
+        //##属性
     public:
         I9Expression *I9ConditionExp; //条件
         BlockStatement *P7ConsequenceStmt; //if块
         BlockStatement *P7AlternativeStmt; //else块
     private:
         Token token;
-        //####方法
+        //##方法
     public:
         IfExpression(Token token) {
             this->token = token;
@@ -50,4 +50,4 @@ namespace ast {
     };
 }
 
-#endif //HKNI_IF_EXPRESSION_H
+#endif

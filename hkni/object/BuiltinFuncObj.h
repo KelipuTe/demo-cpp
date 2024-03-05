@@ -35,4 +35,4 @@ namespace object {
 
 }
 
-#endif //HKNI_BUILTIN_FUNC_OBJ_H
+#endif

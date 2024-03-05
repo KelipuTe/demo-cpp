@@ -9,12 +9,12 @@ namespace ast {
     //后缀表达式
     //格式：表达式 操作符
     class SuffixExpression : public I9Expression {
-        //####属性
+        //##属性
     public:
         Token TokenHKNI;
         I9Expression *I9Exp;
         string Operation;
-        //####方法
+        //##方法
     public:
         SuffixExpression(Token token) {
             this->TokenHKNI = token;
@@ -39,4 +39,4 @@ namespace ast {
     };
 }
 
-#endif //HKNI_SUFFIX_EXPRESSION_H
+#endif

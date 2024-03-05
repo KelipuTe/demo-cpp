@@ -10,12 +10,12 @@ namespace ast {
     //return语句
     //格式：return 表达式;
     class ReturnStatement : public I9Statement {
-        //####属性
+        //##属性
     public:
         I9Expression *I9Exp;
     private:
         Token token; //就是return关键字
-        //####方法
+        //##方法
     public:
         ReturnStatement(Token token) {
             this->token = token;
@@ -40,4 +40,4 @@ namespace ast {
     };
 }
 
-#endif //HKNI_RETURN_STATEMENT_H
+#endif

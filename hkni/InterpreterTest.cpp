@@ -9,9 +9,9 @@ class InterpreterTestCase {
 public:
     string name;
     string input;
-    LEXER_MODE mode;
+    LexerMode mode;
 public:
-    InterpreterTestCase(string name, string input, LEXER_MODE mode) {
+    InterpreterTestCase(string name, string input, LexerMode mode) {
         this->name = name;
         this->input = input;
         this->mode = mode;
@@ -102,7 +102,7 @@ void testInterpreterDoInterpreter() {
 //            new InterpreterTestCase("IF", "int a = 1;int b;if(a==2){b=1;}else{b=2;}b;", INPUT_MODE),
 //            new InterpreterTestCase("IF", "int a = 1;int b;int c = 1;if(a==1 && c==1){b=1;}b;", INPUT_MODE),
 
-//            new InterpreterTestCase("CALL", "func hello(){} hello();", INPUT_MODE),
+//            new InterpreterTestCase("CALL", "function hello(){} hello();", INPUT_MODE),
 
             new InterpreterTestCase("BUILTIN_FUNC", "println(\"aaa\");", INPUT_MODE),
     };

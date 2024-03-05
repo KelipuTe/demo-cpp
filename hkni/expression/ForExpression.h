@@ -5,20 +5,20 @@
 #include <string>
 #include "../Token.h"
 #include "../ast/Expression.h"
-#include "../stmt/BlockStatement.h"
+#include "../statement/BlockStatement.h"
 
 namespace ast {
     //if表达式
     //格式：for(初始化语句;条件表语句;递增递减语句){块语句}
     class ForExpression : public I9Expression {
-        //####属性
+        //##属性
     public:
         Token TokenHKNI;
         I9Statement *I9InitStmt; //
         I9Statement *I9ConditionStmt; //
         I9Statement *I9IncrementStmt; //
         BlockStatement *P7BodyStmt; //循环块
-        //####方法
+        //##方法
     public:
         ForExpression(Token token) {
             this->TokenHKNI = token;
@@ -52,4 +52,4 @@ namespace ast {
     };
 }
 
-#endif //HKNI_FOR_EXPRESSION_H
+#endif

@@ -8,16 +8,16 @@
 namespace ast {
     //布尔表达式
     class BoolExpression : public I9Expression {
-        //####属性
+        //##属性
     public:
         Token token; //就是true或false
-        //####方法
+        //##方法
     public:
         BoolExpression(Token token) {
             this->token = token;
         };
 
-        TOKEN_TYPE GetTokenType(){
+        TokenType GetTokenType(){
             return token.TokenType;
         }
 
@@ -33,4 +33,4 @@ namespace ast {
     };
 }
 
-#endif //HKNI_BOOL_EXPRESSION_H
+#endif

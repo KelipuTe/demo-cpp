@@ -9,11 +9,11 @@
 namespace ast {
     //表达式语句
     class ExpressionStatement : public I9Statement {
-        //####属性
+        //##属性
     public:
         Token TokenHKNI;
         I9Expression *I9Exp;
-        //####方法
+        //##方法
     public:
         ExpressionStatement(Token token) {
             this->TokenHKNI = token;
@@ -36,4 +36,4 @@ namespace ast {
     };
 }
 
-#endif //HKNI_EXPRESSION_STATEMENT_H
+#endif

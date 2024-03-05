@@ -8,10 +8,10 @@
 namespace ast {
     //字符串表达式
     class StringExpression : public I9Expression {
-        //####属性
+        //##属性
     public:
         Token TokenHKNI;
-        //####方法
+        //##方法
     public:
         StringExpression(Token token) {
             this->TokenHKNI = token;
@@ -33,4 +33,4 @@ namespace ast {
     };
 }
 
-#endif //HKNI_STRING_EXPRESSION_H
+#endif

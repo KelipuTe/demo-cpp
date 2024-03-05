@@ -9,9 +9,9 @@ class LexerTestCase {
 public:
     string name;
     string input;
-    LEXER_MODE mode;
+    LexerMode mode;
 public:
-    LexerTestCase(string name, string input, LEXER_MODE mode) {
+    LexerTestCase(string name, string input, LexerMode mode) {
         this->name = name;
         this->input = input;
         this->mode = mode;
@@ -21,7 +21,7 @@ public:
 void testLexerGetNextToken() {
     LexerTestCase *tcList[] = {
             new LexerTestCase("INT", "int a=1;", INPUT_MODE),
-            //            new LexerTestCase("file", "D:\\workspace\\demo-cpp\\hkni\\lexer_test.txt", FILE_MODE),
+//            new LexerTestCase("file", "D:\\workspace\\demo-cpp\\hkni\\lexer_test.txt", FILE_MODE),
     };
 
     int tcListLen = sizeof(tcList) / sizeof(tcList[0]);

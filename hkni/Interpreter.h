@@ -15,12 +15,12 @@
 #include "object/ReturnObject.h"
 #include "object/StringObject.h"
 
-#include "func/BuiltinFunc.h"
+#include "function/BuiltinFunction.h"
 
 using namespace ast;
 using namespace env;
 using namespace object;
-using namespace func;
+using namespace function;
 
 class Interpreter {
     //##属性
@@ -105,7 +105,7 @@ private:
 
     //解释变量声明语句
     Object *interpretVarStatement(VarStatement *p7stmt, Environment *p7env) {
-        string name = p7stmt->P7NameExp->GetTokenLiteral(); //变量名直接可以拿到
+        string name = p7stmt->P7IdentifierExp->GetTokenLiteral(); //变量名直接可以拿到
         Object *p7ValueObj = nullptr;
         if (p7stmt->I9ValueExp != nullptr) {
             p7ValueObj = this->DoInterpret(p7stmt->I9ValueExp, p7env); //解释值表达式
@@ -468,4 +468,4 @@ private:
     }
 };
 
-#endif //HKNI_INTERPRETER_H
+#endif

@@ -6,7 +6,7 @@
 using namespace std;
 
 //词法标记类型，避开一些常见的关键字
-enum TOKEN_TYPE {
+enum TokenType {
     ILLEGAL, //非法
     END, //结束
 
@@ -53,6 +53,7 @@ enum TOKEN_TYPE {
 
     IDENTIFIER, //标识符
 
+    VAR_HKNI, //变量声明（var）
     CONST_HKNI, //常量声明（const）
 
     ASSIGN, //赋值（=）
@@ -82,18 +83,18 @@ enum TOKEN_TYPE {
 
     FOR_HKNI, //for循环语句
 
-    FUNC_HKNI, //函数定义（func）
-    RETURN_HKNI, //return语句
+    FUNCTION_HKNI, //函数定义（function）
+    RETURN_HKNI, //返回语句（return）
 
-    CLASS_HKNI, //类定义（class）
-    NEW_HKNI, //类实例化（new）
+    STRUCT_HKNI, //结构体定义（struct）
+    NEW_HKNI, //结构体实例化（new）
 };
 
 //词法标记
 class Token {
 public:
-    TOKEN_TYPE TokenType; //词法标记类型
+    TokenType TokenType; //词法标记类型
     string Literal; //词法标记原始值
 };
 
-#endif //HKNI_TOKEN_H
+#endif

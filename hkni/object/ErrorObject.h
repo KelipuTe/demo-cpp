@@ -5,11 +5,11 @@
 
 namespace object {
     class ErrorObject : public Object {
-        //####属性
+        //##属性
     public:
         OBJECT_TYPE Type;
         string Value;
-        //####方法
+        //##方法
     public:
         ErrorObject(string value) {
             this->Type = ERROR_OBJ;
@@ -33,4 +33,4 @@ namespace object {
     };
 }
 
-#endif //HKNI_ERROR_OBJECT_H
+#endif

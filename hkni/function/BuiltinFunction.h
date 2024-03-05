@@ -5,12 +5,12 @@
 #include <map>
 
 #include "../object/BuiltinFuncObj.h"
-#include "PrintlnFunc.h"
+#include "PrintlnFunction.h"
 
 using namespace object;
 using namespace std;
 
-namespace func {
+namespace function {
     /**
      * 内置函数
      */
@@ -33,4 +33,4 @@ namespace func {
     };
 }
 
-#endif //HKNI_BUILTIN_FUNC_H
+#endif

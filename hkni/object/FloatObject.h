@@ -5,11 +5,11 @@
 
 namespace object {
     class FloatObject : public Object {
-        //####属性
+        //##属性
     public:
         OBJECT_TYPE Type;
         float Value;
-        //####方法
+        //##方法
     public:
         FloatObject(float value) {
             this->Type = FLOAT_OBJ;
@@ -33,4 +33,4 @@ namespace object {
     };
 }
 
-#endif //HKNI_FLOAT_OBJECT_H
+#endif

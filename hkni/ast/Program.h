@@ -30,4 +30,4 @@ namespace ast {
     };
 }
 
-#endif //HKNI_PROGRAM_H
+#endif

@@ -5,11 +5,11 @@
 
 namespace object {
     class StringObject : public Object {
-        //####属性
+        //##属性
     public:
         OBJECT_TYPE Type;
         string Value;
-        //####方法
+        //##方法
     public:
         StringObject(string value) {
             this->Type = STRING_OBJ;
@@ -33,4 +33,4 @@ namespace object {
     };
 }
 
-#endif //HKNI_STRING_OBJECT_H
+#endif

@@ -1,23 +1,20 @@
-#ifndef HKNI_INT_EXPRESSION_H
-#define HKNI_INT_EXPRESSION_H
+#ifndef HKNI_NULL_EXPRESSION_H
+#define HKNI_NULL_EXPRESSION_H
 
 #include <string>
-
 #include "../Token.h"
 #include "../ast/Expression.h"
 
 namespace ast {
-    //整数表达式
-    class IntExpression : public I9Expression {
-        //####属性
+    //null表达式
+    class NullExpression : public I9Expression {
+        //##属性
     public:
         Token TokenHKNI;
-        int Value;
-        //####方法
+        //##方法
     public:
-        IntExpression(Token token) {
+        NullExpression(Token token) {
             this->TokenHKNI = token;
-            this->Value = stoi(token.Literal);
         };
 
         string GetTokenLiteral() override {
@@ -29,11 +26,7 @@ namespace ast {
         }
 
         void ExpressionNode() override {}
-
-        int GetValue() {
-            return this->Value;
-        }
     };
 }
 
-#endif //HKNI_INT_EXPRESSION_H
+#endif
