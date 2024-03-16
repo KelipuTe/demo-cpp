@@ -5,7 +5,7 @@
 #include <string>
 #include "../Token.h"
 #include "../ast/Expression.h"
-
+using namespace hkni;
 namespace ast {
     //索引表达式
     class IndexExp : public I9Expression {

@@ -11,9 +11,13 @@ namespace object {
         bool Value;
         //##方法
     public:
-        BoolObject(int value) {
+        BoolObject(bool b) {
             this->Type = BOOL_OBJ;
-            this->Value = value;
+            if (b) {
+                this->Value = true;
+            } else {
+                this->Value = false;
+            }
         }
 
         OBJECT_TYPE GetType() override {

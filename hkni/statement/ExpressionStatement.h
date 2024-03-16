@@ -6,6 +6,8 @@
 #include "../ast/Expression.h"
 #include "../ast/Statement.h"
 
+using namespace hkni;
+
 namespace ast {
     //表达式语句
     class ExpressionStatement : public I9Statement {
@@ -15,8 +17,8 @@ namespace ast {
         I9Expression *I9Exp;
         //##方法
     public:
-        ExpressionStatement(Token token) {
-            this->TokenHKNI = token;
+        ExpressionStatement(Token t) {
+            this->TokenHKNI = t;
         };
 
         string GetTokenLiteral() override {
@@ -24,12 +26,12 @@ namespace ast {
         }
 
         string ToString() override {
-            string t4str;
+            string str;
             if (this->I9Exp != nullptr) {
-                t4str.append(this->I9Exp->ToString());
-                t4str.append(";");
+                str.append(this->I9Exp->ToString());
+                str.append(";\n");
             }
-            return t4str;
+            return str;
         }
 
         void StatementNode() override {}

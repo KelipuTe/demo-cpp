@@ -24,11 +24,11 @@ namespace ast {
         }
 
         string ToString() override {
-            string t4str;
+            string str;
             for (auto &item: BodyStmtList) {
-                t4str += item->ToString();
+                str += item->ToString();
             }
-            return t4str;
+            return str;
         }
 
         void StatementNode() override {}

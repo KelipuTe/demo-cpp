@@ -40,7 +40,7 @@ namespace ast {
                 str.append(" = ");
                 str.append(I9ValueExp->ToString());
             }
-            str.append(";");
+            str.append(";\n");
             return str;
         }
 

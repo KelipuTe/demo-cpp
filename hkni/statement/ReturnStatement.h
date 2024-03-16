@@ -26,14 +26,14 @@ namespace ast {
         }
 
         string ToString() override {
-            string t4str;
-            t4str.append("return");
+            string str;
+            str.append("return");
             if (this->I9Exp != nullptr) {
-                t4str.append(" ");
-                t4str.append(this->I9Exp->ToString());
+                str.append(" ");
+                str.append(this->I9Exp->ToString());
             }
-            t4str.append(";");
-            return t4str;
+            str.append(";\n");
+            return str;
         }
 
         void StatementNode() override {}

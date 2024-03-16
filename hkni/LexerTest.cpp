@@ -5,6 +5,8 @@
 
 using namespace std;
 
+using namespace hkni;
+
 class LexerTestCase {
 public:
     string name;
@@ -18,27 +20,29 @@ public:
     }
 };
 
+
 void testLexerGetNextToken() {
     LexerTestCase *tcList[] = {
-            new LexerTestCase("INT", "int a=1;", INPUT_MODE),
-//            new LexerTestCase("file", "D:\\workspace\\demo-cpp\\hkni\\lexer_test.txt", FILE_MODE),
+            //new LexerTestCase("INPUT_MODE", "var a int = 2;", INPUT_MODE),
+            new LexerTestCase("INPUT_MODE", "if(a==2){b=10;}", INPUT_MODE),
+            //new LexerTestCase("FILE_MODE", "D:\\workspace\\demo-cpp\\hkni\\lexer_test.txt", FILE_MODE),
     };
 
     int tcListLen = sizeof(tcList) / sizeof(tcList[0]);
     for (int i = 0; i < tcListLen; i++) {
+        cout << "test case[" << i << "] " << tcList[i]->name << ":" << endl;
+
         Lexer *p7Lexer = new Lexer(tcList[i]->input, tcList[i]->mode);
 
         while (true) {
-            Token c5p7t = p7Lexer->GetNextToken();
-            cout << c5p7t.TokenType << ',' << c5p7t.Literal << endl;
-            if (c5p7t.TokenType == END) {
+            Token token = p7Lexer->GetNextToken();
+            cout << token.TokenType << ',' << token.Literal << endl;
+            if (token.TokenType == END) {
                 break;
             }
         }
 
         delete p7Lexer;
-
-        cout << "test case:" << tcList[i]->name << " done.\n" << endl;
     }
 };
 

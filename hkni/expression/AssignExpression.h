@@ -4,6 +4,7 @@
 #include <string>
 #include "../Token.h"
 #include "../ast/Expression.h"
+#include "IdentifierExpression.h"
 
 namespace ast {
     //赋值表达式

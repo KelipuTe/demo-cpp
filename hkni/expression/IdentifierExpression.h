@@ -5,6 +5,8 @@
 #include "../Token.h"
 #include "../ast/Expression.h"
 
+using namespace hkni;
+
 namespace ast {
     //标识符表达式
     class IdentifierExpression : public I9Expression {

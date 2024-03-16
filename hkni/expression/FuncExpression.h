@@ -15,13 +15,15 @@ namespace ast {
     public:
         Token TokenHKNI;
         IdentifierExpression *P7NameExp; //函数名
-        std::vector<IdentifierExpression*> P7ArgList; //参数列表
-        BlockStatement* P7BodyBlockStmt; //函数体
+        std::vector<TokenType> P7ArgTypeList; //参数类型列表
+        std::vector<IdentifierExpression *> P7ArgList; //参数列表
+        TokenType ReturnType; //返回类型
+        BlockStatement *P7BodyBlockStmt; //函数体
         //##方法
     public:
         FuncExpression(Token token) {
             this->TokenHKNI = token;
-            this->P7NameExp= nullptr;
+            this->P7NameExp = nullptr;
         };
 
         string GetTokenLiteral() override {
@@ -29,26 +31,27 @@ namespace ast {
         }
 
         string ToString() override {
-            string t4str;
-            t4str.append("function ");
-            t4str.append(P7NameExp->ToString());
-            t4str.append("(");
-
-            int argNum = (int)P7ArgList.size();
-            if(argNum>0){
-                for (int index=0;index<argNum;index++) {
-                    t4str.append(P7ArgList[index]->ToString());
-                    if(index<argNum-1){
-                        t4str.append(",");
+            string str;
+            str.append("function ");
+            str.append(P7NameExp->ToString());
+            str.append("(");
+            int argNum = (int) P7ArgList.size();
+            if (argNum > 0) {
+                for (int index = 0; index < argNum; index++) {
+                    str.append(P7ArgList[index]->ToString());
+                    str.append(" ");
+                    str.append(TokenTypeToString(P7ArgTypeList[index]));
+                    if (index < argNum - 1) {
+                        str.append(",");
                     }
                 }
             }
-
-            t4str.append("){\n");
-            t4str.append(P7BodyBlockStmt->ToString());
-            t4str.append("\n}\n");
-
-            return t4str;
+            str.append(") ");
+            str.append(TokenTypeToString(ReturnType));
+            str.append(" {\n");
+            str.append(P7BodyBlockStmt->ToString());
+            str.append("}\n");
+            return str;
         }
 
         void ExpressionNode() override {}
