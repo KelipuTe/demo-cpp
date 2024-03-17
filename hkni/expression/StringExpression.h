@@ -8,13 +8,11 @@
 namespace ast {
     //字符串表达式
     class StringExpression : public I9Expression {
-        //##属性
     public:
         Token TokenHKNI;
-        //##方法
     public:
-        StringExpression(Token token) {
-            this->TokenHKNI = token;
+        StringExpression(Token t) {
+            this->TokenHKNI = t;
         };
 
         string GetTokenLiteral() override {
@@ -22,11 +20,11 @@ namespace ast {
         }
 
         string ToString() override {
-            string t4str;
-            t4str.append("\"");
-            t4str.append(this->TokenHKNI.Literal);
-            t4str.append("\"");
-            return t4str;
+            string str;
+            str.append("\"");
+            str.append(this->TokenHKNI.Literal);
+            str.append("\"");
+            return str;
         }
 
         void ExpressionNode() override {}

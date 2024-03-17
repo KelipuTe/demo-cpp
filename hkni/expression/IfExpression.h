@@ -37,11 +37,11 @@ namespace ast {
             t4str.append(") {\n");
             t4str.append(P7ConsequenceStmt->ToString());
             if (P7AlternativeStmt == nullptr) {
-                t4str.append("\n}\n");
+                t4str.append("}");
             } else {
-                t4str.append("\n} else {\n");
+                t4str.append("} else {\n");
                 t4str.append(P7AlternativeStmt->ToString());
-                t4str.append("\n}\n");
+                t4str.append("}");
             }
             return t4str;
         }

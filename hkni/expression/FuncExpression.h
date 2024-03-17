@@ -21,9 +21,10 @@ namespace ast {
         BlockStatement *P7BodyBlockStmt; //函数体
         //##方法
     public:
-        FuncExpression(Token token) {
-            this->TokenHKNI = token;
+        FuncExpression(Token t) {
+            this->TokenHKNI = t;
             this->P7NameExp = nullptr;
+            this->ReturnType = ILLEGAL;
         };
 
         string GetTokenLiteral() override {
@@ -47,10 +48,12 @@ namespace ast {
                 }
             }
             str.append(") ");
-            str.append(TokenTypeToString(ReturnType));
-            str.append(" {\n");
+            if (ReturnType != ILLEGAL) {
+                str.append(TokenTypeToString(ReturnType) + " ");
+            }
+            str.append("{\n");
             str.append(P7BodyBlockStmt->ToString());
-            str.append("}\n");
+            str.append("}");
             return str;
         }
 

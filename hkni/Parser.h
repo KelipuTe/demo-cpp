@@ -45,6 +45,8 @@ namespace hkni {
         Token nextToken; //下一个token
 
         std::map<TokenType, PRECEDENCE> precedenceMap; //词法标记的优先级
+        //这里不需要用map的find函数判断key是否存在。如果在map里没找到，会返回默认值0，0就是LOWEST_P，逻辑上不会出问题。
+
         std::map<TokenType, f8PrefixParsing> f8PrefixParsingMap; //前缀词法标记的解析函数
         std::map<TokenType, f8InfixParsing> f8InfixParsingMap; //中缀词法标记的解析函数
 
@@ -65,13 +67,10 @@ namespace hkni {
         Program *DoParse() {
             auto *p7program = new Program();
 
+            int i = 0;
             while (nowToken.TokenType != END) {
                 if (nowToken.TokenType == ILLEGAL) {
-                    string modeStr = this->p7lexer->GetModeStr();
-                    string rowStr = std::to_string(this->p7lexer->GetNowRow());
-                    string columnStr = std::to_string(this->p7lexer->GetNowColumn());
-                    string t4str = modeStr + rowStr + "行；" + columnStr + "列；DoParse；语法错误：" + nowToken.Literal;
-                    errorList.push_back(t4str);
+                    reportError("语法错误：" + nowToken.Literal + "。");
                     return nullptr;
                 } else if (nowToken.TokenType == COMMENT) {
                     getNextToken();
@@ -81,6 +80,11 @@ namespace hkni {
                     if (i9stmt != nullptr) {
                         p7program->I9StatementList.push_back(i9stmt);
                     }
+                }
+                ++i;
+                if (i > 10000) {
+                    reportError("程序太长或者程序异常导致死循环。");
+                    break;
                 }
             }
 
@@ -98,8 +102,7 @@ namespace hkni {
         }
 
     private:
-        //初始化词法标记优先级。这里不需要用find函数判断key是否存在。
-        //如果在map里没找到，会返回默认值0，0就是LOWEST_P，逻辑上不会出问题。
+        //初始化词法标记优先级。
         void initPrecedence() {
             precedenceMap[NOT] = NOT_SUB_DEC_INC_P; // !
             precedenceMap[NEQ] = NEQ_EQ_P; // !=
@@ -137,11 +140,15 @@ namespace hkni {
             f8PrefixParsingMap[SUB] = std::bind(&Parser::parsePrefixExpression, this); //负号
             f8PrefixParsingMap[DEC] = std::bind(&Parser::parsePrefixExpression, this); //自减
             f8PrefixParsingMap[INC] = std::bind(&Parser::parsePrefixExpression, this); //自增
-            f8PrefixParsingMap[LPAREN] = std::bind(&Parser::parseLParenExpression, this); //左括号，算数运算
+            f8PrefixParsingMap[LPAREN] = std::bind(&Parser::parseLParenExpression, this); //左括号（算术运算）
             //关键字
             f8PrefixParsingMap[NULL_HKNI] = std::bind(&Parser::parseNullExpression, this); //null值
+            f8PrefixParsingMap[BOOL_VALUE] = std::bind(&Parser::parseBoolExpression, this); //布尔值
             f8PrefixParsingMap[INT_VALUE] = std::bind(&Parser::parseIntExpression, this); //整数值
             f8PrefixParsingMap[FLOAT_VALUE] = std::bind(&Parser::parseFloatExpression, this); //浮点数值
+            f8PrefixParsingMap[IF_HKNI] = std::bind(&Parser::parseIfExpression, this); //if语句
+            f8PrefixParsingMap[FOR_HKNI] = std::bind(&Parser::parseForExpression, this); //for循环语句
+            f8PrefixParsingMap[FUNCTION_HKNI] = std::bind(&Parser::parseFuncExpression, this); //函数定义
             //其他
             f8PrefixParsingMap[IDENTIFIER] = std::bind(&Parser::parseIdentifierExpression, this); //标识符
 
@@ -149,22 +156,23 @@ namespace hkni {
             //运算符
             f8InfixParsingMap[NEQ] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1); //不等于
             f8InfixParsingMap[MOD] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1); //取模
-            f8InfixParsingMap[MOD_ASSIGN] = std::bind(&Parser::parseAssignExpression, this,
-                                                      std::placeholders::_1); //取模赋值
+            f8InfixParsingMap[MOD_ASSIGN] =
+                    std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1); //取模赋值
             f8InfixParsingMap[BIT_AND] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1); //位与
             f8InfixParsingMap[AND] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1); //逻辑与
             f8InfixParsingMap[MUL] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1); //乘法
-            f8InfixParsingMap[MUL_ASSIGN] = std::bind(&Parser::parseAssignExpression, this,
-                                                      std::placeholders::_1); //乘赋值
+            f8InfixParsingMap[MUL_ASSIGN] =
+                    std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1); //乘赋值
             f8InfixParsingMap[SUB] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1); //减法
-            f8InfixParsingMap[SUB_ASSIGN] = std::bind(&Parser::parseAssignExpression, this,
-                                                      std::placeholders::_1); //减赋值
+            f8InfixParsingMap[SUB_ASSIGN] =
+                    std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1); //减赋值
             f8InfixParsingMap[ASSIGN] = std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1); //赋值
             f8InfixParsingMap[EQ] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1); //等于
             f8InfixParsingMap[ADD] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1); //加法
-            f8InfixParsingMap[ADD_ASSIGN] = std::bind(&Parser::parseAssignExpression, this,
-                                                      std::placeholders::_1); //加赋值
-            f8InfixParsingMap[LPAREN] = std::bind(&Parser::parseCallExpression, this, std::placeholders::_1); //左括号，函数调用
+            f8InfixParsingMap[ADD_ASSIGN] =
+                    std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1); //加赋值
+            f8InfixParsingMap[LPAREN] =
+                    std::bind(&Parser::parseCallExpression, this, std::placeholders::_1); //左括号（函数调用）
             f8InfixParsingMap[BIT_OR] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1); //位或
             f8InfixParsingMap[OR] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1); //逻辑或
             f8InfixParsingMap[LT] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1); //小于
@@ -172,13 +180,8 @@ namespace hkni {
             f8InfixParsingMap[GT] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1); //大于
             f8InfixParsingMap[GTE] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1); //大于等于
             f8InfixParsingMap[DIV] = std::bind(&Parser::parseInfixExpression, this, std::placeholders::_1); //除法
-            f8InfixParsingMap[DIV_ASSIGN] = std::bind(&Parser::parseAssignExpression, this,
-                                                      std::placeholders::_1); //除赋值
-            //关键字
-            f8PrefixParsingMap[BOOL_VALUE] = std::bind(&Parser::parseBoolExpression, this); //布尔值
-            f8PrefixParsingMap[IF_HKNI] = std::bind(&Parser::parseIfExpression, this); //if语句
-            f8PrefixParsingMap[FOR_HKNI] = std::bind(&Parser::parseForExpression, this); //for循环语句
-            f8PrefixParsingMap[FUNCTION_HKNI] = std::bind(&Parser::parseFuncExpression, this); //函数定义
+            f8InfixParsingMap[DIV_ASSIGN] =
+                    std::bind(&Parser::parseAssignExpression, this, std::placeholders::_1); //除赋值
         }
 
         void getNextToken() {
@@ -194,21 +197,13 @@ namespace hkni {
             return nextToken.TokenType == type;
         };
 
-        void reportError(string msg) {
-            string modeStr = this->p7lexer->GetModeStr();
-            string rowStr = std::to_string(this->p7lexer->GetNowRow());
-            string columnStr = std::to_string(this->p7lexer->GetNowColumn());
-            string str = modeStr + rowStr + "行；" + columnStr + "列。语法错误：" + msg + "。";
-            errorList.push_back(str);
-        }
-
         //期望当前token是指定type类型的。
-        //如果是就返回true并；如果不是就返回false并报错；
+        //如果是就返回true；如果不是就返回false并报错；
         bool expectNowTokenIs(TokenType type) {
             if (nowTokenIs(type)) {
                 return true;
             } else {
-                reportError("expectNowTokenIs error,given " + nextToken.Literal);
+                reportError("expectNowTokenIs error,TokenHKNI=" + nextToken.Literal + "。");
                 return false;
             }
         }
@@ -220,9 +215,17 @@ namespace hkni {
                 getNextToken();
                 return true;
             } else {
-                reportError("expectNextTokenIs error,given " + nextToken.Literal);
+                reportError("expectNextTokenIs error,TokenHKNI=" + nextToken.Literal + "。");
                 return false;
             }
+        }
+
+        void reportError(string msg) {
+            string modeStr = this->p7lexer->GetModeStr();
+            string rowStr = std::to_string(this->p7lexer->GetNowRow());
+            string columnStr = std::to_string(this->p7lexer->GetNowColumn());
+            string str = modeStr + rowStr + "行；" + columnStr + "列。" + msg;
+            errorList.push_back(str);
         }
 
         int getNowTokenPrecedence() {
@@ -237,114 +240,135 @@ namespace hkni {
 
         //运算符的解析方法可能会递归调用parseExpression
         I9Expression *parseExpression(int precedence) {
-            auto f8PrefixParsing = f8PrefixParsingMap[nowToken.TokenType];
-            if (f8PrefixParsing == nullptr) {
-                string modeStr = this->p7lexer->GetModeStr();
-                string rowStr = std::to_string(this->p7lexer->GetNowRow());
-                string columnStr = std::to_string(this->p7lexer->GetNowColumn());
-                string t4str = modeStr + rowStr + "行；" + columnStr + "列；f8PrefixParsing；语法错误：" + nowToken.Literal;
-                errorList.push_back(t4str);
+            //前缀解析方法
+            auto f8Prefix = f8PrefixParsingMap[nowToken.TokenType];
+            if (f8Prefix == nullptr) {
+                reportError("未找到 " + nowToken.Literal + " 的前缀解析方法。");
                 return nullptr;
             }
-            auto leftExp = f8PrefixParsing();
+            auto leftExp = f8Prefix(); //调用前缀解析方法
 
-            while (!nextTokenIs(SEMICOLON) && precedence < getNextTokenPrecedence()) {
-                auto f8InfixParsing = f8InfixParsingMap[nextToken.TokenType];
-                if (f8InfixParsing == nullptr) {
-                    string modeStr = this->p7lexer->GetModeStr();
-                    string rowStr = std::to_string(this->p7lexer->GetNowRow());
-                    string columnStr = std::to_string(this->p7lexer->GetNowColumn());
-                    string t4str =modeStr + rowStr + "行；" + columnStr + "列；f8InfixParsing；语法错误：" + nowToken.Literal;
-                    errorList.push_back(t4str);
-                    return leftExp;
+            //如果当前token不是分号，而且当前的符号优先级比之前的符号优先级高，则优先按中缀解析
+            while (!nowTokenIs(SEMICOLON) && precedence < getNowTokenPrecedence()) {
+                //中缀解析方法
+                auto f8Infix = f8InfixParsingMap[nowToken.TokenType];
+                if (f8Infix == nullptr) {
+                    reportError("未找到 " + nowToken.Literal + " 的中缀解析方法。");
+                    return nullptr;
                 }
-                getNextToken();
-                leftExp = f8InfixParsing(leftExp);
+                leftExp = f8Infix(leftExp);//调用中缀解析方法
             }
 
             return leftExp;
         }
 
-        //解析标识符
-        IdentifierExpression *parseIdentifierExpression() {
-            return new IdentifierExpression(nowToken);
-        }
-
-        NullExpression *parseNullExpression() {
-            return new NullExpression(nowToken);
-        };
-
-        IntExpression *parseIntExpression() {
-            return new IntExpression(nowToken);
-        };
-
-        FloatExpression *parseFloatExpression() {
-            return new FloatExpression(nowToken);
-        };
-
-        StringExpression *parseStringExpression() {
-            return new StringExpression(nowToken);
-        };
-
-        I9Expression *parseLParenExpression() {
-            getNextToken(); //跳过'('标记
-            auto *p7exp = parseExpression(LOWEST_P);
-            if (!expectNextTokenIs(RPAREN)) {
-                return nullptr;
-            }
+        //##前缀
+        //前缀表达式，通用方法
+        PrefixExpression *parsePrefixExpression() {
+            auto *p7exp = new PrefixExpression(nowToken);
+            getNextToken(); //跳过前缀符号
+            //这几个前缀符号的优先级基本是括号下面最高的优先级了
+            p7exp->I9RightExp = parseExpression(NOT_SUB_DEC_INC_P);
             return p7exp;
         }
 
-        IfExpression *parseIfExpression() {
-            IfExpression *p7exp = new IfExpression(nowToken);
+        //字符串值
+        StringExpression *parseStringExpression() {
+            auto *e = new StringExpression(nowToken);
+            getNextToken();
+            return e;
+        };
 
-            //if(条件表达式)
+        //左括号（算术运算）
+        I9Expression *parseLParenExpression() {
+            //now='(',next=表达式
+            getNextToken(); //跳过'('
+            auto *p7exp = parseExpression(LOWEST_P);
+            //now=')',next=后面的表达式
+            if (!expectNowTokenIs(RPAREN)) {
+                return nullptr;
+            }
+            getNextToken(); //跳过')'
+            return p7exp;
+        }
+
+        //null值
+        NullExpression *parseNullExpression() {
+            auto *e = new NullExpression(nowToken);
+            getNextToken();
+            return e;
+        };
+
+        //布尔值
+        BoolExpression *parseBoolExpression() {
+            auto *e = new BoolExpression(nowToken);
+            getNextToken();
+            return e;
+        };
+
+        //整数值
+        IntExpression *parseIntExpression() {
+            auto *e = new IntExpression(nowToken);
+            getNextToken();
+            return e;
+        };
+
+        //浮点数值
+        FloatExpression *parseFloatExpression() {
+            auto *e = new FloatExpression(nowToken);
+            getNextToken();
+            return e;
+        };
+
+        //if语句
+        IfExpression *parseIfExpression() {
+            //now=if,next='('
+            auto *p7exp = new IfExpression(nowToken);
             if (!expectNextTokenIs(LPAREN)) {
                 return nullptr;
             }
-            getNextToken(); //跳过'('标记
+            getNextToken(); //跳过'('
+            //now='(',next=条件表达式
             p7exp->I9ConditionExp = parseExpression(LOWEST_P);
-            if (!expectNextTokenIs(RPAREN)) {
+            //now=')',next='{'
+            if (!expectNowTokenIs(RPAREN)) {
                 return nullptr;
             }
-
-            //{块语句}
             if (!expectNextTokenIs(LBRACE)) {
                 return nullptr;
             }
+            //now='{',next=块语句
             p7exp->P7ConsequenceStmt = parseBlockStatement();
-
-            //else
-            if (nextTokenIs(ELSE_HKNI)) {
-                getNextToken(); //跳过"else"标记
-                //{块语句}
-                if (!expectNextTokenIs(LBRACE)) {
+            //now=else,next='{'或者没有
+            if (nowTokenIs(ELSE_HKNI)) {
+                getNextToken(); //跳过else
+                //now='{',next=块语句
+                if (!expectNowTokenIs(LBRACE)) {
                     return nullptr;
                 }
                 p7exp->P7AlternativeStmt = parseBlockStatement();
             } else {
                 p7exp->P7AlternativeStmt = nullptr;
             }
-
             return p7exp;
         }
 
+        //for循环语句
         ForExpression *parseForExpression() {
-            ForExpression *p7exp = new ForExpression(nowToken);
-
+            auto *p7exp = new ForExpression(nowToken);
             if (!expectNextTokenIs(LPAREN)) {
                 return nullptr;
             }
             getNextToken();
             p7exp->I9InitStmt = parseStatement();
             if (!nowTokenIs(SEMICOLON)) {
-                reportError("parseForExpression error,given " + nextToken.Literal);
+                reportError("parseForExpression error,TokenHKNI=" + nextToken.Literal + "。");
                 return nullptr;
             }
             getNextToken();
             p7exp->I9ConditionStmt = parseStatement();
             if (!nowTokenIs(SEMICOLON)) {
-                reportError("parseForExpression error,given " + nextToken.Literal);
+                reportError("parseForExpression error,TokenHKNI=" + nextToken.Literal + "。");
                 return nullptr;
             }
             getNextToken();
@@ -352,37 +376,32 @@ namespace hkni {
             if (!expectNextTokenIs(RPAREN)) {
                 return nullptr;
             }
-
             if (!expectNextTokenIs(LBRACE)) {
                 return nullptr;
             }
-
             return p7exp;
         }
 
+        //函数定义
         FuncExpression *parseFuncExpression() {
-            FuncExpression *p7exp = new FuncExpression(nowToken);
-
             //now=关键字,next=函数名
+            auto *p7exp = new FuncExpression(nowToken);
             if (nextTokenIs(IDENTIFIER)) {
                 getNextToken();
                 p7exp->P7NameExp = new IdentifierExpression(nowToken); //处理函数名
             }
-
             //now=函数名,next='('
             if (!expectNextTokenIs(LPAREN)) {
                 return nullptr;
             }
             this->getNextToken(); //跳过'('
             parseFuncArgsList(p7exp); //处理参数列表
+            //now=')',next=返回值类型或者'{'
             if (!expectNowTokenIs(RPAREN)) {
                 return nullptr;
             }
-            //now=')',next=返回值类型或者'{'
-            if (nextTokenIs(BOOL_TYPE) ||
-                nextTokenIs(INT_TYPE) ||
-                nextTokenIs(FLOAT_TYPE) ||
-                nextTokenIs(STRING_TYPE)) {
+            if (nextTokenIs(BOOL_TYPE) || nextTokenIs(INT_TYPE) ||
+                nextTokenIs(FLOAT_TYPE) || nextTokenIs(STRING_TYPE)) {
                 getNextToken();
                 p7exp->ReturnType = nowToken.TokenType; //处理返回值类型
             }
@@ -394,12 +413,12 @@ namespace hkni {
             return p7exp;
         }
 
+        //函数定义的参数列表
         void parseFuncArgsList(FuncExpression *p7exp) {
             //无参数
             if (nowTokenIs(RPAREN)) {
                 return;
             }
-
             //有参数
             std::vector<IdentifierExpression *> argList;
             std::vector<TokenType> argTypeList;
@@ -424,36 +443,28 @@ namespace hkni {
             p7exp->P7ArgList = argList;
         }
 
-        CallExpression *parseCallExpression(I9Expression *funcEXP) {
-            CallExpression *p7exp = new CallExpression(nowToken);
-            p7exp->I9Exp = funcEXP;
-            parseCallArgsList(p7exp);
+        //解析标识符
+        IdentifierExpression *parseIdentifierExpression() {
+            auto *e = new IdentifierExpression(nowToken);
+            getNextToken();
+            return e;
+        }
 
+        //##前缀##
+
+        //##中缀
+
+        //中缀表达式，通用方法
+        InfixExpression *parseInfixExpression(I9Expression *i9exp) {
+            auto *p7exp = new InfixExpression(nowToken);
+            p7exp->I9LeftExp = i9exp;
+            int p = this->getNowTokenPrecedence(); //获取中缀标记的优先级
+            getNextToken(); //跳过中缀符号
+            p7exp->I9RightExp = parseExpression(p); //这里传的是中缀符号的优先级
             return p7exp;
         }
 
-        void parseCallArgsList(CallExpression *p7exp) {
-            //无参数
-            if (nextTokenIs(RPAREN)) {
-                this->getNextToken();
-                return;
-            }
-
-            //有参数
-            std::vector<I9Expression *> argList;
-            this->getNextToken();
-            argList.push_back(parseExpression(LOWEST_P));
-            while (nextTokenIs(COMMA)) {
-                this->getNextToken(); //跳到','
-                this->getNextToken(); //跳过','
-                argList.push_back(parseExpression(LOWEST_P));
-            }
-
-            expectNextTokenIs(RPAREN);
-
-            p7exp->ArgExpList = argList;
-        }
-
+        //赋值
         AssignExpression *parseAssignExpression(I9Expression *i9exp) {
             auto *p7exp = new AssignExpression(nowToken);
             p7exp->I9NameExp = dynamic_cast<IdentifierExpression *>(i9exp);
@@ -462,26 +473,39 @@ namespace hkni {
             return p7exp;
         }
 
-        PrefixExpression *parsePrefixExpression() {
-            auto *p7exp = new PrefixExpression(nowToken);
-            getNextToken(); //跳过前缀标记
-            //这几个前缀符号的优先级基本是括号下面最高的优先级了
-            p7exp->I9RightExp = parseExpression(NOT_SUB_DEC_INC_P);
+        //左括号（函数调用）
+        CallExpression *parseCallExpression(I9Expression *funcEXP) {
+            //now='(',next=参数列表或者')'
+            auto *p7exp = new CallExpression(nowToken);
+            p7exp->I9Exp = funcEXP; //处理函数名
+            this->getNextToken(); //跳过'('
+            parseCallArgsList(p7exp); //处理参数列表
+            //now=')',next=
+            if (!expectNowTokenIs(RPAREN)) {
+                return nullptr;
+            }
+            this->getNextToken(); //跳过')'
             return p7exp;
         }
 
-        InfixExpression *parseInfixExpression(I9Expression *i9exp) {
-            auto *p7exp = new InfixExpression(nowToken);
-            p7exp->I9LeftExp = i9exp;
-            int precedence = this->getNowTokenPrecedence(); //获取中缀标记的优先级
-            getNextToken(); //跳过中缀标记
-            p7exp->I9RightExp = parseExpression(precedence); //这里传的是中缀标记的优先级
-            return p7exp;
+        //函数调用的参数列表
+        void parseCallArgsList(CallExpression *p7exp) {
+            //无参数
+            if (nowTokenIs(RPAREN)) {
+                return;
+            }
+            //有参数
+            std::vector<I9Expression *> argList;
+
+            argList.push_back(parseExpression(LOWEST_P));
+            while (nowTokenIs(COMMA)) {
+                this->getNextToken(); //跳到','
+                argList.push_back(parseExpression(LOWEST_P));
+            }
+            p7exp->ArgExpList = argList;
         }
 
-        BoolExpression *parseBoolExpression() {
-            return new BoolExpression(nowToken);
-        };
+        //##中缀##
 
         //##解析表达式##
 
@@ -500,79 +524,89 @@ namespace hkni {
         }
 
         VarStatement *parseVarStatement() {
+            //now=var,next=标识符
             auto *p7stmt = new VarStatement();
-
             if (!expectNextTokenIs(IDENTIFIER)) {
                 return nullptr;
             }
+            //now=标识符,next=变量类型
             p7stmt->P7IdentifierExp = new IdentifierExpression(nowToken);
-
             if (!this->nextTokenIs(BOOL_TYPE) &&
                 !this->nextTokenIs(INT_TYPE) &&
                 !this->nextTokenIs(FLOAT_TYPE) &&
                 !this->nextTokenIs(STRING_TYPE)) {
-                reportError("parseVarStatement error,given " + nextToken.Literal);
+                reportError("变量声明语句解析错误，TokenHKNI=" + nextToken.Literal + "。");
                 return nullptr;
             }
             this->getNextToken();
-            p7stmt->SetToken(nowToken);
-
-            if (this->nextTokenIs(SEMICOLON)) {
-                this->getNextToken();
+            //now=变量类型,next=';'或者'='
+            p7stmt->TokenHKNI = nowToken;
+            p7stmt->ValueType = nowToken.TokenType;
+            this->getNextToken();
+            //now=';'或者'=',next=
+            if (nowTokenIs(SEMICOLON)) {
+                this->getNextToken(); //跳过';'
                 return p7stmt; //var 标识符 类型;
             }
-
-            if (!expectNextTokenIs(ASSIGN)) {
+            //now='=',next=变量值
+            if (!expectNowTokenIs(ASSIGN)) {
                 return nullptr;
             }
-            this->getNextToken();
+            this->getNextToken(); //跳过'='
+            //now=变量值,next=';'
             p7stmt->I9ValueExp = parseExpression(LOWEST_P);
-            if (this->nextTokenIs(SEMICOLON)) {
-                this->getNextToken();
+            if (!expectNowTokenIs(SEMICOLON)) {
+                return nullptr;
             }
-            getNextToken();
+            this->getNextToken(); //跳过';'
             return p7stmt; //var 标识符 类型 = 值;
         }
 
         ReturnStatement *parseReturnStatement() {
+            //now=return,next=';'或者表达式
             auto *p7stmt = new ReturnStatement(nowToken);
-            this->getNextToken();
-            p7stmt->I9Exp = parseExpression(LOWEST_P);
-            if (this->nextTokenIs(SEMICOLON)) {
-                this->getNextToken();
+            this->getNextToken(); //跳过return
+            if (nowTokenIs(SEMICOLON)) {
+                getNextToken(); //跳过';'
+                return p7stmt;
             }
-            getNextToken();
+            p7stmt->I9Exp = parseExpression(LOWEST_P);
+            //now=';',next=
+            if (!expectNowTokenIs(SEMICOLON)) {
+                return nullptr;
+            }
+            getNextToken(); //跳过';'
             return p7stmt;
         }
 
         ExpressionStatement *parseExpressionStatement() {
             auto *p7stmt = new ExpressionStatement(nowToken);
             p7stmt->I9Exp = parseExpression(LOWEST_P);
-            if (nextTokenIs(SEMICOLON)) {
+            if (nowTokenIs(SEMICOLON)) {
                 getNextToken(); //跳过';'
             }
-            getNextToken();
             return p7stmt;
         }
 
+        //块语句，会处理首尾的'{'和'}'
         BlockStatement *parseBlockStatement() {
-            BlockStatement *p7stmt = new BlockStatement(nowToken);
-
+            //now='{',next=
+            auto *p7stmt = new BlockStatement(nowToken);
             getNextToken(); //跳过'{'
-
             while (!nowTokenIs(RBRACE)) {
                 //跳过注释
                 if (nowTokenIs(COMMENT)) {
                     getNextToken();
                     continue;
                 }
-
+                //解析语句
                 auto *i9stmt = parseStatement();
                 if (i9stmt != nullptr) {
                     p7stmt->BodyStmtList.push_back(i9stmt);
                 }
             }
-
+            //now='}',next=
+            getNextToken(); //跳过'}'
             return p7stmt;
         }
 

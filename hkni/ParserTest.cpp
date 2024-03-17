@@ -95,7 +95,7 @@ void testParserDoParse() {
             //new ParserTestCase("FUNCTION_HKNI", "function hello(){}", INPUT_MODE),
             //new ParserTestCase("FUNCTION_HKNI", "function hello(a int){}", INPUT_MODE),
             //new ParserTestCase("FUNCTION_HKNI", "function hello(a int,b int){}", INPUT_MODE),
-            new ParserTestCase("FUNCTION_HKNI", "function hello() int {return 1;}", INPUT_MODE),
+            //new ParserTestCase("FUNCTION_HKNI", "function hello() int {return 1;}", INPUT_MODE),
             //new ParserTestCase("FUNCTION_HKNI", "function hello() int {var a int=1;return a;}", INPUT_MODE),
             //new ParserTestCase("FUNCTION_HKNI", "hello();", INPUT_MODE),
             //new ParserTestCase("FUNCTION_HKNI", "hello(1);", INPUT_MODE),
@@ -111,6 +111,7 @@ void testParserDoParse() {
             //new ParserTestCase("RETURN_HKNI", "return a+b;", INPUT_MODE),
             //new ParserTestCase("RETURN_HKNI", "return a();", INPUT_MODE),
             //new ParserTestCase("RETURN_HKNI", "return a()+b();", INPUT_MODE),
+
     };
 
     int tcListLen = sizeof(tcList) / sizeof(tcList[0]);
@@ -121,9 +122,9 @@ void testParserDoParse() {
         Parser *p7parser = new Parser(p7lexer);
         Program *p7program = p7parser->DoParse();
 
-        if (p7parser->HasError()){
+        if (p7parser->HasError()) {
             p7parser->PrintError();
-        }else{
+        } else {
             for (auto item: p7program->I9StatementList) {
                 cout << item->ToString() << endl;
             }
