@@ -6,7 +6,7 @@
 #include "../ast/Expression.h"
 #include "../ast/Statement.h"
 
-namespace ast {
+namespace asthkni {
     //return语句
     //格式：return 表达式;
     class ReturnStatement : public I9Statement {

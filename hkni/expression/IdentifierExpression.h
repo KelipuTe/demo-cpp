@@ -7,7 +7,7 @@
 
 using namespace hkni;
 
-namespace ast {
+namespace asthkni {
     //标识符表达式
     class IdentifierExpression : public I9Expression {
         //##属性

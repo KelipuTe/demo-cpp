@@ -9,7 +9,10 @@ namespace hkni {
 
     //词法标记类型，避开一些常见的关键字
     enum TokenType {
-        //运算符（按键盘从左到右从上到下的顺序排的）
+        ILLEGAL, //非法，枚举第一个是0，正好用非法占位
+        END, //结束
+
+        //运算符（按键盘从左到右从上到下的顺序排的，方便找）
         STRING_VALUE, //字符串值（`、'、"）
         NOT, //逻辑非（!）
         NEQ, //不等于（!=）
@@ -68,8 +71,6 @@ namespace hkni {
 
         //其他
         IDENTIFIER, //标识符
-        END, //结束
-        ILLEGAL, //非法
     };
 
     //词法标记

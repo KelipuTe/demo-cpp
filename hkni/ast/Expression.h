@@ -3,7 +3,7 @@
 
 #include "Node.h"
 
-namespace ast {
+namespace asthkni {
     //表达式抽象
     class I9Expression : public I9Node {
     public:

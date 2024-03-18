@@ -3,21 +3,21 @@
 
 #include "Object.h"
 
-namespace object {
+namespace objecthkni {
     class FloatObject : public Object {
         //##属性
     public:
-        OBJECT_TYPE Type;
+        ObjectType ValueObjectType;
         float Value;
         //##方法
     public:
-        FloatObject(float value) {
-            this->Type = FLOAT_OBJ;
-            this->Value = value;
+        FloatObject(float v) {
+            this->ValueObjectType = FLOAT_OBJ;
+            this->Value = v;
         }
 
-        OBJECT_TYPE GetType() override {
-            return this->Type;
+        ObjectType GetObjectType() override {
+            return this->ValueObjectType;
         }
 
         string GetLiteral() override {
@@ -26,7 +26,7 @@ namespace object {
 
         string ToString() override {
             string t4str;
-            t4str.append("Object Type=" + to_string(this->Type) + ";");
+            t4str.append("Object ObjectType=" + to_string(this->ValueObjectType) + ";");
             t4str.append("Value=" + to_string(this->Value) + ";");
             return t4str;
         }

@@ -5,7 +5,7 @@
 #include "../Token.h"
 #include "../ast/Expression.h"
 
-namespace ast {
+namespace asthkni {
     //后缀表达式
     //格式：表达式 操作符
     class SuffixExpression : public I9Expression {

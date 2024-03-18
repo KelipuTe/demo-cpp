@@ -5,16 +5,14 @@
 
 #include "object/Object.h"
 
-using namespace object;
+using namespace objecthkni;
 
-namespace env {
-    //环境
+namespace hkni {
+    //环境（作用域）
     class Environment {
-        //##属性
     public:
         std::map<string, Object *> variableMap; //局部变量
         Environment *p7outer; //外层环境
-        //##方法
     public:
         Environment() {}
 

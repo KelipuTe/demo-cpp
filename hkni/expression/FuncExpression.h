@@ -7,7 +7,7 @@
 #include "../expression/IdentifierExpression.h"
 #include "../statement/BlockStatement.h"
 
-namespace ast {
+namespace asthkni {
     //函数声明表达式
     //格式：function 函数名(参数列表){块语句}
     class FuncExpression : public I9Expression {

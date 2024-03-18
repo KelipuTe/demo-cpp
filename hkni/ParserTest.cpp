@@ -75,12 +75,12 @@ void testParserDoParse() {
             //new ParserTestCase("BOOL_VALUE", "false;", INPUT_MODE),
             //new ParserTestCase("BOOL_TYPE", "var a bool;", INPUT_MODE),
             //new ParserTestCase("BOOL_TYPE", "var a bool = true;", INPUT_MODE),
-            //new ParserTestCase("INT_TYPE", "var a int;", INPUT_MODE),
-            //new ParserTestCase("INT_TYPE", "var a int = 2;", INPUT_MODE),
             //new ParserTestCase("INT_VALUE", "0b10;", INPUT_MODE),
             //new ParserTestCase("INT_VALUE", "010;", INPUT_MODE),
             //new ParserTestCase("INT_VALUE", "10;", INPUT_MODE),
             //new ParserTestCase("INT_VALUE", "0x10;", INPUT_MODE),
+            //new ParserTestCase("INT_TYPE", "var a int;", INPUT_MODE),
+            //new ParserTestCase("INT_TYPE", "var a int = 2;", INPUT_MODE),
             //new ParserTestCase("FLOAT_VALUE", "3.00;", INPUT_MODE),
             //new ParserTestCase("FLOAT_VALUE", "3.14;", INPUT_MODE),
             //new ParserTestCase("FLOAT_TYPE", "var a float;", INPUT_MODE),
@@ -111,7 +111,6 @@ void testParserDoParse() {
             //new ParserTestCase("RETURN_HKNI", "return a+b;", INPUT_MODE),
             //new ParserTestCase("RETURN_HKNI", "return a();", INPUT_MODE),
             //new ParserTestCase("RETURN_HKNI", "return a()+b();", INPUT_MODE),
-
     };
 
     int tcListLen = sizeof(tcList) / sizeof(tcList[0]);

@@ -4,30 +4,29 @@
 #include <functional>
 #include <map>
 
-#include "../object/BuiltinFuncObj.h"
+#include "../object/BuiltinFuncObject.h"
 #include "PrintlnFunction.h"
 
-using namespace object;
 using namespace std;
+using namespace objecthkni;
 
-namespace function {
-    /**
-     * 内置函数
-     */
-    class BuiltinFunc  {
+namespace functionhkni {
+    //内置函数
+    class BuiltinFunc {
     public:
-        std::map<string, BuiltinFuncObj*> _builtinFunc;
+        std::map<string, BuiltinFuncObject *> _builtinFunc;
     public:
-        BuiltinFunc(){
+        BuiltinFunc() {
             initBuiltinFunc();
         }
-        void initBuiltinFunc(){
-            BuiltinFuncObj* printFunc = new BuiltinFuncObj();
-            printFunc->_func=PrintlnFunc;
+
+        void initBuiltinFunc() {
+            BuiltinFuncObject *printFunc = new BuiltinFuncObject();
+            printFunc->_func = PrintlnFunc;
             _builtinFunc["println"] = printFunc;
         }
 
-        BuiltinFuncObj* getBuiltinFunc(string funcName) {
+        BuiltinFuncObject *getBuiltinFunc(string funcName) {
             return _builtinFunc[funcName];
         }
     };

@@ -3,17 +3,17 @@
 
 #include "Object.h"
 
-namespace object {
+namespace objecthkni {
     class NullObject : public Object {
     public:
-        OBJECT_TYPE Type;
+        ObjectType ValueObjectType;
     public:
         NullObject() {
-            this->Type = NULL_OBJ;
+            this->ValueObjectType = NULL_OBJ;
         }
 
-        OBJECT_TYPE GetType() override {
-            return this->Type;
+        ObjectType GetObjectType() override {
+            return this->ValueObjectType;
         }
 
         string GetLiteral() override {
@@ -22,7 +22,7 @@ namespace object {
 
         string ToString() override {
             string t4str;
-            t4str.append("Object Type=" + to_string(this->Type) + ";");
+            t4str.append("Object ObjectType=" + to_string(this->ValueObjectType) + ";");
             return t4str;
         }
     };

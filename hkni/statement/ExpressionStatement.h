@@ -8,7 +8,7 @@
 
 using namespace hkni;
 
-namespace ast {
+namespace asthkni {
     //表达式语句
     class ExpressionStatement : public I9Statement {
         //##属性

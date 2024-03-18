@@ -7,7 +7,7 @@
 #include "../ast/Expression.h"
 #include "../statement/BlockStatement.h"
 
-namespace ast {
+namespace asthkni {
     //if表达式
     //格式：for(初始化语句;条件表语句;递增递减语句){块语句}
     class ForExpression : public I9Expression {

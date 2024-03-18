@@ -5,7 +5,7 @@
 #include "../Token.h"
 #include "../ast/Statement.h"
 
-namespace ast {
+namespace asthkni {
     //块语句
     class BlockStatement : public I9Statement {
         //##属性

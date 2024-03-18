@@ -1,27 +1,23 @@
 #ifndef HKNI_BOOL_OBJECT_H
 #define HKNI_BOOL_OBJECT_H
 
+
 #include "Object.h"
 
-namespace object {
+namespace objecthkni {
     class BoolObject : public Object {
-        //##属性
     public:
-        OBJECT_TYPE Type;
+        ObjectType ValueObjectType;
         bool Value;
-        //##方法
+
     public:
-        BoolObject(bool b) {
-            this->Type = BOOL_OBJ;
-            if (b) {
-                this->Value = true;
-            } else {
-                this->Value = false;
-            }
+        BoolObject(bool v) {
+            ValueObjectType = BOOL_OBJ;
+                this->Value = v;
         }
 
-        OBJECT_TYPE GetType() override {
-            return this->Type;
+        ObjectType GetObjectType() override {
+            return this->ValueObjectType;
         }
 
         string GetLiteral() override {
@@ -29,11 +25,11 @@ namespace object {
         }
 
         string ToString() override {
-            string t4str;
-            t4str.append("Object Type=" + to_string(this->Type) + ";");
+            string str;
+            str.append("Object ObjectType=" + ObjectTypeToString(ValueObjectType) + ";");
             string valueStr = this->Value ? "true" : "false";
-            t4str.append("Value=" + valueStr + ";");
-            return t4str;
+            str.append("Value=" + valueStr + ";");
+            return str;
         }
     };
 }

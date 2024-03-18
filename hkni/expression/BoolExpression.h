@@ -5,7 +5,7 @@
 #include "../Token.h"
 #include "../ast/Expression.h"
 
-namespace ast {
+namespace asthkni {
     //布尔表达式
     class BoolExpression : public I9Expression {
         //##属性

@@ -28,7 +28,7 @@
 
 #include "ast/Program.h"
 
-using namespace ast;
+using namespace asthkni;
 
 namespace hkni {
     //语法分析器，基于运算符优先级和递归的实现。
@@ -45,10 +45,11 @@ namespace hkni {
         Token nextToken; //下一个token
 
         std::map<TokenType, PRECEDENCE> precedenceMap; //词法标记的优先级
-        //这里不需要用map的find函数判断key是否存在。如果在map里没找到，会返回默认值0，0就是LOWEST_P，逻辑上不会出问题。
+        //如果在map里没找到，会返回PRECEDENCE类型的默认值0，0就是LOWEST_P，逻辑上不会出问题。
 
         std::map<TokenType, f8PrefixParsing> f8PrefixParsingMap; //前缀词法标记的解析函数
         std::map<TokenType, f8InfixParsing> f8InfixParsingMap; //中缀词法标记的解析函数
+        //如果在map里没找到，会返回f8PrefixParsing类型的默认值null。
 
         vector<string> errorList; //错误列表
         //##方法
@@ -103,6 +104,7 @@ namespace hkni {
 
     private:
         //初始化词法标记优先级。
+        //顺序和TokenType的顺序一样。
         void initPrecedence() {
             precedenceMap[NOT] = NOT_SUB_DEC_INC_P; // !
             precedenceMap[NEQ] = NEQ_EQ_P; // !=
@@ -131,7 +133,8 @@ namespace hkni {
             precedenceMap[DIV_ASSIGN] = ASSIGN_P; // /=
         }
 
-        //初始化词法标记的解析方法，前缀和中缀两个map。如果在map里没找到，会返回默认值null。
+        //初始化词法标记的解析方法。
+        //顺序和TokenType的顺序一样。
         void initParsingFunction() {
             //前缀
             //运算符
@@ -203,7 +206,7 @@ namespace hkni {
             if (nowTokenIs(type)) {
                 return true;
             } else {
-                reportError("expectNowTokenIs error,TokenHKNI=" + nextToken.Literal + "。");
+                reportError("expectNowTokenIs error,ValueToken=" + nextToken.Literal + "。");
                 return false;
             }
         }
@@ -215,7 +218,7 @@ namespace hkni {
                 getNextToken();
                 return true;
             } else {
-                reportError("expectNextTokenIs error,TokenHKNI=" + nextToken.Literal + "。");
+                reportError("expectNextTokenIs error,ValueToken=" + nextToken.Literal + "。");
                 return false;
             }
         }
@@ -236,9 +239,116 @@ namespace hkni {
             return precedenceMap[nextToken.TokenType];
         }
 
+        //##解析语句
+
+        //解析语句，递归入口
+        I9Statement *parseStatement() {
+            switch (nowToken.TokenType) {
+                case VAR_HKNI:
+                    return parseVarStatement();
+                case RETURN_HKNI:
+                    return parseReturnStatement();
+                default:
+                    return parseExpressionStatement();
+            }
+        }
+
+        //var语句
+        VarStatement *parseVarStatement() {
+            //now=var,next=标识符
+            auto *p7stmt = new VarStatement();
+            if (!expectNextTokenIs(IDENTIFIER)) {
+                return nullptr;
+            }
+            //now=标识符,next=变量类型
+            p7stmt->P7IdentifierExp = new IdentifierExpression(nowToken);
+            if (!this->nextTokenIs(BOOL_TYPE) &&
+                !this->nextTokenIs(INT_TYPE) &&
+                !this->nextTokenIs(FLOAT_TYPE) &&
+                !this->nextTokenIs(STRING_TYPE)) {
+                reportError("变量声明语句解析错误，ValueToken=" + nextToken.Literal + "。");
+                return nullptr;
+            }
+            this->getNextToken();
+            //now=变量类型,next=';'或者'='
+            p7stmt->ValueToken = nowToken;
+            p7stmt->ValueTokenType = nowToken.TokenType;
+            this->getNextToken();
+            //now=';'或者'=',next=
+            if (nowTokenIs(SEMICOLON)) {
+                this->getNextToken(); //跳过';'
+                return p7stmt; //var 标识符 类型;
+            }
+            //now='=',next=变量值
+            if (!expectNowTokenIs(ASSIGN)) {
+                return nullptr;
+            }
+            this->getNextToken(); //跳过'='
+            //now=变量值,next=';'
+            p7stmt->I9ValueExp = parseExpression(LOWEST_P);
+            if (!expectNowTokenIs(SEMICOLON)) {
+                return nullptr;
+            }
+            this->getNextToken(); //跳过';'
+            return p7stmt; //var 标识符 类型 = 值;
+        }
+
+        //return语句
+        ReturnStatement *parseReturnStatement() {
+            //now=return,next=';'或者表达式
+            auto *p7stmt = new ReturnStatement(nowToken);
+            this->getNextToken(); //跳过return
+            if (nowTokenIs(SEMICOLON)) {
+                getNextToken(); //跳过';'
+                return p7stmt;
+            }
+            p7stmt->I9Exp = parseExpression(LOWEST_P);
+            //now=';',next=
+            if (!expectNowTokenIs(SEMICOLON)) {
+                return nullptr;
+            }
+            getNextToken(); //跳过';'
+            return p7stmt;
+        }
+
+        //表达式语句
+        ExpressionStatement *parseExpressionStatement() {
+            auto *p7stmt = new ExpressionStatement(nowToken);
+            p7stmt->I9Exp = parseExpression(LOWEST_P);
+            if (nowTokenIs(SEMICOLON)) {
+                getNextToken(); //跳过';'
+            }
+            return p7stmt;
+        }
+
+        //块语句，会处理首尾的'{'和'}'
+        BlockStatement *parseBlockStatement() {
+            //now='{',next=
+            auto *p7stmt = new BlockStatement(nowToken);
+            getNextToken(); //跳过'{'
+            while (!nowTokenIs(RBRACE)) {
+                //跳过注释
+                if (nowTokenIs(COMMENT)) {
+                    getNextToken();
+                    continue;
+                }
+                //解析语句
+                auto *i9stmt = parseStatement();
+                if (i9stmt != nullptr) {
+                    p7stmt->BodyStmtList.push_back(i9stmt);
+                }
+            }
+            //now='}',next=
+            getNextToken(); //跳过'}'
+            return p7stmt;
+        }
+
+        //##解析语句##
+
         //##解析表达式
 
-        //运算符的解析方法可能会递归调用parseExpression
+        //解析表达式，递归入口。
+        //运算符的解析方法可能会递归调用该函数。
         I9Expression *parseExpression(int precedence) {
             //前缀解析方法
             auto f8Prefix = f8PrefixParsingMap[nowToken.TokenType];
@@ -362,13 +472,13 @@ namespace hkni {
             getNextToken();
             p7exp->I9InitStmt = parseStatement();
             if (!nowTokenIs(SEMICOLON)) {
-                reportError("parseForExpression error,TokenHKNI=" + nextToken.Literal + "。");
+                reportError("parseForExpression error,ValueToken=" + nextToken.Literal + "。");
                 return nullptr;
             }
             getNextToken();
             p7exp->I9ConditionStmt = parseStatement();
             if (!nowTokenIs(SEMICOLON)) {
-                reportError("parseForExpression error,TokenHKNI=" + nextToken.Literal + "。");
+                reportError("parseForExpression error,ValueToken=" + nextToken.Literal + "。");
                 return nullptr;
             }
             getNextToken();
@@ -508,109 +618,6 @@ namespace hkni {
         //##中缀##
 
         //##解析表达式##
-
-        //##解析语句
-
-        //解析语句，递归入口
-        I9Statement *parseStatement() {
-            switch (nowToken.TokenType) {
-                case VAR_HKNI:
-                    return parseVarStatement();
-                case RETURN_HKNI:
-                    return parseReturnStatement();
-                default:
-                    return parseExpressionStatement();
-            }
-        }
-
-        VarStatement *parseVarStatement() {
-            //now=var,next=标识符
-            auto *p7stmt = new VarStatement();
-            if (!expectNextTokenIs(IDENTIFIER)) {
-                return nullptr;
-            }
-            //now=标识符,next=变量类型
-            p7stmt->P7IdentifierExp = new IdentifierExpression(nowToken);
-            if (!this->nextTokenIs(BOOL_TYPE) &&
-                !this->nextTokenIs(INT_TYPE) &&
-                !this->nextTokenIs(FLOAT_TYPE) &&
-                !this->nextTokenIs(STRING_TYPE)) {
-                reportError("变量声明语句解析错误，TokenHKNI=" + nextToken.Literal + "。");
-                return nullptr;
-            }
-            this->getNextToken();
-            //now=变量类型,next=';'或者'='
-            p7stmt->TokenHKNI = nowToken;
-            p7stmt->ValueType = nowToken.TokenType;
-            this->getNextToken();
-            //now=';'或者'=',next=
-            if (nowTokenIs(SEMICOLON)) {
-                this->getNextToken(); //跳过';'
-                return p7stmt; //var 标识符 类型;
-            }
-            //now='=',next=变量值
-            if (!expectNowTokenIs(ASSIGN)) {
-                return nullptr;
-            }
-            this->getNextToken(); //跳过'='
-            //now=变量值,next=';'
-            p7stmt->I9ValueExp = parseExpression(LOWEST_P);
-            if (!expectNowTokenIs(SEMICOLON)) {
-                return nullptr;
-            }
-            this->getNextToken(); //跳过';'
-            return p7stmt; //var 标识符 类型 = 值;
-        }
-
-        ReturnStatement *parseReturnStatement() {
-            //now=return,next=';'或者表达式
-            auto *p7stmt = new ReturnStatement(nowToken);
-            this->getNextToken(); //跳过return
-            if (nowTokenIs(SEMICOLON)) {
-                getNextToken(); //跳过';'
-                return p7stmt;
-            }
-            p7stmt->I9Exp = parseExpression(LOWEST_P);
-            //now=';',next=
-            if (!expectNowTokenIs(SEMICOLON)) {
-                return nullptr;
-            }
-            getNextToken(); //跳过';'
-            return p7stmt;
-        }
-
-        ExpressionStatement *parseExpressionStatement() {
-            auto *p7stmt = new ExpressionStatement(nowToken);
-            p7stmt->I9Exp = parseExpression(LOWEST_P);
-            if (nowTokenIs(SEMICOLON)) {
-                getNextToken(); //跳过';'
-            }
-            return p7stmt;
-        }
-
-        //块语句，会处理首尾的'{'和'}'
-        BlockStatement *parseBlockStatement() {
-            //now='{',next=
-            auto *p7stmt = new BlockStatement(nowToken);
-            getNextToken(); //跳过'{'
-            while (!nowTokenIs(RBRACE)) {
-                //跳过注释
-                if (nowTokenIs(COMMENT)) {
-                    getNextToken();
-                    continue;
-                }
-                //解析语句
-                auto *i9stmt = parseStatement();
-                if (i9stmt != nullptr) {
-                    p7stmt->BodyStmtList.push_back(i9stmt);
-                }
-            }
-            //now='}',next=
-            getNextToken(); //跳过'}'
-            return p7stmt;
-        }
-
-        //##解析语句##
     };
 
 }

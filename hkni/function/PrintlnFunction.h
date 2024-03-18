@@ -8,16 +8,17 @@
 #include "../object/NullObject.h"
 
 using namespace std;
-using namespace object;
+using namespace objecthkni;
 
-Object * PrintlnFunc(std::vector<Object*> args){
-    if (args.size() == 0) {
+namespace functionhkni {
+    Object *PrintlnFunc(std::vector<Object *> args) {
+        if (args.size() == 0) {
 
-        return new ErrorObject("println函数最少需要1个参数");
+            return new ErrorObject("println函数最少需要1个参数");
+        }
+        cout << args[0]->GetLiteral() << endl;
+
+        return new NullObject();
     }
-    cout << args[0]->GetLiteral() << endl;
-
-    return new NullObject();
 }
-
 #endif

@@ -3,7 +3,7 @@
 
 #include "Node.h"
 
-namespace ast {
+namespace asthkni {
     //语句抽象
     class I9Statement : public I9Node {
     public:

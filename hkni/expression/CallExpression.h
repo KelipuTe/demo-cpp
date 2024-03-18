@@ -6,7 +6,7 @@
 #include "../Token.h"
 #include "../ast/Expression.h"
 
-namespace ast {
+namespace asthkni {
     //函数调用表达式
     class CallExpression : public I9Expression {
         //##属性

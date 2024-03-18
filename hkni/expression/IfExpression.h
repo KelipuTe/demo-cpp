@@ -6,7 +6,7 @@
 #include "../ast/Expression.h"
 #include "../statement/BlockStatement.h"
 
-namespace ast {
+namespace asthkni {
     //if表达式
     //格式：if(条件表达式){块语句}; if(条件表达式){块语句}else{块语句};
     class IfExpression : public I9Expression {

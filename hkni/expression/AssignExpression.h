@@ -6,7 +6,7 @@
 #include "../ast/Expression.h"
 #include "IdentifierExpression.h"
 
-namespace ast {
+namespace asthkni {
     //赋值表达式
     //格式：标识符表达式 操作符 表达式
     class AssignExpression : public I9Expression {

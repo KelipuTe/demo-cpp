@@ -17,30 +17,34 @@
 
 #include "function/BuiltinFunction.h"
 
-using namespace ast;
-using namespace env;
-using namespace object;
-using namespace function;
+using namespace asthkni;
+using namespace objecthkni;
+using namespace functionhkni;
 
 namespace hkni {
     class Interpreter {
-        //##属性
     public:
-        BuiltinFunc *_builtinFunctions;
+        BuiltinFunc *_builtinFunctions; //内置函数
 
+        //注册内置函数
         void registerBuiltinFunctions(BuiltinFunc *builtinFunctions) {
             _builtinFunctions = builtinFunctions;
         }
-        //##方法
+
     public:
-        //解释器入口，递归入口
+        //解释器入口，递归入口。
+        //解释的过程可能会递归调用该函数。
+        //顺序和语法分析那里一样。
         Object *DoInterpret(I9Node *i9node, Environment *p7env) {
             if (typeid(*i9node) == typeid(Program)) {
                 auto *p7program = dynamic_cast<Program *>(i9node); //程序
                 return interpretProgram(p7program, p7env);
             } else if (typeid(*i9node) == typeid(VarStatement)) {
-                auto *p7stmt = dynamic_cast<VarStatement *>(i9node); //变量声明语句
+                auto *p7stmt = dynamic_cast<VarStatement *>(i9node); //var语句
                 return interpretVarStatement(p7stmt, p7env);
+            } else if (typeid(*i9node) == typeid(ReturnStatement)) {
+                auto *p7stmt = dynamic_cast<ReturnStatement *>(i9node); //return语句
+                return interpretReturnStatement(p7stmt, p7env);
             } else if (typeid(*i9node) == typeid(ExpressionStatement)) {
                 auto *p7stmt = dynamic_cast<ExpressionStatement *>(i9node); //表达式语句
                 return DoInterpret(p7stmt->I9Exp, p7env);
@@ -50,50 +54,47 @@ namespace hkni {
             } else if (typeid(*i9node) == typeid(PrefixExpression)) {
                 auto *p7exp = dynamic_cast<PrefixExpression *>(i9node); //前缀表达式
                 return interpretPrefixExpression(p7exp, p7env);
+            } else if (typeid(*i9node) == typeid(BoolExpression)) {
+                auto *p7exp = dynamic_cast<BoolExpression *>(i9node); //布尔值
+                return new BoolObject(p7exp->GetTokenLiteral() == "true");
+            } else if (typeid(*i9node) == typeid(IntExpression)) {
+                auto *p7exp = dynamic_cast<IntExpression *>(i9node); //整数值
+                return new IntObject(p7exp->GetValue());
+            } else if (typeid(*i9node) == typeid(FloatExpression)) {
+                auto *p7exp = dynamic_cast<FloatExpression *>(i9node); //浮点数值
+                return new FloatObject(p7exp->GetValue());
+            } else if (typeid(*i9node) == typeid(StringExpression)) {
+                auto *p7exp = dynamic_cast<StringExpression *>(i9node); //字符串值
+                return new StringObject(p7exp->GetTokenLiteral());
+            } else if (typeid(*i9node) == typeid(AssignExpression)) {
+                auto *p7exp = dynamic_cast<AssignExpression *>(i9node); //赋值
+                return interpretAssignExpression(p7exp, p7env);
+            } else if (typeid(*i9node) == typeid(IfExpression)) {
+                auto *p7exp = dynamic_cast<IfExpression *>(i9node); //if
+                return interpretIfExpression(p7exp, p7env);
+            } else if (typeid(*i9node) == typeid(FuncExpression)) {
+                auto *p7exp = dynamic_cast<FuncExpression *>(i9node); //函数定义
+                return interpretFuncExpression(p7exp, p7env);
             } else if (typeid(*i9node) == typeid(InfixExpression)) {
                 auto *p7exp = dynamic_cast<InfixExpression *>(i9node); //中缀表达式
                 return interpretInfixExpression(p7exp, p7env);
-            } else if (typeid(*i9node) == typeid(BoolExpression)) {
-                auto *p7exp = dynamic_cast<BoolExpression *>(i9node); //布尔表达式
-                return new BoolObject(p7exp->GetTokenLiteral()== "true");
-            } else if (typeid(*i9node) == typeid(IntExpression)) {
-                auto *p7exp = dynamic_cast<IntExpression *>(i9node); //整数表达式
-                return new IntObject(p7exp->GetValue());
-            } else if (typeid(*i9node) == typeid(FloatExpression)) {
-                auto *p7exp = dynamic_cast<FloatExpression *>(i9node); //浮点数表达式
-                return new FloatObject(p7exp->GetValue());
-            } else if (typeid(*i9node) == typeid(StringExpression)) {
-                auto *p7exp = dynamic_cast<StringExpression *>(i9node); //字符串表达式
-                return new StringObject(p7exp->GetTokenLiteral());
-            } else if (typeid(*i9node) == typeid(IdentifierExpression)) {
-                auto *p7exp = dynamic_cast<IdentifierExpression *>(i9node); //标识符表达式
-                return interpretIdentifierExpression(p7exp, p7env);
-            } else if (typeid(*i9node) == typeid(AssignExpression)) {
-                auto *p7exp = dynamic_cast<AssignExpression *>(i9node); //赋值表达式
-                return interpretAssignExpression(p7exp, p7env);
-            } else if (typeid(*i9node) == typeid(IfExpression)) {
-                auto *p7exp = dynamic_cast<IfExpression *>(i9node); //if表达式
-                return interpretIfExpression(p7exp, p7env);
-            } else if (typeid(*i9node) == typeid(FuncExpression)) {
-                auto *p7exp = dynamic_cast<FuncExpression *>(i9node); //函数声明表达式
-                return interpretFuncExpression(p7exp, p7env);
             } else if (typeid(*i9node) == typeid(CallExpression)) {
-                auto *p7exp = dynamic_cast<CallExpression *>(i9node); //函数调用表达式
+                auto *p7exp = dynamic_cast<CallExpression *>(i9node); //函数调用
                 return interpretCallExpression(p7exp, p7env);
-            } else if (typeid(*i9node) == typeid(ReturnStatement)) {
-                auto *p7stmt = dynamic_cast<ReturnStatement *>(i9node); //返回语句
-                return interpretReturnStatement(p7stmt, p7env);
+            } else if (typeid(*i9node) == typeid(IdentifierExpression)) {
+                auto *p7exp = dynamic_cast<IdentifierExpression *>(i9node); //标识符
+                return interpretIdentifierExpression(p7exp, p7env);
             }
             return nullptr;
         }
 
     private:
         //判断对象是不是某种类型
-        bool objectIs(Object *p7obj, OBJECT_TYPE type) {
+        bool objectIs(Object *p7obj, ObjectType type) {
             if (p7obj == nullptr) {
                 return false;
             }
-            return p7obj->GetType() == type;
+            return p7obj->GetObjectType() == type;
         }
 
         //解释程序
@@ -108,22 +109,23 @@ namespace hkni {
         //解释变量声明语句
         Object *interpretVarStatement(VarStatement *p7stmt, Environment *p7env) {
             string name = p7stmt->P7IdentifierExp->GetTokenLiteral(); //变量名直接可以拿到
-            Object *p7ValueObj = nullptr;
+            Object *p7obj = nullptr;
             if (p7stmt->I9ValueExp != nullptr) {
-                p7ValueObj = this->DoInterpret(p7stmt->I9ValueExp, p7env); //解释值表达式
+                //如果有值表达式，就解释值表达式
+                p7obj = this->DoInterpret(p7stmt->I9ValueExp, p7env);
             } else {
-                //初始化0值
-                if (p7stmt->ValueType == BOOL_TYPE) {
-                    p7ValueObj = new BoolObject("false");
-                } else if (p7stmt->ValueType == INT_TYPE) {
-                    p7ValueObj = new IntObject(0);
-                } else if (p7stmt->ValueType == FLOAT_TYPE) {
-                    p7ValueObj = new FloatObject(0.0);
-                } else if (p7stmt->ValueType == STRING_TYPE) {
-                    p7ValueObj = new StringObject("");
+                //如果没有值表达式，就初始化0值
+                if (p7stmt->ValueTokenType == BOOL_TYPE) {
+                    p7obj = new BoolObject(false);
+                } else if (p7stmt->ValueTokenType == INT_TYPE) {
+                    p7obj = new IntObject(0);
+                } else if (p7stmt->ValueTokenType == FLOAT_TYPE) {
+                    p7obj = new FloatObject(0.0);
+                } else if (p7stmt->ValueTokenType == STRING_TYPE) {
+                    p7obj = new StringObject("");
                 }
             }
-            p7env->AddVariable(name, p7ValueObj); //在环境中添加变量
+            p7env->AddVariable(name, p7obj); //在环境中添加变量
             return nullptr;
         }
 
@@ -131,7 +133,7 @@ namespace hkni {
             Object *p7obj = nullptr;
             for (auto i9stmt: p7stmt->BodyStmtList) {
                 p7obj = this->DoInterpret(i9stmt, p7env); //解释每一条语句
-                if (objectIs(p7obj, object::RETURN_OBJ) || objectIs(p7obj, object::ERROR_OBJ)) {
+                if (objectIs(p7obj, objecthkni::RETURN_OBJ) || objectIs(p7obj, objecthkni::ERROR_OBJ)) {
                     //如果解释语句的结果是return或者error，直接返回
                     return p7obj;
                 }
@@ -149,16 +151,15 @@ namespace hkni {
         //处理前缀表达式
         Object *handelPrefixExpression(string operatorStr, Object *p7RightObj) {
             Object *p7obj = nullptr;
-
             if (p7RightObj == nullptr) {
                 return new ErrorObject("错误。前缀表达式为空");
             }
 
-            if (objectIs(p7RightObj, object::BOOL_OBJ)) {
+            if (objectIs(p7RightObj, objecthkni::BOOL_OBJ)) {
                 p7obj = this->interpretBoolPrefixExpression(operatorStr, p7RightObj);
-            } else if (objectIs(p7RightObj, object::INT_OBJ)) {
+            } else if (objectIs(p7RightObj, objecthkni::INT_OBJ)) {
                 p7obj = this->interpretIntPrefixExpression(operatorStr, p7RightObj);
-            } else if (objectIs(p7RightObj, object::FLOAT_OBJ)) {
+            } else if (objectIs(p7RightObj, objecthkni::FLOAT_OBJ)) {
                 p7obj = this->interpretFloatPrefixExpression(operatorStr, p7RightObj);
             }
 
@@ -167,10 +168,9 @@ namespace hkni {
 
         //解释布尔前缀表达式
         Object *interpretBoolPrefixExpression(string operatorStr, Object *p7obj) {
-            IntObject *p7ObjReal = dynamic_cast<IntObject *>(p7obj);
-
+            BoolObject *p7ObjReal = dynamic_cast<BoolObject *>(p7obj);
             if (operatorStr == "!") {
-                return new IntObject(-p7ObjReal->Value);
+                return new BoolObject(!p7ObjReal->Value);
             } else {
                 return new ErrorObject("错误。布尔类型不支持前缀操作符：" + operatorStr);
             }
@@ -222,15 +222,15 @@ namespace hkni {
                 return new ErrorObject("错误。中缀表达式为空");
             }
 
-            if (p7LeftObj->GetType() != p7RightObj->GetType()) {
+            if (p7LeftObj->GetObjectType() != p7RightObj->GetObjectType()) {
                 return new ErrorObject("错误。中缀表达式两边的对象类型不一样。");
             }
 
-            if (objectIs(p7LeftObj, object::BOOL_OBJ)) {
+            if (objectIs(p7LeftObj, objecthkni::BOOL_OBJ)) {
                 p7obj = this->interpretBoolInfixExpression(p7LeftObj, operatorStr, p7RightObj);
-            } else if (objectIs(p7LeftObj, object::INT_OBJ)) {
+            } else if (objectIs(p7LeftObj, objecthkni::INT_OBJ)) {
                 p7obj = this->interpretIntInfixExpression(p7LeftObj, operatorStr, p7RightObj);
-            } else if (objectIs(p7LeftObj, object::FLOAT_OBJ)) {
+            } else if (objectIs(p7LeftObj, objecthkni::FLOAT_OBJ)) {
                 p7obj = this->interpretFloatInfixExpression(p7LeftObj, operatorStr, p7RightObj);
             }
 
@@ -364,7 +364,7 @@ namespace hkni {
 
             //解释条件表达式
             Object *p7ConditionObj = this->DoInterpret(p7exp->I9ConditionExp, p7env);
-            if (!objectIs(p7ConditionObj, object::BOOL_OBJ)) {
+            if (!objectIs(p7ConditionObj, objecthkni::BOOL_OBJ)) {
                 return new ErrorObject("错误。if语句的条件表达式结果不是布尔类型。");
             }
             BoolObject *p7ConditionObjReal = dynamic_cast<BoolObject *>(p7ConditionObj);
@@ -412,8 +412,8 @@ namespace hkni {
 
             auto p7FuncObj = this->DoInterpret(p7exp->I9Exp, p7env); //通过函数名得到函数对象
 
-            if (!objectIs(p7FuncObj, object::FUNC_OBJ)
-                && !objectIs(p7FuncObj, object::BUILTIN_FUNC_OBJ)) {
+            if (!objectIs(p7FuncObj, objecthkni::FUNC_OBJ)
+                && !objectIs(p7FuncObj, objecthkni::BUILTIN_FUNC_OBJ)) {
                 return new ErrorObject("错误。不是函数对象。");
             }
 
@@ -432,7 +432,7 @@ namespace hkni {
 
             for (auto argExp: argExpList) {
                 auto argObj = this->DoInterpret(argExp, p7env);
-                if (objectIs(argObj, object::ERROR_OBJ)) {
+                if (objectIs(argObj, objecthkni::ERROR_OBJ)) {
                     //如果解释参数的时候出错了，直接返回错误对象
                     argObjList.push_back(argObj);
                     return argObjList;
@@ -448,8 +448,8 @@ namespace hkni {
                 auto *p7FuncObjReal = dynamic_cast<FuncObject *>(p7FuncObj);
                 auto p7FuncEnv = this->createFuncEnv(p7FuncObjReal, argObjList);
                 return this->DoInterpret(p7FuncObjReal->P7BodyBlockStmt, p7FuncEnv);
-            } else if (typeid(*p7FuncObj) == typeid(BuiltinFuncObj)) {
-                BuiltinFuncObj *builtin = dynamic_cast<BuiltinFuncObj *>(p7FuncObj);
+            } else if (typeid(*p7FuncObj) == typeid(BuiltinFuncObject)) {
+                BuiltinFuncObject *builtin = dynamic_cast<BuiltinFuncObject *>(p7FuncObj);
                 return builtin->_func(argObjList);
             }
             return new ErrorObject("错误。不是函数对象。");

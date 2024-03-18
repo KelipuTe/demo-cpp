@@ -5,7 +5,7 @@
 #include "../Token.h"
 #include "../ast/Expression.h"
 
-namespace ast {
+namespace asthkni {
     //null表达式
     class NullExpression : public I9Expression {
         //##属性

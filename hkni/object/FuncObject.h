@@ -8,14 +8,13 @@
 
 #include "../Environment.h"
 
-using namespace ast;
-using namespace env;
+using namespace asthkni;
 
-namespace object {
+namespace objecthkni {
     class FuncObject : public Object {
         //##属性
     public:
-        OBJECT_TYPE Type;
+        ObjectType ValueObjectType;
         IdentifierExpression *P7NameExp; //函数名
         std::vector<IdentifierExpression*> P7ArgList; //参数列表
         BlockStatement* P7BodyBlockStmt; //函数体
@@ -23,11 +22,11 @@ namespace object {
         //##方法
     public:
         FuncObject() {
-            this->Type = FUNC_OBJ;
+            ValueObjectType = FUNC_OBJ;
         }
 
-        OBJECT_TYPE GetType() override {
-            return this->Type;
+        ObjectType GetObjectType() override {
+            return ValueObjectType;
         }
 
         string GetLiteral() override {

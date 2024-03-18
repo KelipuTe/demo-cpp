@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace ast {
+namespace asthkni {
     //程序
     class Program : public I9Node {
     public:

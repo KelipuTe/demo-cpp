@@ -4,15 +4,15 @@
 #include "../expression/IdentifierExpression.h"
 #include "../ast/Statement.h"
 
-namespace ast {
+namespace asthkni {
     //变量声明语句
     //格式：var 标识符表达式 变量类型;
     //格式：var 标识符表达式 变量类型 = 表达式;
     class VarStatement : public I9Statement {
     public:
         IdentifierExpression *P7IdentifierExp; //标识符表达式
-        Token TokenHKNI; //变量类型
-        TokenType ValueType; //变量类型
+        Token ValueToken; //变量类型的token
+        TokenType ValueTokenType; //变量类型的token
         I9Expression *I9ValueExp; //值表达式，需要先解释出来
     public:
         VarStatement() {
@@ -21,14 +21,14 @@ namespace ast {
         };
 
         string GetTokenLiteral() override {
-            return TokenHKNI.Literal;
+            return ValueToken.Literal;
         }
 
         string ToString() override {
             string str;
             str.append("var ");
             str.append(P7IdentifierExp->ToString());
-            str.append(" " + TokenHKNI.Literal);
+            str.append(" " + ValueToken.Literal);
             if (I9ValueExp != nullptr) {
                 str.append(" = ");
                 str.append(I9ValueExp->ToString());

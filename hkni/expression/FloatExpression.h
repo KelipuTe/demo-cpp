@@ -5,7 +5,7 @@
 #include "../Token.h"
 #include "../ast/Expression.h"
 
-namespace ast {
+namespace asthkni {
     //浮点数表达式
     class FloatExpression : public I9Expression {
         //##属性

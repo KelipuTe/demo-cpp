@@ -5,7 +5,7 @@
 #include "../Token.h"
 #include "../ast/Expression.h"
 
-namespace ast {
+namespace asthkni {
     //前缀表达式
     //格式：操作符 表达式
     class PrefixExpression : public I9Expression {

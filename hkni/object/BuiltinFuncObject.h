@@ -6,21 +6,19 @@
 
 using namespace std;
 
-namespace object {
-    /**
-     * 内置函数
-     */
-    class BuiltinFuncObj : public Object {
+namespace objecthkni {
+    //内置函数
+    class BuiltinFuncObject : public Object {
     public:
-        OBJECT_TYPE Type;
+        ObjectType ValueObjectType;
         std::function<Object *(std::vector<Object *>)> _func;
     public:
-        BuiltinFuncObj() {
-            this->Type = BUILTIN_FUNC_OBJ;
+        BuiltinFuncObject() {
+            ValueObjectType = BUILTIN_FUNC_OBJ;
         }
 
-        OBJECT_TYPE GetType() override {
-            return this->Type;
+        ObjectType GetObjectType() override {
+            return ValueObjectType;
         }
 
         string GetLiteral() override {

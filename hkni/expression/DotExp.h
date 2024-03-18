@@ -6,7 +6,8 @@
 #include "../Token.h"
 #include "../ast/Expression.h"
 using namespace hkni;
-namespace ast {
+
+namespace asthkni {
     //点引表达式
     class DotExp : public I9Expression {
     public:

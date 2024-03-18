@@ -3,21 +3,21 @@
 
 #include "Object.h"
 
-namespace object {
+namespace objecthkni {
     class ReturnObject : public Object {
         //##属性
     public:
-        OBJECT_TYPE Type;
+        ObjectType ValueObjectType;
         Object * Value;
         //##方法
     public:
-        ReturnObject(Object *p7obj) {
-            this->Type = RETURN_OBJ;
-            this->Value = p7obj;
+        ReturnObject(Object *p7v) {
+            this->ValueObjectType = RETURN_OBJ;
+            this->Value = p7v;
         }
 
-        OBJECT_TYPE GetType() override {
-            return this->Type;
+        ObjectType GetObjectType() override {
+            return this->ValueObjectType;
         }
 
         string GetLiteral() override {
@@ -26,7 +26,7 @@ namespace object {
 
         string ToString() override {
             string t4str;
-            t4str.append("Object Type=" + to_string(this->Type) + ";");
+            t4str.append("Object ObjectType=" + to_string(this->ValueObjectType) + ";");
             string valueStr = this->Value->ToString();
             t4str.append("Value=" + valueStr + ";");
             return t4str;

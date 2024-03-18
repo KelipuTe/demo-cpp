@@ -1,7 +1,7 @@
 #ifndef HKNI_NODE_H
 #define HKNI_NODE_H
 
-namespace ast {
+namespace asthkni {
     //AST抽象语法树结点抽象
     class I9Node {
     public:

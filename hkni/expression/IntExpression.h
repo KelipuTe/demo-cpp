@@ -6,7 +6,7 @@
 #include "../Token.h"
 #include "../ast/Expression.h"
 
-namespace ast {
+namespace asthkni {
     //整数表达式
     class IntExpression : public I9Expression {
         //##属性
