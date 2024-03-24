@@ -8,10 +8,8 @@
 namespace asthkni {
     //null表达式
     class NullExpression : public I9Expression {
-        //##属性
     public:
         Token TokenHKNI;
-        //##方法
     public:
         NullExpression(Token token) {
             this->TokenHKNI = token;

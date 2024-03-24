@@ -12,14 +12,13 @@ using namespace asthkni;
 
 namespace objecthkni {
     class FuncObject : public Object {
-        //##属性
     public:
         ObjectType ValueObjectType;
         IdentifierExpression *P7NameExp; //函数名
         std::vector<IdentifierExpression*> P7ArgList; //参数列表
         BlockStatement* P7BodyBlockStmt; //函数体
         Environment *p7env; //函数作用域
-        //##方法
+
     public:
         FuncObject() {
             ValueObjectType = FUNC_OBJ;
@@ -30,11 +29,11 @@ namespace objecthkni {
         }
 
         string GetLiteral() override {
+            return "FuncObject";
         }
 
         string ToString() override {
-            string t4str;
-            return t4str;
+            return "Object;ObjectType=" + ObjectTypeToString(ValueObjectType) + ";";
         }
     };
 }

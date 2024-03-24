@@ -11,10 +11,12 @@ namespace objecthkni {
     class BuiltinFuncObject : public Object {
     public:
         ObjectType ValueObjectType;
-        std::function<Object *(std::vector<Object *>)> _func;
+        std::function<Object *(std::vector<Object *>)> Value;
+
     public:
         BuiltinFuncObject() {
             ValueObjectType = BUILTIN_FUNC_OBJ;
+            Value = nullptr;
         }
 
         ObjectType GetObjectType() override {
@@ -22,13 +24,12 @@ namespace objecthkni {
         }
 
         string GetLiteral() override {
-            return "Builtin Function";
+            return "BuiltinFuncObject";
         }
 
         string ToString() override {
-
+            return "Object;ObjectType=" + ObjectTypeToString(ValueObjectType) + ";";
         }
-
     };
 
 }

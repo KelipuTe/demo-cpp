@@ -19,8 +19,8 @@ namespace objecthkni {
         RETURN_OBJ, //返回
     };
 
-    string ObjectTypeToString(ObjectType type) {
-        switch (type) {
+    string ObjectTypeToString(ObjectType ot) {
+        switch (ot) {
             case ERROR_OBJ:
                 return "ERROR_OBJ";
             case NULL_OBJ:
@@ -44,9 +44,11 @@ namespace objecthkni {
         }
     }
 
+    //对象抽象
     class Object {
-    protected:
-        bool isConst = false;
+    public:
+        bool IsConst = false; //是否是常量
+
     public:
         Object() = default;
 
@@ -58,6 +60,14 @@ namespace objecthkni {
 
         virtual string ToString() = 0;
     };
+
+    //判断对象是不是某种类型
+    bool ObjectIs(Object *p7o, ObjectType ot) {
+        if (p7o == nullptr) {
+            return false;
+        }
+        return p7o->GetObjectType() == ot;
+    }
 }
 
 #endif

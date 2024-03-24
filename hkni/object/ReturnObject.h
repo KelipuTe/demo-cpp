@@ -5,31 +5,29 @@
 
 namespace objecthkni {
     class ReturnObject : public Object {
-        //##属性
     public:
         ObjectType ValueObjectType;
-        Object * Value;
-        //##方法
+        Object *P7Value;
+
     public:
-        ReturnObject(Object *p7v) {
-            this->ValueObjectType = RETURN_OBJ;
-            this->Value = p7v;
+        ReturnObject(Object *p7value) {
+            ValueObjectType = RETURN_OBJ;
+            P7Value = p7value;
         }
 
         ObjectType GetObjectType() override {
-            return this->ValueObjectType;
+            return ValueObjectType;
         }
 
         string GetLiteral() override {
-            return this->Value->GetLiteral();
+            return P7Value->GetLiteral();
         }
 
         string ToString() override {
-            string t4str;
-            t4str.append("Object ObjectType=" + to_string(this->ValueObjectType) + ";");
-            string valueStr = this->Value->ToString();
-            t4str.append("Value=" + valueStr + ";");
-            return t4str;
+            string str;
+            str.append("Object;ObjectType=" + ObjectTypeToString(ValueObjectType) + ";");
+            str.append("P7Value=" + P7Value->ToString() + ";");
+            return str;
         }
     };
 }

@@ -7,6 +7,7 @@ namespace objecthkni {
     class NullObject : public Object {
     public:
         ObjectType ValueObjectType;
+
     public:
         NullObject() {
             this->ValueObjectType = NULL_OBJ;
@@ -21,9 +22,7 @@ namespace objecthkni {
         }
 
         string ToString() override {
-            string t4str;
-            t4str.append("Object ObjectType=" + to_string(this->ValueObjectType) + ";");
-            return t4str;
+            return "Object;ObjectType=" + ObjectTypeToString(ValueObjectType) + ";";
         }
     };
 }

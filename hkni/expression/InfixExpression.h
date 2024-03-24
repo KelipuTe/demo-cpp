@@ -9,13 +9,11 @@ namespace asthkni {
     //中缀表达式
     //格式：表达式 操作符 表达式
     class InfixExpression : public I9Expression {
-        //##属性
     public:
-        Token TokenHKNI;
+        Token TokenHKNI; //操作符
         I9Expression *I9LeftExp;
         string OperatorStr;
         I9Expression *I9RightExp;
-        //##方法
     public:
         InfixExpression(Token token) {
             this->TokenHKNI = token;

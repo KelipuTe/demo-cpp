@@ -14,20 +14,22 @@ namespace functionhkni {
     //内置函数
     class BuiltinFunc {
     public:
-        std::map<string, BuiltinFuncObject *> _builtinFunc;
+        //内置函数map，key为函数名，value为函数对象
+        std::map<string, BuiltinFuncObject *> BuiltinFuncMap;
+
     public:
         BuiltinFunc() {
-            initBuiltinFunc();
+            InitBuiltinFunc();
         }
 
-        void initBuiltinFunc() {
-            BuiltinFuncObject *printFunc = new BuiltinFuncObject();
-            printFunc->_func = PrintlnFunc;
-            _builtinFunc["println"] = printFunc;
+        void InitBuiltinFunc() {
+            auto *printFunc = new BuiltinFuncObject();
+            printFunc->Value = PrintlnFunc;
+            BuiltinFuncMap["println"] = printFunc;
         }
 
-        BuiltinFuncObject *getBuiltinFunc(string funcName) {
-            return _builtinFunc[funcName];
+        BuiltinFuncObject *GetBuiltinFunc(string funcName) {
+            return BuiltinFuncMap[funcName];
         }
     };
 }

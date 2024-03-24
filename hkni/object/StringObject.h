@@ -5,30 +5,29 @@
 
 namespace objecthkni {
     class StringObject : public Object {
-        //##属性
     public:
         ObjectType ValueObjectType;
         string Value;
-        //##方法
+
     public:
         StringObject(string v) {
-            this->ValueObjectType = STRING_OBJ;
-            this->Value = v;
+            ValueObjectType = STRING_OBJ;
+            Value = v;
         }
 
         ObjectType GetObjectType() override {
-            return this->ValueObjectType;
+            return ValueObjectType;
         }
 
         string GetLiteral() override {
-            return this->Value;
+            return Value;
         }
 
         string ToString() override {
-            string t4str;
-            t4str.append("Object ObjectType=" + to_string(this->ValueObjectType) + ";");
-            t4str.append("Value=" + this->Value + ";");
-            return t4str;
+            string str;
+            str.append("Object;ObjectType=" + ObjectTypeToString(ValueObjectType) + ";");
+            str.append("P7Value=" + Value + ";");
+            return str;
         }
     };
 }

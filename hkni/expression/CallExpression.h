@@ -9,19 +9,14 @@
 namespace asthkni {
     //函数调用表达式
     class CallExpression : public I9Expression {
-        //##属性
     public:
-        Token TokenHKNI;
         I9Expression* I9Exp;
         std::vector<I9Expression*> ArgExpList; //参数列表
-        //##方法
     public:
-        CallExpression(Token token) {
-            this->TokenHKNI = token;
-        };
+        CallExpression() {};
 
         string GetTokenLiteral() override {
-            return this->TokenHKNI.Literal;
+            return "call";
         }
 
         string ToString() override {

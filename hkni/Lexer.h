@@ -578,7 +578,10 @@ namespace hkni {
                             readNextChar();
                         }
                         str = to_string(num);
-                    } else {
+                    } else if (nowChar == ';' || nowChar == ')'){
+                        //就是0的情况，后面要么是分号，要么是右括号
+                        str = to_string(num);
+                    }else {
                         *isError = true; //错误，识别不出来
                     }
                 }

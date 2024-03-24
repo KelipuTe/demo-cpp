@@ -20,7 +20,6 @@
 #include "expression/NullExpression.h"
 #include "expression/PrefixExpression.h"
 #include "expression/StringExpression.h"
-#include "expression/SuffixExpression.h"
 
 #include "statement/ExpressionStatement.h"
 #include "statement/ReturnStatement.h"
@@ -324,7 +323,7 @@ namespace hkni {
         //块语句，会处理首尾的'{'和'}'
         BlockStatement *parseBlockStatement() {
             //now='{',next=
-            auto *p7stmt = new BlockStatement(nowToken);
+            auto *p7stmt = new BlockStatement();
             getNextToken(); //跳过'{'
             while (!nowTokenIs(RBRACE)) {
                 //跳过注释
@@ -433,7 +432,7 @@ namespace hkni {
         //if语句
         IfExpression *parseIfExpression() {
             //now=if,next='('
-            auto *p7exp = new IfExpression(nowToken);
+            auto *p7exp = new IfExpression();
             if (!expectNextTokenIs(LPAREN)) {
                 return nullptr;
             }
@@ -465,37 +464,50 @@ namespace hkni {
 
         //for循环语句
         ForExpression *parseForExpression() {
-            auto *p7exp = new ForExpression(nowToken);
+            //now=for,next='('
+            auto *p7exp = new ForExpression();
             if (!expectNextTokenIs(LPAREN)) {
                 return nullptr;
             }
+            //now='(',next=初始化语句
             getNextToken();
-            p7exp->I9InitStmt = parseStatement();
-            if (!nowTokenIs(SEMICOLON)) {
-                reportError("parseForExpression error,ValueToken=" + nextToken.Literal + "。");
-                return nullptr;
+            //now=初始化语句,next
+            if (nowTokenIs(SEMICOLON)) {
+                //初始化语句为空
+            } else {
+                p7exp->I9InitExp = parseExpression(LOWEST_P);
             }
-            getNextToken();
-            p7exp->I9ConditionStmt = parseStatement();
-            if (!nowTokenIs(SEMICOLON)) {
-                reportError("parseForExpression error,ValueToken=" + nextToken.Literal + "。");
-                return nullptr;
+            getNextToken(); //跳过分号
+            //now=条件表达式,next=
+            if (nowTokenIs(SEMICOLON)) {
+                //条件表达式为空
+            } else {
+                p7exp->I9ConditionExp = parseExpression(LOWEST_P);
             }
-            getNextToken();
-            p7exp->I9IncrementStmt = parseStatement();
-            if (!expectNextTokenIs(RPAREN)) {
+            getNextToken(); //跳过分号
+            //now=递增递减语句,next=
+            if (nowTokenIs(RPAREN)) {
+                //递增递减语句为空，什么都不做
+            } else {
+                p7exp->I9IncrementExp = parseExpression(LOWEST_P);
+            }
+            //now=')',next='{'
+            if (!expectNowTokenIs(RPAREN)) {
                 return nullptr;
             }
             if (!expectNextTokenIs(LBRACE)) {
                 return nullptr;
             }
+            //now='{',next=块语句
+            p7exp->P7BodyStmt = parseBlockStatement();
+
             return p7exp;
         }
 
         //函数定义
         FuncExpression *parseFuncExpression() {
             //now=关键字,next=函数名
-            auto *p7exp = new FuncExpression(nowToken);
+            auto *p7exp = new FuncExpression();
             if (nextTokenIs(IDENTIFIER)) {
                 getNextToken();
                 p7exp->P7NameExp = new IdentifierExpression(nowToken); //处理函数名
@@ -586,7 +598,7 @@ namespace hkni {
         //左括号（函数调用）
         CallExpression *parseCallExpression(I9Expression *funcEXP) {
             //now='(',next=参数列表或者')'
-            auto *p7exp = new CallExpression(nowToken);
+            auto *p7exp = new CallExpression();
             p7exp->I9Exp = funcEXP; //处理函数名
             this->getNextToken(); //跳过'('
             parseCallArgsList(p7exp); //处理参数列表

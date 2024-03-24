@@ -11,11 +11,12 @@ using namespace std;
 using namespace objecthkni;
 
 namespace functionhkni {
+    //println
     Object *PrintlnFunc(std::vector<Object *> args) {
-        if (args.size() == 0) {
-
+        if (args.empty()) {
             return new ErrorObject("println函数最少需要1个参数");
         }
+
         cout << args[0]->GetLiteral() << endl;
 
         return new NullObject();

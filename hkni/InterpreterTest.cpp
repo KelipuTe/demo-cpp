@@ -96,7 +96,9 @@ void testInterpreterDoInterpreter() {
             //new InterpreterTestCase("IF_HKNI", "var a int=1;var b int;if(a==1){b=1;}else{b=2;}b;", INPUT_MODE),
             //new InterpreterTestCase("IF_HKNI", "var a int=1;var b int;if(a==2){b=1;}else{b=2;}b;", INPUT_MODE),
             //new InterpreterTestCase("IF_HKNI", "var a int=1;var b int;var c int=1;if(a==1 && c==1){b=1;}b;", INPUT_MODE),
+            //new InterpreterTestCase("FOR_HKNI", "var i int=0;var j int;for(i=5;i<10;++i){j+=2;}j;", INPUT_MODE),
             //new InterpreterTestCase("FUNCTION_HKNI", "function hello(){} hello();", INPUT_MODE),
+            //new InterpreterTestCase("FUNCTION_HKNI", "var a int;function hello(){return 5;}a=hello();a;", INPUT_MODE),
             //new InterpreterTestCase("BUILTIN_FUNC", "println(\"aaa\");", INPUT_MODE),
     };
 
@@ -104,21 +106,21 @@ void testInterpreterDoInterpreter() {
     for (int i = 0; i < tcListLen; i++) {
         cout << "test case[" << i << "] " << tcList[i]->name << ":" << endl;
 
-        Lexer *p7lexer = new Lexer(tcList[i]->input, tcList[i]->mode);
-        Parser *p7parser = new Parser(p7lexer);
+        auto *p7lexer = new Lexer(tcList[i]->input, tcList[i]->mode);
+        auto *p7parser = new Parser(p7lexer);
         Program *p7program = p7parser->DoParse();
 
         if (p7parser->HasError()) {
             p7parser->PrintError();
         } else {
-            Interpreter *p7interpreter = new Interpreter();
+            auto *p7interpreter = new Interpreter();
 
             //初始化内置函数
-            BuiltinFunc *builtinFunctions = new BuiltinFunc();
-            p7interpreter->registerBuiltinFunctions(builtinFunctions);
+            auto *p7BuiltinFunc = new BuiltinFunc();
+            p7interpreter->InitBuiltinFunc(p7BuiltinFunc);
 
             //初始化程序最外面那层的环境（作用域）
-            Environment *p7env = new Environment();
+            auto *p7env = new Environment();
 
             Object *p7obj = p7interpreter->DoInterpret(p7program, p7env);
             if (p7obj != nullptr) {

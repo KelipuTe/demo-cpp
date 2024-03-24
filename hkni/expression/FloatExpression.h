@@ -8,11 +8,9 @@
 namespace asthkni {
     //浮点数表达式
     class FloatExpression : public I9Expression {
-        //##属性
     public:
         Token TokenHKNI;
         float Value;
-        //##方法
     public:
         FloatExpression(Token token) {
             this->TokenHKNI = token;

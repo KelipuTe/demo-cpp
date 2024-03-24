@@ -8,25 +8,26 @@ namespace objecthkni {
     public:
         ObjectType ValueObjectType;
         int Value;
+
     public:
         IntObject(int v) {
-            this->ValueObjectType = INT_OBJ;
-            this->Value = v;
+            ValueObjectType = INT_OBJ;
+            Value = v;
         }
 
         ObjectType GetObjectType() override {
-            return this->ValueObjectType;
+            return ValueObjectType;
         }
 
         string GetLiteral() override {
-            return to_string(this->Value);
+            return to_string(Value);
         }
 
         string ToString() override {
-            string t4str;
-            t4str.append("Object ObjectType=" + to_string(this->ValueObjectType) + ";");
-            t4str.append("Value=" + to_string(this->Value) + ";");
-            return t4str;
+            string str;
+            str.append("Object;ObjectType=" + ObjectTypeToString(ValueObjectType) + ";");
+            str.append("P7Value=" + to_string(Value) + ";");
+            return str;
         }
     };
 }

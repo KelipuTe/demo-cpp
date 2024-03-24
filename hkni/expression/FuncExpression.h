@@ -13,7 +13,6 @@ namespace asthkni {
     class FuncExpression : public I9Expression {
         //##属性
     public:
-        Token TokenHKNI;
         IdentifierExpression *P7NameExp; //函数名
         std::vector<TokenType> P7ArgTypeList; //参数类型列表
         std::vector<IdentifierExpression *> P7ArgList; //参数列表
@@ -21,14 +20,13 @@ namespace asthkni {
         BlockStatement *P7BodyBlockStmt; //函数体
         //##方法
     public:
-        FuncExpression(Token t) {
-            this->TokenHKNI = t;
-            this->P7NameExp = nullptr;
-            this->ReturnType = ILLEGAL;
+        FuncExpression() {
+            P7NameExp = nullptr;
+            ReturnType = NULL_HKNI;
         };
 
         string GetTokenLiteral() override {
-            return this->TokenHKNI.Literal;
+            return "function";
         }
 
         string ToString() override {

@@ -1,7 +1,6 @@
 #ifndef HKNI_BOOL_OBJECT_H
 #define HKNI_BOOL_OBJECT_H
 
-
 #include "Object.h"
 
 namespace objecthkni {
@@ -13,22 +12,22 @@ namespace objecthkni {
     public:
         BoolObject(bool v) {
             ValueObjectType = BOOL_OBJ;
-                this->Value = v;
+            Value = v;
         }
 
         ObjectType GetObjectType() override {
-            return this->ValueObjectType;
+            return ValueObjectType;
         }
 
         string GetLiteral() override {
-            return this->Value ? "true" : "false";
+            return Value ? "true" : "false";
         }
 
         string ToString() override {
             string str;
-            str.append("Object ObjectType=" + ObjectTypeToString(ValueObjectType) + ";");
-            string valueStr = this->Value ? "true" : "false";
-            str.append("Value=" + valueStr + ";");
+            str.append("Object;ObjectType=" + ObjectTypeToString(ValueObjectType) + ";");
+            string valueStr = Value ? "true" : "false";
+            str.append("P7Value=" + valueStr + ";");
             return str;
         }
     };
