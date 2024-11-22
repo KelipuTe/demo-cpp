@@ -7,7 +7,7 @@
 
 namespace asthkni {
     //null表达式
-    class NullExpression : public I9Expression {
+    class NullExpression : public ExpressionI9 {
     public:
         Token TokenHKNI;
     public:

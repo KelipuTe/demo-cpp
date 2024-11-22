@@ -3,9 +3,11 @@
 
 namespace asthkni {
     //AST抽象语法树结点抽象
-    class I9Node {
+    class NodeI9 {
     public:
-        //获取词法标记原始值
+        virtual ~NodeI9() = default;
+
+        //获取结点词法标记原始值
         virtual string GetTokenLiteral() = 0;
 
         //将结点以程序代码的形式输出

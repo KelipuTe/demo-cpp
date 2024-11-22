@@ -17,7 +17,9 @@ namespace functionhkni {
             return new ErrorObject("println函数最少需要1个参数");
         }
 
-        cout << args[0]->GetLiteral() << endl;
+        for (int i = 0; i < args.size(); i++) {
+            cout << args[i]->GetLiteral() << endl;
+        }
 
         return new NullObject();
     }

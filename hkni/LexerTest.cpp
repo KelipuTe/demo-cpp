@@ -25,7 +25,7 @@ void testLexerGetNextToken() {
     LexerTestCase *tcList[] = {
             //new LexerTestCase("INPUT_MODE", "var a int = 2;", INPUT_MODE),
             new LexerTestCase("INPUT_MODE", "if(a==2){b=10;}", INPUT_MODE),
-            //new LexerTestCase("FILE_MODE", "D:\\workspace\\demo-cpp\\hkni\\lexer_test.txt", FILE_MODE),
+            //new LexerTestCase("FILE_MODE", "D:\\workspace\\demo-cpp\\hkni\\test_code.txt", FILE_MODE),
     };
 
     int tcListLen = sizeof(tcList) / sizeof(tcList[0]);

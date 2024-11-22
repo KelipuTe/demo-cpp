@@ -10,11 +10,11 @@
 namespace asthkni {
     //for表达式
     //格式：for(初始化语句;条件表语句;递增递减语句){块语句}
-    class ForExpression : public I9Expression {
+    class ForExpression : public ExpressionI9 {
     public:
-        I9Expression *I9InitExp; //初始化
-        I9Expression *I9ConditionExp; //条件
-        I9Expression *I9IncrementExp; //递增递减
+        ExpressionI9 *I9InitExp; //初始化
+        ExpressionI9 *I9ConditionExp; //条件
+        ExpressionI9 *I9IncrementExp; //递增递减
         BlockStatement *P7BodyStmt; //循环块
     public:
         ForExpression() {

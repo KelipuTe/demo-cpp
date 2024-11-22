@@ -10,9 +10,9 @@ namespace asthkni {
     //if表达式
     //格式：if(条件表达式){块语句};
     //格式：if(条件表达式){块语句}else{块语句};
-    class IfExpression : public I9Expression {
+    class IfExpression : public ExpressionI9 {
     public:
-        I9Expression *I9ConditionExp; //条件
+        ExpressionI9 *I9ConditionExp; //条件
         BlockStatement *P7ConsequenceStmt; //if块
         BlockStatement *P7AlternativeStmt; //else块
 

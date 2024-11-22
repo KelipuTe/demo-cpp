@@ -99,7 +99,10 @@ void testInterpreterDoInterpreter() {
             //new InterpreterTestCase("FOR_HKNI", "var i int=0;var j int;for(i=5;i<10;++i){j+=2;}j;", INPUT_MODE),
             //new InterpreterTestCase("FUNCTION_HKNI", "function hello(){} hello();", INPUT_MODE),
             //new InterpreterTestCase("FUNCTION_HKNI", "var a int;function hello(){return 5;}a=hello();a;", INPUT_MODE),
-            //new InterpreterTestCase("BUILTIN_FUNC", "println(\"aaa\");", INPUT_MODE),
+            //new InterpreterTestCase("BUILTIN_FUNC", "println(\"aaa\");", INPUT_MODE
+            //new InterpreterTestCase("STRUCT_HKNI", "type User struct{string name,int age,}", INPUT_MODE
+
+            new InterpreterTestCase("FILE_MODE", "D:\\workspace\\demo-cpp\\hkni\\test_code.txt", FILE_MODE),
     };
 
     int tcListLen = sizeof(tcList) / sizeof(tcList[0]);

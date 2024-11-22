@@ -9,10 +9,10 @@
 namespace asthkni {
     //return语句
     //格式：return 表达式;
-    class ReturnStatement : public I9Statement {
+    class ReturnStatement : public StatementI9 {
         //##属性
     public:
-        I9Expression *I9Exp;
+        ExpressionI9 *I9Exp;
     private:
         Token token; //就是return关键字
         //##方法

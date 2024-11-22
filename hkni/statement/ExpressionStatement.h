@@ -10,11 +10,11 @@ using namespace hkni;
 
 namespace asthkni {
     //表达式语句
-    class ExpressionStatement : public I9Statement {
+    class ExpressionStatement : public StatementI9 {
         //##属性
     public:
         Token TokenHKNI;
-        I9Expression *I9Exp;
+        ExpressionI9 *I9Exp;
         //##方法
     public:
         ExpressionStatement(Token t) {

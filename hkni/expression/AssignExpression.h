@@ -9,12 +9,12 @@
 namespace asthkni {
     //赋值表达式
     //格式：标识符表达式 操作符 表达式
-    class AssignExpression : public I9Expression {
+    class AssignExpression : public ExpressionI9 {
     public:
         Token TokenHKNI; //就是操作符的字符串
         IdentifierExpression *I9NameExp; //标识符表达式
         string operationStr; //操作符（=、+=、-=、*=、/=、%=）
-        I9Expression *I9ValueExp; //值表达式，需要先解释出来
+        ExpressionI9 *I9ValueExp; //值表达式，需要先解释出来
     public:
         AssignExpression(Token token) {
             this->TokenHKNI = token;

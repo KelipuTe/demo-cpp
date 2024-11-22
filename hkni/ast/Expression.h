@@ -5,7 +5,7 @@
 
 namespace asthkni {
     //表达式抽象
-    class I9Expression : public I9Node {
+    class ExpressionI9 : public NodeI9 {
     public:
         virtual void ExpressionNode() = 0;
     };

@@ -7,7 +7,7 @@
 
 namespace asthkni {
     //布尔表达式
-    class BoolExpression : public I9Expression {
+    class BoolExpression : public ExpressionI9 {
     public:
         Token token; //就是true或false
     public:

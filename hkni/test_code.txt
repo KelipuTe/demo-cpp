@@ -1,0 +1,7 @@
+var a string = "hkni";
+
+function testPrint(aa string) {
+    println("hello", aa);
+}
+
+testPrint(a);

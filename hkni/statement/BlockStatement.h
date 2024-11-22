@@ -7,9 +7,9 @@
 
 namespace asthkni {
     //块语句
-    class BlockStatement : public I9Statement {
+    class BlockStatement : public StatementI9 {
     public:
-        std::vector<I9Statement*> BodyStmtList;
+        std::vector<StatementI9*> BodyStmtList;
 
     public:
         BlockStatement() {};

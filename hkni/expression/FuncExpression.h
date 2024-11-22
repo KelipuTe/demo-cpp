@@ -7,10 +7,12 @@
 #include "../expression/IdentifierExpression.h"
 #include "../statement/BlockStatement.h"
 
+//function 函数名(参数列表) 返回类型 {块语句}
+//参数列表：参数1 参数2类型, 参数2 参数2类型,...
+
 namespace asthkni {
     //函数声明表达式
-    //格式：function 函数名(参数列表){块语句}
-    class FuncExpression : public I9Expression {
+    class FuncExpression : public ExpressionI9 {
         //##属性
     public:
         IdentifierExpression *P7NameExp; //函数名

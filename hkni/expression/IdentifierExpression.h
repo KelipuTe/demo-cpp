@@ -9,21 +9,21 @@ using namespace hkni;
 
 namespace asthkni {
     //标识符表达式
-    class IdentifierExpression : public I9Expression {
+    class IdentifierExpression : public ExpressionI9 {
     public:
-        Token TokenHKNI;
-
+        Token Name;
+        Token Type;
     public:
         IdentifierExpression(Token t) {
-            TokenHKNI = t;
+            Name = t;
         };
 
         string GetTokenLiteral() override {
-            return TokenHKNI.Literal;
+            return Name.Literal;
         }
 
         string ToString() override {
-            return TokenHKNI.Literal;
+            return Name.Literal;
         }
 
         void ExpressionNode() override {}

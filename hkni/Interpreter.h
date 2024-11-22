@@ -35,7 +35,7 @@ namespace hkni {
         //解释器入口，递归入口。
         //解释的过程可能会递归调用该函数。
         //顺序和语法分析那里一样。
-        Object *DoInterpret(I9Node *i9node, Environment *p7env) {
+        Object *DoInterpret(NodeI9 *i9node, Environment *p7env) {
             if (typeid(*i9node) == typeid(Program)) {
                 auto *p7program = dynamic_cast<Program *>(i9node); //程序
                 return interpretProgram(p7program, p7env);
@@ -96,7 +96,7 @@ namespace hkni {
         //程序
         Object *interpretProgram(Program *p7program, Environment *p7env) {
             Object *p7obj = nullptr;
-            for (auto i9stmt: p7program->I9StatementList) {
+            for (auto i9stmt: p7program->StmtI9List) {
                 p7obj = this->DoInterpret(i9stmt, p7env); //解释每一条语句
             }
             return p7obj;
@@ -221,7 +221,7 @@ namespace hkni {
 
         //解析函数调用的参数列表
         std::vector<Object *>
-        interpretCallExpressionArgExpList(std::vector<I9Expression *> argExpList, Environment *p7env) {
+        interpretCallExpressionArgExpList(std::vector<ExpressionI9 *> argExpList, Environment *p7env) {
             std::vector<Object *> argObjList;
 
             for (auto argExp: argExpList) {

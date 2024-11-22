@@ -8,12 +8,10 @@
 
 namespace asthkni {
     //整数表达式
-    class IntExpression : public I9Expression {
-        //##属性
+    class IntExpression : public ExpressionI9 {
     public:
         Token TokenHKNI;
         int Value;
-        //##方法
     public:
         IntExpression(Token token) {
             this->TokenHKNI = token;

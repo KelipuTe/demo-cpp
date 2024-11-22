@@ -8,24 +8,23 @@ using namespace std;
 
 namespace asthkni {
     //程序
-    class Program : public I9Node {
+    class Program final : public NodeI9 {
     public:
-        std::vector<I9Statement *> I9StatementList; //语句列表
-    public:
+        std::vector<StatementI9 *> StmtI9List; //语句列表（程序由语句组成）
+
         string GetTokenLiteral() override {
-            if (!I9StatementList.empty()) {
-                return I9StatementList[0]->GetTokenLiteral();
-            } else {
-                return "";
+            if (!StmtI9List.empty()) {
+                return StmtI9List[0]->GetTokenLiteral();
             }
+            return "";
         }
 
         string ToString() override {
-            string t4str;
-            for (auto &item: I9StatementList) {
-                t4str += item->ToString();
+            string strT4;
+            for (auto &item: StmtI9List) {
+                strT4 += item->ToString();
             }
-            return t4str;
+            return strT4;
         }
     };
 }

@@ -5,7 +5,7 @@
 
 namespace asthkni {
     //语句抽象
-    class I9Statement : public I9Node {
+    class StatementI9 : public NodeI9 {
     public:
         virtual void StatementNode() = 0;
     };

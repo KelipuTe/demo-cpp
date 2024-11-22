@@ -8,12 +8,12 @@ namespace asthkni {
     //变量声明语句
     //格式：var 标识符表达式 变量类型;
     //格式：var 标识符表达式 变量类型 = 表达式;
-    class VarStatement : public I9Statement {
+    class VarStatement : public StatementI9 {
     public:
         IdentifierExpression *P7IdentifierExp; //标识符表达式
         Token ValueToken; //变量类型的token
         TokenType ValueTokenType; //变量类型的token
-        I9Expression *I9ValueExp; //值表达式，需要先解释出来
+        ExpressionI9 *I9ValueExp; //值表达式，需要先解释出来
     public:
         VarStatement() {
             this->P7IdentifierExp = nullptr;

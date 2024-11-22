@@ -6,12 +6,15 @@ using namespace std;
 
 using namespace hkni;
 
+/**
+ * 语法分析测试用例
+ */
 class ParserTestCase {
 public:
     string name;
     string input;
     LexerMode mode;
-public:
+
     ParserTestCase(string name, string input, LexerMode mode) {
         this->name = name;
         this->input = input;
@@ -124,7 +127,7 @@ void testParserDoParse() {
         if (p7parser->HasError()) {
             p7parser->PrintError();
         } else {
-            for (auto item: p7program->I9StatementList) {
+            for (auto item: p7program->StmtI9List) {
                 cout << item->ToString() << endl;
             }
         }

@@ -8,12 +8,12 @@
 namespace asthkni {
     //中缀表达式
     //格式：表达式 操作符 表达式
-    class InfixExpression : public I9Expression {
+    class InfixExpression : public ExpressionI9 {
     public:
         Token TokenHKNI; //操作符
-        I9Expression *I9LeftExp;
+        ExpressionI9 *I9LeftExp;
         string OperatorStr;
-        I9Expression *I9RightExp;
+        ExpressionI9 *I9RightExp;
     public:
         InfixExpression(Token token) {
             this->TokenHKNI = token;

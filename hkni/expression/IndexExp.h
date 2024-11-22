@@ -10,11 +10,11 @@ using namespace hkni;
 
 namespace asthkni {
     //索引表达式
-    class IndexExp : public I9Expression {
+    class IndexExp : public ExpressionI9 {
     public:
         Token TokenHKNI;
-        I9Expression *I9LeftExp;
-        I9Expression *I9RightExp;
+        ExpressionI9 *I9LeftExp;
+        ExpressionI9 *I9RightExp;
 
         IndexExp(Token t) {
             this->TokenHKNI = t;

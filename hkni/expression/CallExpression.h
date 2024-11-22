@@ -8,10 +8,10 @@
 
 namespace asthkni {
     //函数调用表达式
-    class CallExpression : public I9Expression {
+    class CallExpression : public ExpressionI9 {
     public:
-        I9Expression* I9Exp;
-        std::vector<I9Expression*> ArgExpList; //参数列表
+        ExpressionI9* I9Exp;
+        std::vector<ExpressionI9*> ArgExpList; //参数列表
     public:
         CallExpression() {};
 

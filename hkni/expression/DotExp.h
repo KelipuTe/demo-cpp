@@ -9,11 +9,11 @@ using namespace hkni;
 
 namespace asthkni {
     //点引表达式
-    class DotExp : public I9Expression {
+    class DotExp : public ExpressionI9 {
     public:
         Token TokenHKNI;
-        I9Expression *I9LeftExp;
-        I9Expression *I9RightExp;
+        ExpressionI9 *I9LeftExp;
+        ExpressionI9 *I9RightExp;
 
         DotExp(Token t) {
             this->TokenHKNI = t;

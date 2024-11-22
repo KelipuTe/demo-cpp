@@ -8,11 +8,11 @@
 namespace asthkni {
     //前缀表达式
     //格式：操作符 表达式
-    class PrefixExpression : public I9Expression {
+    class PrefixExpression : public ExpressionI9 {
     public:
         Token TokenHKNI; //操作符
         string OperatorStr;
-        I9Expression *I9RightExp;
+        ExpressionI9 *I9RightExp;
 
     public:
         PrefixExpression(Token token) {

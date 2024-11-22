@@ -7,7 +7,8 @@ using namespace std;
 
 namespace hkni {
 
-    //词法标记类型，避开一些常见的关键字
+    //词法标记类型
+    //因为 HKNI 是用 c++ 编写的，所以尽量避开一些 c++ 的关键字
     enum TokenType {
         ILLEGAL, //非法，枚举第一个是0，正好用非法占位
         END, //结束
@@ -66,6 +67,7 @@ namespace hkni {
         FOR_HKNI, //for循环语句
         FUNCTION_HKNI, //函数定义（function）
         RETURN_HKNI, //返回语句（return）
+        TYPE_HKNI, //类型定义（type）
         STRUCT_HKNI, //结构体定义（struct）
         NEW_HKNI, //结构体实例化（new）
 
@@ -76,8 +78,8 @@ namespace hkni {
     //词法标记
     class Token {
     public:
-        TokenType TokenType; //词法标记类型
         string Literal; //词法标记原始值
+        TokenType TokenType; //词法标记类型
     };
 
     string TokenTypeToString(TokenType t) {

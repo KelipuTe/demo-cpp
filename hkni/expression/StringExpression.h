@@ -7,7 +7,7 @@
 
 namespace asthkni {
     //字符串表达式
-    class StringExpression : public I9Expression {
+    class StringExpression : public ExpressionI9 {
     public:
         Token TokenHKNI;
     public:
