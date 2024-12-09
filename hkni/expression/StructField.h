@@ -2,12 +2,11 @@
 #define HKNI_STRUCT_FIELD_H
 
 #include <string>
+
 #include "../Token.h"
 #include "../ast/Expression.h"
 
-using namespace hkni;
-
-namespace asthkni {
+namespace hkni {
     //结构体字段
     class StructField : public ExpressionI9 {
     public:

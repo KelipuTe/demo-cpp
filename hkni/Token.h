@@ -6,7 +6,6 @@
 using namespace std;
 
 namespace hkni {
-
     //词法标记类型
     //因为 HKNI 是用 c++ 编写的，所以尽量避开一些 c++ 的关键字
     enum TokenType {
@@ -52,24 +51,31 @@ namespace hkni {
         COMMENT, //注释（//）
 
         //关键字
-        NULL_HKNI, //null值（null）
-        BOOL_VALUE, //布尔值（true、false）
-        BOOL_TYPE, //布尔类型（bool）
-        INT_VALUE, //整数值（2进制、8进制、10进制、16进制）
-        INT_TYPE, //整数类型（int）
-        FLOAT_VALUE, //浮点数值（10进制）
-        FLOAT_TYPE, //浮点数类型（float）
-        STRING_TYPE, //字符串类型（string）
         VAR_HKNI, //变量声明（var）
         CONST_HKNI, //常量声明（const）
+
+        BOOL_TYPE, //布尔类型（bool）
+        BOOL_VALUE, //布尔值（true、false）
+        INT_TYPE, //整数类型（int）
+        INT_VALUE, //整数值（2进制、8进制、10进制、16进制）
+        FLOAT_TYPE, //浮点数类型（float）
+        FLOAT_VALUE, //浮点数值（10进制）
+        STRING_TYPE, //字符串类型（string）
+        NULL_HKNI, //null值（null）
+
         IF_HKNI, //if语句
         ELSE_HKNI, //else语句
         FOR_HKNI, //for循环语句
-        FUNCTION_HKNI, //函数定义（function）
-        RETURN_HKNI, //返回语句（return）
+
+        FUNCTION_HKNI, //函数定义（func）
+        RETURN_HKNI, //函数返回语句（return）
+
+        ARRAY_HKNI, //数组声明（[]）
+        MAP_HKNI, //map声明（map）
         TYPE_HKNI, //类型定义（type）
         STRUCT_HKNI, //结构体定义（struct）
-        NEW_HKNI, //结构体实例化（new）
+        CLASS_HKNI, //类定义（class）
+        NEW_HKNI, //实例化（new）
 
         //其他
         IDENTIFIER, //标识符
@@ -78,7 +84,7 @@ namespace hkni {
     //词法标记
     class Token {
     public:
-        string Literal; //词法标记原始值
+        string Literal; //词法标记原始值（就是代码文本）
         TokenType TokenType; //词法标记类型
     };
 

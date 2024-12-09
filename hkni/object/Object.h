@@ -1,11 +1,9 @@
-#ifndef HKNI_OBJECT_H
-#define HKNI_OBJECT_H
+#ifndef HKNI_OBJ_H
+#define HKNI_OBJ_H
 
 #include <string>
 
-using namespace std;
-
-namespace objecthkni {
+namespace hkni {
     //对象类型，避开一些常见的关键字
     enum ObjectType {
         ERROR_OBJ, //错误
@@ -19,8 +17,8 @@ namespace objecthkni {
         RETURN_OBJ, //返回
     };
 
-    string ObjectTypeToString(ObjectType ot) {
-        switch (ot) {
+    string ObjectTypeToStr(ObjectType objType) {
+        switch (objType) {
             case ERROR_OBJ:
                 return "ERROR_OBJ";
             case NULL_OBJ:
@@ -62,11 +60,11 @@ namespace objecthkni {
     };
 
     //判断对象是不是某种类型
-    bool ObjectIs(Object *p7o, ObjectType ot) {
-        if (p7o == nullptr) {
+    bool ObjectIs(Object *obj, ObjectType objType) {
+        if (obj == nullptr) {
             return false;
         }
-        return p7o->GetObjectType() == ot;
+        return obj->GetObjectType() == objType;
     }
 }
 

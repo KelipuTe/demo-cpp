@@ -5,51 +5,55 @@
 
 #include "object/Object.h"
 
-using namespace objecthkni;
-
 namespace hkni {
     //环境（作用域）
     class Environment {
     public:
-        std::map<string, Object *> VariableMap; //局部变量
-        Environment *P7OuterEnv; //外层环境
+        std::map<string, Object *> VarMap; //局部变量
+        Environment *outerEnv; //外层环境
+
     public:
-        Environment() {}
+        Environment() {
+        }
 
         //添加变量，不可重复
-        void AddVariable(string name, Object *p7ValueObj) {
-            if (!IsExistVariable(name)) {
-                VariableMap[name] = p7ValueObj;
+        void AddVar(string name, Object *obj) {
+            if (!IsVarExist(name)) {
+                VarMap[name] = obj;
             }
         }
 
         //获取变量
-        Object *GetVariable(string name) {
-            if (IsExistVariable(name)) {
-                return VariableMap[name];
+        Object *GetVar(string name) {
+            if (IsVarExist(name)) {
+                return VarMap[name];
             }
-            if (P7OuterEnv != nullptr && P7OuterEnv->IsExistVariable(name)) {
-                return P7OuterEnv->GetVariable(name);
+
+            if (outerEnv != nullptr && outerEnv->IsVarExist(name)) {
+                return outerEnv->GetVar(name);
             }
+
             return nullptr;
         }
 
         //修改变量
-        void EditVariable(string name, Object *p7ValueObj) {
-            if (IsExistVariable(name)) {
-                VariableMap[name] = p7ValueObj;
+        void EditVar(string name, Object *obj) {
+            if (IsVarExist(name)) {
+                VarMap[name] = obj;
                 return;
             }
-            if (P7OuterEnv != nullptr) {
-                P7OuterEnv->EditVariable(name, p7ValueObj);
+
+            if (outerEnv != nullptr) {
+                outerEnv->EditVar(name, obj);
                 return;
             }
         }
 
         //变量是否存在
-        bool IsExistVariable(string name) {
-            auto p7obj = VariableMap[name];
-            return p7obj != nullptr;
+        bool IsVarExist(string name) {
+            auto obj = VarMap[name];
+
+            return obj != nullptr;
         }
     };
 }

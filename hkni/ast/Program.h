@@ -2,11 +2,10 @@
 #define HKNI_PROGRAM_H
 
 #include <vector>
+
 #include "Statement.h"
 
-using namespace std;
-
-namespace asthkni {
+namespace hkni {
     //程序
     class Program final : public NodeI9 {
     public:
@@ -20,11 +19,11 @@ namespace asthkni {
         }
 
         string ToString() override {
-            string strT4;
+            string str;
             for (auto &item: StmtI9List) {
-                strT4 += item->ToString();
+                str += item->ToString();
             }
-            return strT4;
+            return str;
         }
     };
 }

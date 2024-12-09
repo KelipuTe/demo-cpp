@@ -1,14 +1,13 @@
-
 #ifndef HKNI_DOT_EXP_H
 #define HKNI_DOT_EXP_H
 
 #include <string>
+
 #include "../Token.h"
 #include "../ast/Expression.h"
-using namespace hkni;
 
-namespace asthkni {
-    //点引表达式
+namespace hkni {
+    //点表达式
     class DotExp : public ExpressionI9 {
     public:
         Token TokenHKNI;

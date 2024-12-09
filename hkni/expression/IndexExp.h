@@ -1,14 +1,12 @@
-
 #ifndef HKNI_INDEX_EXP_H
 #define HKNI_INDEX_EXP_H
 
 #include <string>
+
 #include "../Token.h"
 #include "../ast/Expression.h"
 
-using namespace hkni;
-
-namespace asthkni {
+namespace hkni {
     //索引表达式
     class IndexExp : public ExpressionI9 {
     public:

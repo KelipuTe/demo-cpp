@@ -7,8 +7,6 @@
 
 #include "Token.h"
 
-using namespace std;
-
 namespace hkni {
     //词法分析模式
     enum LexerMode {
@@ -16,16 +14,17 @@ namespace hkni {
         FILE_MODE = 2, //文件模式
     };
 
-    const string ErrWrongLexerMode = "【错误】错误的词法分析模式。";
+    const string INPUT_MODE_STR = "【代码模式】";
+    const string FILE_MODE_STR = "【文件模式】";
+
+    const string ErrWrongLexerMode = "【词法分析错误】错误的词法分析模式。";
 
     //词法分析器
     class Lexer {
-        //##属性
     private:
         string input; //输入数据
+        FILE *file = nullptr; //文件模式打开的文件
         LexerMode mode; //词法分析模式
-
-        FILE *fileP7 = nullptr; //文件模式打开的文件
 
         char readBuffer[128] = {0}; //读取缓冲区
         const int readBufferLen = 128; //读取缓冲区的长度
@@ -42,31 +41,43 @@ namespace hkni {
 
         //关键字
         map<string, TokenType> keywordMap = {
-            {"null", NULL_HKNI},
+            {"var", VAR_HKNI},
+            {"const", CONST_HKNI},
+
             {"bool", BOOL_TYPE},
             {"true", BOOL_VALUE},
             {"false", BOOL_VALUE},
             {"int", INT_TYPE},
             {"float", FLOAT_TYPE},
             {"string", STRING_TYPE},
-            {"var", VAR_HKNI},
-            {"const", CONST_HKNI},
+            {"null", NULL_HKNI},
+
             {"if", IF_HKNI},
             {"else", ELSE_HKNI},
             {"for", FOR_HKNI},
-            {"function", FUNCTION_HKNI},
+
+            {"func", FUNCTION_HKNI},
             {"return", RETURN_HKNI},
+
+            {"map", MAP_HKNI},
+
             {"type", TYPE_HKNI},
             {"struct", STRUCT_HKNI},
+
             {"new", NEW_HKNI},
         };
-        //##方法
+
     public:
         /**
          * @param input 代码文本、文件路径
          * @param mode
          */
         Lexer(string input, LexerMode mode) {
+            if (mode != INPUT_MODE && mode != FILE_MODE) {
+                cout << ErrWrongLexerMode << endl;
+                exit(1);
+            }
+
             this->input = input;
             this->mode = mode;
             if (mode == FILE_MODE) {
@@ -75,24 +86,24 @@ namespace hkni {
 
             readNextChar(); //相当于初始化
 
-            // 读到非0字符，则至少有一行
+            //只要能读到字符，则至少有一行
             if (nowChar != 0) {
                 nowRow = 1;
             }
-        };
+        }
 
         ~Lexer() {
-            if (fileP7 != nullptr) {
-                fclose(fileP7);
+            if (file != nullptr) {
+                fclose(file);
             }
-        };
+        }
 
         string GetModeStr() {
             if (mode == INPUT_MODE) {
-                return "代码模式。";
+                return INPUT_MODE_STR;
             }
             if (mode == FILE_MODE) {
-                return "文件模式：" + input + "。";
+                return FILE_MODE_STR;
             }
             return ErrWrongLexerMode;
         }
@@ -111,10 +122,6 @@ namespace hkni {
             skipWhiteSpace();
 
             switch (nowChar) {
-                case 0:
-                    token.Literal = "";
-                    token.TokenType = END;
-                    break;
                 case '`':
                     token.Literal = readString('`');
                     token.TokenType = STRING_VALUE;
@@ -162,6 +169,10 @@ namespace hkni {
                 case '(':
                     token.Literal = "(";
                     token.TokenType = LPAREN;
+                    break;
+                case 0:
+                    token.Literal = "";
+                    token.TokenType = END;
                     break;
                 case ')':
                     token.Literal = ")";
@@ -284,30 +295,30 @@ namespace hkni {
                         //单行注释
                         readNextChar();
 
-                        string t4str = "//";
+                        string strT4 = "//";
                         while (nowChar != 0 && nowChar != '\n') {
                             readNextChar();
-                            t4str.push_back(nowChar);
+                            strT4.push_back(nowChar);
                         }
 
-                        token.Literal = t4str;
+                        token.Literal = strT4;
                         token.TokenType = COMMENT;
                     } else if (peekNextChar() == '*') {
                         //多行注释
                         readNextChar();
 
-                        string t4str = "/*";
+                        string strT4 = "/*";
                         while (nowChar != 0) {
                             readNextChar();
-                            t4str.push_back(nowChar);
+                            strT4.push_back(nowChar);
                             if (nowChar == '*' && peekNextChar() == '/') {
                                 readNextChar();
-                                t4str.push_back(nowChar);
+                                strT4.push_back(nowChar);
                                 break;
                             }
                         }
 
-                        token.Literal = t4str;
+                        token.Literal = strT4;
                         token.TokenType = COMMENT;
                     } else {
                         token.Literal = "/";
@@ -324,12 +335,12 @@ namespace hkni {
                     if (isNumber()) {
                         bool isInt = true;
                         bool isError = false;
-                        string t4str = readNumber(&isInt, &isError);
+                        string strT4 = readNumber(&isInt, &isError);
                         if (isError) {
                             cout << "【错误】数字格式错误。" << endl;
                             exit(1);
                         }
-                        token.Literal = t4str;
+                        token.Literal = strT4;
                         token.TokenType = isInt ? INT_VALUE : FLOAT_VALUE;
                         return token;
                     }
@@ -344,9 +355,9 @@ namespace hkni {
 
     private:
         void openFile(string path) {
-            fileP7 = fopen(path.c_str(), "r");
-            if (fileP7 == nullptr) {
-                cout << "【错误】文件 " << fileP7 << " 打开失败。" << endl;
+            file = fopen(path.c_str(), "r");
+            if (file == nullptr) {
+                cout << "【错误】文件 " << file << " 打开失败。" << endl;
                 exit(1);
             }
         }
@@ -382,7 +393,7 @@ namespace hkni {
                 nowColumn++;
             } else if (mode == FILE_MODE) {
                 //文件模式
-                if (fileP7 == nullptr) {
+                if (file == nullptr) {
                     nowChar = 0;
                     return;
                 }
@@ -393,7 +404,7 @@ namespace hkni {
                     //要么是第一次调用这个方法，两个值都是 0 的时候进来
                     //要么是一段数据处理完了，需要读取下一段数据的时候进来
 
-                    size_t freadSize = fread(readBuffer, 1, readBufferLen, fileP7);
+                    size_t freadSize = fread(readBuffer, 1, readBufferLen, file);
                     nowReadBufferLen = (int) freadSize;
 
                     if (nowReadBufferLen == 0) {
@@ -419,13 +430,10 @@ namespace hkni {
 
                 if (nowChar == 0) {
                     //读到文件末尾，关闭文件，结束读取
-                    fclose(fileP7);
-                    fileP7 = nullptr;
+                    fclose(file);
+                    file = nullptr;
                     return;
                 }
-            } else {
-                cout << ErrWrongLexerMode << endl;
-                exit(1);
             }
 
             nowCharIndex = nextCharIndex;
@@ -439,12 +447,13 @@ namespace hkni {
                     return 0;
                 }
                 return input[nextCharIndex];
-            } else if (mode == FILE_MODE) {
+            }
+            if (mode == FILE_MODE) {
                 if (nextCharIndex == nowReadBufferLen) {
                     //读到缓冲区的末尾，表示缓冲区中的数据已经处理完了
                     //但是这并不表示结束了，文件中有可能还有数据，需要继续读取
                     nextCharBuffer[0] = 0; //重置缓冲区
-                    size_t freadSize = fread(nextCharBuffer, 1, 1, fileP7);
+                    size_t freadSize = fread(nextCharBuffer, 1, 1, file);
                     if (freadSize == 0) {
                         return 0;
                     } else {
@@ -452,10 +461,8 @@ namespace hkni {
                     }
                 }
                 return readBuffer[nextCharIndex];
-            } else {
-                cout << ErrWrongLexerMode << endl;
-                exit(1);
             }
+            return 0;
         }
 
 
